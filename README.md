@@ -49,6 +49,53 @@ AI mentor personas, lifestyle content packs, optional social features, and PWA p
 - **Conversion**: ≥3% free-to-Pro conversion rate
 - **Performance**: <1.5s First Contentful Paint, <3s Time to Interactive
 
+## 🚀 Development Workflow
+
+### GitHub Project Management
+- **Project Board**: [Mind Voyage Companion - Development](https://github.com/users/mrbin264/projects/4)
+- **User Stories**: 13 stories organized in phases (MVC-000 to MVC-012)
+- **Workflow Documentation**: See `.github/workflows/DEVELOPER_WORKFLOW.md`
+
+### Quick Start for Developers
+
+1. **Setup Environment**
+   ```bash
+   # Clone repository
+   git clone https://github.com/mrbin264/mind-voyage-companion.git
+   cd mind-voyage-companion
+   
+   # Install dependencies
+   npm install
+   
+   # Setup environment variables
+   cp .env.example .env.local
+   ```
+
+2. **Start Development**
+   ```bash
+   # View available user stories
+   ./scripts/manage-project.sh view-project
+   
+   # Start working on a story
+   ./scripts/manage-project.sh start-story <issue-number> <assignee>
+   
+   # Create feature branch
+   git checkout -b feature/mvc-xxx-description
+   ```
+
+3. **VS Code Tasks** (Cmd/Ctrl + Shift + P → "Tasks: Run Task")
+   - Start User Story
+   - Run Development Server
+   - Code Quality Check
+   - Create Feature Branch
+   - Create Pull Request
+
+### Workflow Files
+- **📋 Full Workflow Guide**: `.github/workflows/DEVELOPER_WORKFLOW.md`
+- **⚡ Quick Reference**: `.github/workflows/QUICK_REFERENCE.md` 
+- **🔧 Project Management Script**: `scripts/manage-project.sh`
+- **⚙️ VS Code Tasks**: `.vscode/tasks.json`
+
 ## 🔒 Privacy & Security
 
 - Privacy-first architecture with no user data monetization
