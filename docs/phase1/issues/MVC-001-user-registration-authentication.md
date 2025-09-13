@@ -50,10 +50,90 @@ None - foundational feature
 ## Technical Implementation Details
 
 ### Frontend Components
-- Registration form with email/password validation
-- Login form with error handling
-- Password reset request form
-- Password reset confirmation form
+
+#### Authentication Forms (RSC + Client Components)
+```typescript
+// app/(auth)/register/page.tsx - Server Component
+export default function RegisterPage() {
+  return <AuthLayout><RegisterForm /></AuthLayout>
+}
+
+// components/auth/RegisterForm.tsx - Client Component
+'use client'
+interface RegisterFormData {
+  email: string
+  password: string
+  confirmPassword: string
+  name?: string
+}
+
+export function RegisterForm() {
+  const [state, formAction] = useFormState(registerAction, null)
+  const [pending, startTransition] = useTransition()
+  
+  return (
+    <form action={formAction} className="space-y-4">
+      <FormField 
+        name="email" 
+        type="email" 
+        label="Email"
+        error={state?.fieldErrors?.email}
+        required
+      />
+      <PasswordField 
+        name="password"
+        label="Password" 
+        requirements={{
+          minLength: 8,
+          requireNumbers: true,
+          requireSpecialChars: true
+        }}
+        error={state?.fieldErrors?.password}
+      />
+      <FormSubmitButton pending={pending}>
+        Create Account
+      </FormSubmitButton>
+    </form>
+  )
+}
+```
+
+#### Validation & Form Handling
+```typescript
+// lib/validations/auth.ts
+export const registerSchema = z.object({
+  email: z.string().email('Invalid email address'),
+  password: z.string()
+    .min(8, 'Password must be at least 8 characters')
+    .regex(/[0-9]/, 'Password must contain at least one number')
+    .regex(/[^a-zA-Z0-9]/, 'Password must contain special character'),
+  name: z.string().min(2, 'Name must be at least 2 characters').optional()
+})
+
+// lib/actions/auth.ts - Server Actions
+export async function registerAction(prevState: any, formData: FormData) {
+  const validation = registerSchema.safeParse({
+    email: formData.get('email'),
+    password: formData.get('password'),
+    name: formData.get('name')
+  })
+  
+  if (!validation.success) {
+    return { fieldErrors: validation.error.flatten().fieldErrors }
+  }
+  
+  // Registration logic...
+  redirect('/onboarding')
+}
+```
+
+#### Component Architecture
+- **AuthLayout** - Shared layout for auth pages with branding
+- **FormField** - Reusable form input with validation states
+- **PasswordField** - Enhanced password input with strength indicator
+- **FormSubmitButton** - Button with loading states and pending UI
+- **AuthGuard** - HOC for protecting authenticated routes
+- **SessionProvider** - Context for auth state management
 
 ### Backend API Endpoints
 - `POST /api/auth/signup` - User registration

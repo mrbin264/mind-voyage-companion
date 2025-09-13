@@ -174,7 +174,7 @@ Users begin their day by opening Mind Voyage Companion to find an inspiring Stoi
 
 * Azure OpenAI integration for translation and content improvement features
 * Azure App Service for hosting with Azure Key Vault for secrets management
-* PostgreSQL database with Prisma ORM for data management
+* MongoDB (Azure) with Mongoose ODM for data management
 * Azure Application Insights for monitoring and analytics
 * Email service integration for notifications and weekly reports
 
@@ -183,14 +183,14 @@ Users begin their day by opening Mind Voyage Companion to find an inspiring Stoi
 * All user data encrypted at rest with Azure-managed encryption keys
 * PII redaction in AI prompts with strict no-training policies
 * GDPR compliance with user data export and deletion capabilities
-* Row-level security ensuring users can only access their own data
+* MongoDB security features ensuring users can only access their own data
 * Daily automated backups with 24-hour recovery point objective
 
 ### 8.3 Scalability & performance
 
 * Horizontal application scaling supporting up to 10,000 concurrent users
 * Database optimization with proper indexing and query performance monitoring
-* Event table partitioning by month for analytics data management
+* Collection sharding and partitioning strategies for analytics data management
 * CDN integration for static assets and improved global performance
 * Caching strategies for frequently accessed data like daily Stoic content
 
