@@ -21,11 +21,13 @@ async function getMongoUri() {
     }
     return mongoMemoryServer.getUri()
   }
-  
+
   // Use regular MongoDB URI in production
   const MONGODB_URI = process.env.MONGODB_URI
   if (!MONGODB_URI) {
-    throw new Error('Please define the MONGODB_URI environment variable for production')
+    throw new Error(
+      'Please define the MONGODB_URI environment variable for production'
+    )
   }
   return MONGODB_URI
 }
@@ -47,8 +49,10 @@ async function connectDB() {
       bufferCommands: false,
     }
 
-    cached.promise = mongoose.connect(mongoUri, opts).then((mongoose) => {
-      console.log(`📝 Connected to MongoDB: ${process.env.NODE_ENV === 'development' ? 'Memory Server' : 'Production'}`)
+    cached.promise = mongoose.connect(mongoUri, opts).then(mongoose => {
+      console.log(
+        `📝 Connected to MongoDB: ${process.env.NODE_ENV === 'development' ? 'Memory Server' : 'Production'}`
+      )
       return mongoose
     })
   }

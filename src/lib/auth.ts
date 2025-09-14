@@ -1,7 +1,7 @@
-import { NextAuthConfig } from "next-auth"
-import { MongoDBAdapter } from "@auth/mongodb-adapter"
-import MicrosoftEntraID from "next-auth/providers/microsoft-entra-id"
-import { MongoClient } from "mongodb"
+import { NextAuthConfig } from 'next-auth'
+import { MongoDBAdapter } from '@auth/mongodb-adapter'
+import MicrosoftEntraID from 'next-auth/providers/microsoft-entra-id'
+import { MongoClient } from 'mongodb'
 
 // MongoDB Memory Server for development
 let mongoMemoryServer: any = null
@@ -23,17 +23,19 @@ async function getMongoUri() {
     }
     return mongoMemoryServer.getUri()
   }
-  
+
   // Use regular MongoDB URI in production
   if (!process.env.MONGODB_URI) {
-    throw new Error('Please define the MONGODB_URI environment variable for production')
+    throw new Error(
+      'Please define the MONGODB_URI environment variable for production'
+    )
   }
   return process.env.MONGODB_URI
 }
 
 async function createMongoClient() {
   const uri = await getMongoUri()
-  
+
   if (process.env.NODE_ENV === 'development') {
     // In development mode, use a global variable to preserve the client
     if (!global._mongoClientPromise) {
@@ -57,7 +59,7 @@ export const authConfig: NextAuthConfig = {
     MicrosoftEntraID({
       clientId: process.env.AZURE_AD_CLIENT_ID!,
       clientSecret: process.env.AZURE_AD_CLIENT_SECRET!,
-      issuer: process.env.AZURE_AD_TENANT_ID 
+      issuer: process.env.AZURE_AD_TENANT_ID
         ? `https://login.microsoftonline.com/${process.env.AZURE_AD_TENANT_ID}/v2.0`
         : undefined,
     }),
@@ -72,7 +74,7 @@ export const authConfig: NextAuthConfig = {
     }),
   },
   pages: {
-    signIn: "/auth/signin",
-    error: "/auth/error",
+    signIn: '/auth/signin',
+    error: '/auth/error',
   },
 }
