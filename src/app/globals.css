@@ -56,5 +56,69 @@
   body {
     background-color: hsl(var(--background));
     color: hsl(var(--foreground));
+    font-feature-settings: "rlig" 1, "calt" 1;
+  }
+}
+
+/* Enhanced Design System Variables */
+@layer base {
+  :root {
+    /* Enhanced Design System Variables */
+    --spacing-component-padding: 1rem;
+    --spacing-component-margin: 1rem;
+    --spacing-section-gap: 2rem;
+    --spacing-page-padding: 1.5rem;
+    
+    /* Animation Durations */
+    --duration-75: 75ms;
+    --duration-100: 100ms;
+    --duration-150: 150ms;
+    --duration-200: 200ms;
+    --duration-300: 300ms;
+    --duration-500: 500ms;
+    
+    /* Easing Functions */
+    --ease-in-out: cubic-bezier(0.4, 0, 0.2, 1);
+    --ease-in: cubic-bezier(0.4, 0, 1, 1);
+    --ease-out: cubic-bezier(0, 0, 0.2, 1);
+    
+    /* Common Transitions */
+    --transition-colors: color var(--duration-150) var(--ease-in-out), 
+                         background-color var(--duration-150) var(--ease-in-out);
+    --transition-opacity: opacity var(--duration-150) var(--ease-in-out);
+    --transition-transform: transform var(--duration-150) var(--ease-in-out);
+    --transition-all: all var(--duration-150) var(--ease-in-out);
+  }
+}
+
+/* Custom Utility Classes */
+@layer utilities {
+  /* Enhanced Focus Styles */
+  .focus-ring {
+    @apply focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2;
+  }
+  
+  /* Component State Classes */
+  .component-base {
+    @apply transition-all duration-150 ease-in-out;
+  }
+  
+  /* Interactive States */
+  .hover-lift {
+    @apply hover:shadow-lg hover:-translate-y-0.5 transition-all duration-200;
+  }
+  
+  /* Loading States */
+  .pulse-slow {
+    animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+  }
+  
+  /* Text Gradients */
+  .text-gradient-primary {
+    @apply bg-gradient-to-r from-primary-500 to-primary-600 bg-clip-text text-transparent;
+  }
+  
+  .text-gradient-secondary {
+    @apply bg-gradient-to-r from-secondary-500 to-secondary-600 bg-clip-text text-transparent;
   }
 }
