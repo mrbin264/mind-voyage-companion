@@ -18,7 +18,7 @@ export default async function LoginPage() {
     // redirect("/onboarding");
   }
   return (
-    <AuthLayout>
+    <AuthLayout type="login">
       <LoginForm />
     </AuthLayout>
   )
