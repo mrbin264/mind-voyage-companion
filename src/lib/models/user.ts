@@ -23,7 +23,9 @@ export interface ISession extends Document {
 export interface IUser extends Document {
   name?: string
   email: string
+  password?: string // bcrypt hash, optional for OAuth
   emailVerified?: Date
+  verified?: boolean
   image?: string
   createdAt: Date
   updatedAt: Date
@@ -64,7 +66,9 @@ const UserSchema = new Schema<IUser>(
   {
     name: String,
     email: { type: String, required: true, unique: true },
+    password: { type: String }, // bcrypt hash, optional for OAuth
     emailVerified: Date,
+    verified: { type: Boolean, default: false },
     image: String,
     timezone: { type: String, default: 'UTC' },
     preferences: { type: Schema.Types.Mixed, default: {} },
