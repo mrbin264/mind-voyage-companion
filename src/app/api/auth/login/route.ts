@@ -6,7 +6,7 @@ import connectDB from '@/lib/db'
 
 const loginSchema = z.object({
   email: z.string().email(),
-  password: z.string().min(8)
+  password: z.string().min(8),
 })
 
 export async function POST(req: NextRequest) {
@@ -14,17 +14,28 @@ export async function POST(req: NextRequest) {
   const data = await req.json()
   const parsed = loginSchema.safeParse(data)
   if (!parsed.success) {
-    return NextResponse.json({ errors: parsed.error.flatten().fieldErrors }, { status: 400 })
+    return NextResponse.json(
+      { errors: parsed.error.flatten().fieldErrors },
+      { status: 400 }
+    )
   }
   const { email, password } = parsed.data
   const user = await User.findOne({ email })
   if (!user || !user.password) {
-    return NextResponse.json({ errors: { email: ['Invalid credentials'] } }, { status: 401 })
+    return NextResponse.json(
+      { errors: { email: ['Invalid credentials'] } },
+      { status: 401 }
+    )
   }
   const valid = await compare(password, user.password)
   if (!valid) {
-    return NextResponse.json({ errors: { password: ['Invalid credentials'] } }, { status: 401 })
+    return NextResponse.json(
+      { errors: { password: ['Invalid credentials'] } },
+      { status: 401 }
+    )
   }
   // TODO: Set session cookie
-  return NextResponse.json({ user: { id: user.id, email: user.email, name: user.name } })
+  return NextResponse.json({
+    user: { id: user.id, email: user.email, name: user.name },
+  })
 }
