@@ -9,21 +9,19 @@ interface LayoutProps {
   footer?: React.ReactNode
 }
 
-export function Layout({ 
-  children, 
-  className, 
-  sidebar, 
-  header, 
-  footer 
+export function Layout({
+  children,
+  className,
+  sidebar,
+  header,
+  footer,
 }: LayoutProps) {
   return (
     <div className={cn('min-h-screen bg-background', className)}>
       {/* Header */}
       {header && (
         <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-          <div className="container flex h-16 items-center">
-            {header}
-          </div>
+          <div className="container flex h-16 items-center">{header}</div>
         </header>
       )}
 
@@ -39,18 +37,14 @@ export function Layout({
 
         {/* Main Content */}
         <main className="flex-1 min-h-[calc(100vh-4rem)]">
-          <div className="container py-6">
-            {children}
-          </div>
+          <div className="container py-6">{children}</div>
         </main>
       </div>
 
       {/* Footer */}
       {footer && (
         <footer className="border-t bg-background">
-          <div className="container py-6">
-            {footer}
-          </div>
+          <div className="container py-6">{footer}</div>
         </footer>
       )}
     </div>
@@ -65,21 +59,19 @@ interface PageHeaderProps {
   className?: string
 }
 
-export function PageHeader({ 
-  title, 
-  description, 
-  action, 
+export function PageHeader({
+  title,
+  description,
+  action,
   breadcrumb,
-  className 
+  className,
 }: PageHeaderProps) {
   return (
     <div className={cn('pb-8', className)}>
       {breadcrumb && (
-        <nav className="mb-4 text-sm text-muted-foreground">
-          {breadcrumb}
-        </nav>
+        <nav className="mb-4 text-sm text-muted-foreground">{breadcrumb}</nav>
       )}
-      
+
       <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
         <div className="space-y-1">
           <h1 className="text-3xl font-bold tracking-tight text-foreground">
@@ -91,12 +83,8 @@ export function PageHeader({
             </p>
           )}
         </div>
-        
-        {action && (
-          <div className="flex items-center gap-2">
-            {action}
-          </div>
-        )}
+
+        {action && <div className="flex items-center gap-2">{action}</div>}
       </div>
     </div>
   )
@@ -108,11 +96,7 @@ interface PageContentProps {
 }
 
 export function PageContent({ children, className }: PageContentProps) {
-  return (
-    <div className={cn('space-y-6', className)}>
-      {children}
-    </div>
-  )
+  return <div className={cn('space-y-6', className)}>{children}</div>
 }
 
 interface SectionProps {
@@ -123,12 +107,12 @@ interface SectionProps {
   action?: React.ReactNode
 }
 
-export function Section({ 
-  title, 
-  description, 
-  children, 
-  className, 
-  action 
+export function Section({
+  title,
+  description,
+  children,
+  className,
+  action,
 }: SectionProps) {
   return (
     <section className={cn('space-y-4', className)}>
@@ -136,20 +120,16 @@ export function Section({
         <div className="flex flex-col gap-2 md:flex-row md:items-center md:justify-between">
           <div className="space-y-1">
             {title && (
-              <h2 className="text-xl font-semibold tracking-tight">
-                {title}
-              </h2>
+              <h2 className="text-xl font-semibold tracking-tight">{title}</h2>
             )}
             {description && (
-              <p className="text-muted-foreground">
-                {description}
-              </p>
+              <p className="text-muted-foreground">{description}</p>
             )}
           </div>
           {action && <div>{action}</div>}
         </div>
       )}
-      
+
       <div>{children}</div>
     </section>
   )
@@ -162,12 +142,7 @@ interface GridProps {
   className?: string
 }
 
-export function Grid({ 
-  children, 
-  cols = 1, 
-  gap = 'md', 
-  className 
-}: GridProps) {
+export function Grid({ children, cols = 1, gap = 'md', className }: GridProps) {
   const colsClass = {
     1: 'grid-cols-1',
     2: 'grid-cols-1 lg:grid-cols-2',
@@ -176,14 +151,14 @@ export function Grid({
     6: 'grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-6',
     12: 'grid-cols-12',
   }
-  
+
   const gapClass = {
     sm: 'gap-2',
     md: 'gap-4',
     lg: 'gap-6',
     xl: 'gap-8',
   }
-  
+
   return (
     <div className={cn('grid', colsClass[cols], gapClass[gap], className)}>
       {children}
@@ -200,30 +175,30 @@ interface StackProps {
   className?: string
 }
 
-export function Stack({ 
-  children, 
+export function Stack({
+  children,
   direction = 'vertical',
   gap = 'md',
   align = 'stretch',
   justify = 'start',
-  className 
+  className,
 }: StackProps) {
   const directionClass = direction === 'vertical' ? 'flex-col' : 'flex-row'
-  
+
   const gapClass = {
     sm: 'gap-2',
     md: 'gap-4',
     lg: 'gap-6',
     xl: 'gap-8',
   }
-  
+
   const alignClass = {
     start: 'items-start',
     center: 'items-center',
     end: 'items-end',
     stretch: 'items-stretch',
   }
-  
+
   const justifyClass = {
     start: 'justify-start',
     center: 'justify-center',
@@ -231,16 +206,18 @@ export function Stack({
     between: 'justify-between',
     around: 'justify-around',
   }
-  
+
   return (
-    <div className={cn(
-      'flex', 
-      directionClass, 
-      gapClass[gap], 
-      alignClass[align],
-      justifyClass[justify],
-      className
-    )}>
+    <div
+      className={cn(
+        'flex',
+        directionClass,
+        gapClass[gap],
+        alignClass[align],
+        justifyClass[justify],
+        className
+      )}
+    >
       {children}
     </div>
   )

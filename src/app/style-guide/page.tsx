@@ -1,36 +1,48 @@
 import { Metadata } from 'next'
-import { 
-  Layout, 
-  PageHeader, 
-  PageContent, 
-  Section, 
-  Grid, 
-  Stack 
+import {
+  Layout,
+  PageHeader,
+  PageContent,
+  Section,
+  Grid,
+  Stack,
 } from '@/components/ui/layout'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
-import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card'
+import {
+  Card,
+  CardHeader,
+  CardTitle,
+  CardDescription,
+  CardContent,
+} from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
-import { 
-  Skeleton, 
-  Spinner, 
-  LoadingState, 
-  EmptyState, 
+import {
+  Skeleton,
+  Spinner,
+  LoadingState,
+  EmptyState,
   ErrorState,
   Alert,
   AlertTitle,
   AlertDescription,
   Progress,
-  StatusIndicator
+  StatusIndicator,
 } from '@/components/ui/feedback'
-import { FormField, Textarea, Select, FormActions, Checkbox } from '@/components/ui/form'
-import { 
-  Heart, 
-  Star, 
-  Coffee, 
-  Dumbbell, 
-  Book, 
-  Palette, 
+import {
+  FormField,
+  Textarea,
+  Select,
+  FormActions,
+  Checkbox,
+} from '@/components/ui/form'
+import {
+  Heart,
+  Star,
+  Coffee,
+  Dumbbell,
+  Book,
+  Palette,
   Shield,
   Plus,
   Download,
@@ -41,12 +53,13 @@ import {
   TrendingUp,
   CheckCircle,
   AlertCircle,
-  Info
+  Info,
 } from 'lucide-react'
 
 export const metadata: Metadata = {
   title: 'Style Guide | Mind Voyage Companion',
-  description: 'Comprehensive design system and component library for the Mind Voyage Companion application.',
+  description:
+    'Comprehensive design system and component library for the Mind Voyage Companion application.',
 }
 
 export default function StyleGuidePage() {
@@ -59,27 +72,31 @@ export default function StyleGuidePage() {
   return (
     <Layout>
       <PageContent>
-        <PageHeader 
+        <PageHeader
           title="Design System Style Guide"
           description="A comprehensive showcase of all UI components, design tokens, and patterns used in the Mind Voyage Companion application."
         />
 
         {/* Color Palette */}
-        <Section 
-          title="Color Palette" 
+        <Section
+          title="Color Palette"
           description="Our semantic color system ensures consistency and accessibility across the application."
         >
           <Grid cols={3} gap="lg">
             <Card>
               <CardHeader>
                 <CardTitle className="text-lg">Primary Colors</CardTitle>
-                <CardDescription>Contemplative Blue - Our brand identity</CardDescription>
+                <CardDescription>
+                  Contemplative Blue - Our brand identity
+                </CardDescription>
               </CardHeader>
               <CardContent>
                 <div className="space-y-2">
                   <div className="flex items-center gap-3">
                     <div className="w-8 h-8 rounded bg-primary-500" />
-                    <span className="text-sm font-mono">primary-500 (#0ca5e9)</span>
+                    <span className="text-sm font-mono">
+                      primary-500 (#0ca5e9)
+                    </span>
                   </div>
                   <div className="flex items-center gap-3">
                     <div className="w-8 h-8 rounded bg-primary-400" />
@@ -96,13 +113,17 @@ export default function StyleGuidePage() {
             <Card>
               <CardHeader>
                 <CardTitle className="text-lg">Secondary Colors</CardTitle>
-                <CardDescription>Wisdom Gold - For achievements</CardDescription>
+                <CardDescription>
+                  Wisdom Gold - For achievements
+                </CardDescription>
               </CardHeader>
               <CardContent>
                 <div className="space-y-2">
                   <div className="flex items-center gap-3">
                     <div className="w-8 h-8 rounded bg-secondary-500" />
-                    <span className="text-sm font-mono">secondary-500 (#f59e0b)</span>
+                    <span className="text-sm font-mono">
+                      secondary-500 (#f59e0b)
+                    </span>
                   </div>
                   <div className="flex items-center gap-3">
                     <div className="w-8 h-8 rounded bg-secondary-400" />
@@ -146,33 +167,57 @@ export default function StyleGuidePage() {
         </Section>
 
         {/* Typography */}
-        <Section title="Typography" description="Consistent text hierarchy for improved readability.">
+        <Section
+          title="Typography"
+          description="Consistent text hierarchy for improved readability."
+        >
           <Card>
             <CardContent>
               <div className="space-y-6">
                 <div>
                   <h1 className="text-4xl font-bold">Heading 1 - Hero Text</h1>
-                  <code className="text-xs text-muted-foreground">text-4xl font-bold</code>
+                  <code className="text-xs text-muted-foreground">
+                    text-4xl font-bold
+                  </code>
                 </div>
                 <div>
                   <h2 className="text-3xl font-bold">Heading 2 - Page Title</h2>
-                  <code className="text-xs text-muted-foreground">text-3xl font-bold</code>
+                  <code className="text-xs text-muted-foreground">
+                    text-3xl font-bold
+                  </code>
                 </div>
                 <div>
-                  <h3 className="text-2xl font-semibold">Heading 3 - Section Title</h3>
-                  <code className="text-xs text-muted-foreground">text-2xl font-semibold</code>
+                  <h3 className="text-2xl font-semibold">
+                    Heading 3 - Section Title
+                  </h3>
+                  <code className="text-xs text-muted-foreground">
+                    text-2xl font-semibold
+                  </code>
                 </div>
                 <div>
-                  <h4 className="text-xl font-medium">Heading 4 - Subsection</h4>
-                  <code className="text-xs text-muted-foreground">text-xl font-medium</code>
+                  <h4 className="text-xl font-medium">
+                    Heading 4 - Subsection
+                  </h4>
+                  <code className="text-xs text-muted-foreground">
+                    text-xl font-medium
+                  </code>
                 </div>
                 <div>
-                  <p className="text-base">Body text - This is the default text size for body content and general reading.</p>
-                  <code className="text-xs text-muted-foreground">text-base</code>
+                  <p className="text-base">
+                    Body text - This is the default text size for body content
+                    and general reading.
+                  </p>
+                  <code className="text-xs text-muted-foreground">
+                    text-base
+                  </code>
                 </div>
                 <div>
-                  <p className="text-sm text-muted-foreground">Small text - Used for secondary information and captions.</p>
-                  <code className="text-xs text-muted-foreground">text-sm text-muted-foreground</code>
+                  <p className="text-sm text-muted-foreground">
+                    Small text - Used for secondary information and captions.
+                  </p>
+                  <code className="text-xs text-muted-foreground">
+                    text-sm text-muted-foreground
+                  </code>
                 </div>
               </div>
             </CardContent>
@@ -180,7 +225,10 @@ export default function StyleGuidePage() {
         </Section>
 
         {/* Buttons */}
-        <Section title="Buttons" description="Interactive elements for user actions with multiple variants and states.">
+        <Section
+          title="Buttons"
+          description="Interactive elements for user actions with multiple variants and states."
+        >
           <Grid cols={2} gap="lg">
             <Card>
               <CardHeader>
@@ -212,11 +260,19 @@ export default function StyleGuidePage() {
                   <Button size="lg">Large</Button>
                   <Button size="xl">Extra Large</Button>
                   <Button disabled>Disabled</Button>
-                  <Button loading loadingText="Processing...">Loading State</Button>
+                  <Button loading loadingText="Processing...">
+                    Loading State
+                  </Button>
                   <div className="flex gap-2">
-                    <Button size="icon"><Heart className="h-4 w-4" /></Button>
-                    <Button size="icon-sm"><Star className="h-4 w-4" /></Button>
-                    <Button size="icon-lg"><Plus className="h-4 w-4" /></Button>
+                    <Button size="icon">
+                      <Heart className="h-4 w-4" />
+                    </Button>
+                    <Button size="icon-sm">
+                      <Star className="h-4 w-4" />
+                    </Button>
+                    <Button size="icon-lg">
+                      <Plus className="h-4 w-4" />
+                    </Button>
                   </div>
                 </Stack>
               </CardContent>
@@ -225,7 +281,10 @@ export default function StyleGuidePage() {
         </Section>
 
         {/* Form Elements */}
-        <Section title="Form Elements" description="Input components with validation states and accessibility features.">
+        <Section
+          title="Form Elements"
+          description="Input components with validation states and accessibility features."
+        >
           <Grid cols={2} gap="lg">
             <Card>
               <CardHeader>
@@ -233,28 +292,28 @@ export default function StyleGuidePage() {
               </CardHeader>
               <CardContent>
                 <Stack direction="vertical" gap="lg">
-                  <Input 
+                  <Input
                     label="Default Input"
                     placeholder="Enter text here..."
                     description="This is a helper text"
                   />
-                  <Input 
+                  <Input
                     label="Email Input"
                     type="email"
                     placeholder="john@example.com"
                     icon={<User className="h-4 w-4" />}
                   />
-                  <Input 
+                  <Input
                     label="Password Input"
                     type="password"
                     placeholder="Your password"
                   />
-                  <Input 
+                  <Input
                     label="Error State"
                     error="This field is required"
                     placeholder="Invalid input"
                   />
-                  <Input 
+                  <Input
                     label="Success State"
                     success="Perfect! This looks good"
                     placeholder="Valid input"
@@ -269,7 +328,7 @@ export default function StyleGuidePage() {
               </CardHeader>
               <CardContent>
                 <Stack direction="vertical" gap="lg">
-                  <Textarea 
+                  <Textarea
                     label="Message"
                     placeholder="Enter your message..."
                     description="Maximum 500 characters"
@@ -279,7 +338,7 @@ export default function StyleGuidePage() {
                     options={selectOptions}
                     placeholder="Choose an option..."
                   />
-                  <Checkbox 
+                  <Checkbox
                     label="Agreement"
                     description="I agree to the terms and conditions"
                   />
@@ -294,12 +353,17 @@ export default function StyleGuidePage() {
         </Section>
 
         {/* Cards */}
-        <Section title="Cards" description="Container components for grouping related content.">
+        <Section
+          title="Cards"
+          description="Container components for grouping related content."
+        >
           <Grid cols={3} gap="md">
             <Card>
               <CardHeader>
                 <CardTitle>Default Card</CardTitle>
-                <CardDescription>A basic card with header and content</CardDescription>
+                <CardDescription>
+                  A basic card with header and content
+                </CardDescription>
               </CardHeader>
               <CardContent>
                 <p className="text-sm text-muted-foreground">
@@ -335,7 +399,10 @@ export default function StyleGuidePage() {
         </Section>
 
         {/* Badges */}
-        <Section title="Badges" description="Small status indicators and labels.">
+        <Section
+          title="Badges"
+          description="Small status indicators and labels."
+        >
           <Card>
             <CardContent>
               <Grid cols={4} gap="md">
@@ -367,8 +434,18 @@ export default function StyleGuidePage() {
                   <h4 className="font-medium">With Icons</h4>
                   <div className="flex flex-wrap gap-2">
                     <Badge icon={<Heart className="h-3 w-3" />}>Loved</Badge>
-                    <Badge variant="success" icon={<CheckCircle className="h-3 w-3" />}>Complete</Badge>
-                    <Badge variant="warning" icon={<AlertCircle className="h-3 w-3" />}>Pending</Badge>
+                    <Badge
+                      variant="success"
+                      icon={<CheckCircle className="h-3 w-3" />}
+                    >
+                      Complete
+                    </Badge>
+                    <Badge
+                      variant="warning"
+                      icon={<AlertCircle className="h-3 w-3" />}
+                    >
+                      Pending
+                    </Badge>
                   </div>
                 </div>
 
@@ -386,7 +463,10 @@ export default function StyleGuidePage() {
         </Section>
 
         {/* Feedback Components */}
-        <Section title="Feedback & States" description="Loading states, alerts, and user feedback components.">
+        <Section
+          title="Feedback & States"
+          description="Loading states, alerts, and user feedback components."
+        >
           <Grid cols={2} gap="lg">
             <Card>
               <CardHeader>
@@ -402,7 +482,7 @@ export default function StyleGuidePage() {
                       <Spinner size="lg" />
                     </div>
                   </div>
-                  
+
                   <div className="space-y-2">
                     <h4 className="font-medium">Skeletons</h4>
                     <div className="space-y-2">
@@ -512,7 +592,10 @@ export default function StyleGuidePage() {
         </Section>
 
         {/* Icons */}
-        <Section title="Iconography" description="Our curated icon set using Lucide React for consistency and clarity.">
+        <Section
+          title="Iconography"
+          description="Our curated icon set using Lucide React for consistency and clarity."
+        >
           <Card>
             <CardContent>
               <Grid cols={6} gap="md">

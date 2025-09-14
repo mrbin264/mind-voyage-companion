@@ -8,12 +8,12 @@ export async function middleware(request: NextRequest) {
   // Define protected routes
   const protectedRoutes = ['/dashboard']
   const authRoutes = ['/login', '/register']
-  
-  const isProtectedRoute = protectedRoutes.some(route => 
+
+  const isProtectedRoute = protectedRoutes.some(route =>
     request.nextUrl.pathname.startsWith(route)
   )
-  
-  const isAuthRoute = authRoutes.some(route => 
+
+  const isAuthRoute = authRoutes.some(route =>
     request.nextUrl.pathname.startsWith(route)
   )
 
@@ -27,7 +27,7 @@ export async function middleware(request: NextRequest) {
     try {
       const secret = process.env.JWT_SECRET || 'fallback-secret-key'
       verify(token, secret)
-      
+
       // If logged in and accessing auth routes, redirect to dashboard
       if (isAuthRoute) {
         return NextResponse.redirect(new URL('/dashboard', request.url))
@@ -36,7 +36,7 @@ export async function middleware(request: NextRequest) {
       // Invalid token, clear it
       const response = NextResponse.next()
       response.cookies.delete('auth-token')
-      
+
       if (isProtectedRoute) {
         return NextResponse.redirect(new URL('/login', request.url))
       }

@@ -18,8 +18,7 @@ const badgeVariants = cva(
           'border-transparent bg-success-500 text-white shadow-sm hover:bg-success-600',
         warning:
           'border-transparent bg-warning-500 text-white shadow-sm hover:bg-warning-600',
-        info:
-          'border-transparent bg-info-500 text-white shadow-sm hover:bg-info-600',
+        info: 'border-transparent bg-info-500 text-white shadow-sm hover:bg-info-600',
         outline: 'text-foreground border-border',
         // Mood-specific badges
         'mood-1': 'border-transparent bg-mood-1 text-white',
@@ -47,7 +46,14 @@ export interface BadgeProps
   icon?: React.ReactNode
 }
 
-function Badge({ className, variant, size, icon, children, ...props }: BadgeProps) {
+function Badge({
+  className,
+  variant,
+  size,
+  icon,
+  children,
+  ...props
+}: BadgeProps) {
   return (
     <div className={cn(badgeVariants({ variant, size }), className)} {...props}>
       {icon && <span className="flex-shrink-0">{icon}</span>}

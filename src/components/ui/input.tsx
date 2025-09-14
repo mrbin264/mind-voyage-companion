@@ -40,25 +40,34 @@ export interface InputProps
 }
 
 const Input = React.forwardRef<HTMLInputElement, InputProps>(
-  ({ 
-    className, 
-    variant, 
-    size, 
-    type, 
-    label, 
-    description, 
-    error, 
-    success, 
-    warning,
-    icon,
-    rightIcon,
-    ...props 
-  }, ref) => {
+  (
+    {
+      className,
+      variant,
+      size,
+      type,
+      label,
+      description,
+      error,
+      success,
+      warning,
+      icon,
+      rightIcon,
+      ...props
+    },
+    ref
+  ) => {
     const [showPassword, setShowPassword] = React.useState(false)
-    
+
     // Determine the actual variant based on validation states
-    const actualVariant = error ? 'error' : success ? 'success' : warning ? 'warning' : variant
-    
+    const actualVariant = error
+      ? 'error'
+      : success
+        ? 'success'
+        : warning
+          ? 'warning'
+          : variant
+
     const inputType = type === 'password' && showPassword ? 'text' : type
 
     const InputElement = (
@@ -68,7 +77,7 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
             {icon}
           </div>
         )}
-        
+
         <input
           type={inputType}
           className={cn(
@@ -79,7 +88,7 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
           ref={ref}
           {...props}
         />
-        
+
         {type === 'password' && (
           <button
             type="button"
@@ -94,7 +103,7 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
             )}
           </button>
         )}
-        
+
         {rightIcon && type !== 'password' && (
           <div className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground">
             {rightIcon}
@@ -114,27 +123,27 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
             {label}
           </label>
         )}
-        
+
         {InputElement}
-        
+
         {description && !error && !success && !warning && (
           <p className="text-xs text-muted-foreground">{description}</p>
         )}
-        
+
         {error && (
           <div className="flex items-center gap-1 text-xs text-error-600">
             <AlertCircle className="h-3 w-3" />
             {error}
           </div>
         )}
-        
+
         {success && (
           <div className="flex items-center gap-1 text-xs text-success-600">
             <CheckCircle2 className="h-3 w-3" />
             {success}
           </div>
         )}
-        
+
         {warning && (
           <div className="flex items-center gap-1 text-xs text-warning-600">
             <AlertCircle className="h-3 w-3" />

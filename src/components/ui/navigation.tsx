@@ -23,7 +23,7 @@ interface MainNavigationProps {
 export function MainNavigation({ items, className }: MainNavigationProps) {
   return (
     <nav className={cn('flex items-center gap-4 lg:gap-6', className)}>
-      {items.map((item) => (
+      {items.map(item => (
         <NavigationLink key={item.href} item={item} />
       ))}
     </nav>
@@ -36,9 +36,13 @@ interface SidebarNavigationProps {
   title?: string
 }
 
-export function SidebarNavigation({ items, className, title }: SidebarNavigationProps) {
+export function SidebarNavigation({
+  items,
+  className,
+  title,
+}: SidebarNavigationProps) {
   const [openSections, setOpenSections] = React.useState<Set<string>>(new Set())
-  
+
   const toggleSection = (href: string) => {
     const newOpenSections = new Set(openSections)
     if (newOpenSections.has(href)) {
@@ -56,10 +60,10 @@ export function SidebarNavigation({ items, className, title }: SidebarNavigation
           {title}
         </h2>
       )}
-      
-      {items.map((item) => (
-        <SidebarNavigationItem 
-          key={item.href} 
+
+      {items.map(item => (
+        <SidebarNavigationItem
+          key={item.href}
           item={item}
           isOpen={openSections.has(item.href)}
           onToggle={() => toggleSection(item.href)}
@@ -90,7 +94,7 @@ export function MobileNavigation({ items, className }: MobileNavigationProps) {
 
       {isOpen && (
         <>
-          <div 
+          <div
             className="fixed inset-0 z-50 bg-background/80 backdrop-blur-sm"
             onClick={() => setIsOpen(false)}
           />
@@ -105,11 +109,8 @@ export function MobileNavigation({ items, className }: MobileNavigationProps) {
                 <X className="h-4 w-4" />
               </Button>
             </div>
-            
-            <SidebarNavigation 
-              items={items}
-              className="space-y-1"
-            />
+
+            <SidebarNavigation items={items} className="space-y-1" />
           </div>
         </>
       )}
@@ -151,16 +152,16 @@ interface SidebarNavigationItemProps {
   level?: number
 }
 
-function SidebarNavigationItem({ 
-  item, 
-  isOpen = false, 
+function SidebarNavigationItem({
+  item,
+  isOpen = false,
   onToggle,
-  level = 0 
+  level = 0,
 }: SidebarNavigationItemProps) {
   const pathname = usePathname()
   const isActive = pathname === item.href
   const hasChildren = item.children && item.children.length > 0
-  
+
   const paddingLeft = level * 12 + 16 // 16px base + 12px per level
 
   if (hasChildren) {
@@ -183,17 +184,17 @@ function SidebarNavigationItem({
               </Badge>
             )}
           </span>
-          <ChevronRight 
+          <ChevronRight
             className={cn(
               'h-4 w-4 shrink-0 transition-transform',
               isOpen && 'rotate-90'
             )}
           />
         </button>
-        
+
         {isOpen && (
           <div className="mt-1 space-y-1">
-            {item.children!.map((child) => (
+            {item.children!.map(child => (
               <SidebarNavigationItem
                 key={child.href}
                 item={child}
@@ -249,9 +250,7 @@ export function Breadcrumb({ items, className }: BreadcrumbProps) {
               {item.title}
             </Link>
           ) : (
-            <span className="font-medium text-foreground">
-              {item.title}
-            </span>
+            <span className="font-medium text-foreground">{item.title}</span>
           )}
         </React.Fragment>
       ))}

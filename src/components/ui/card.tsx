@@ -13,7 +13,7 @@ const cardVariants = cva(
         outlined: 'border-2 border-border shadow-none',
         ghost: 'border-transparent shadow-none bg-transparent',
         success: 'border-success-200 bg-success-50',
-        warning: 'border-warning-200 bg-warning-50',  
+        warning: 'border-warning-200 bg-warning-50',
         error: 'border-error-200 bg-error-50',
         info: 'border-info-200 bg-info-50',
       },
@@ -112,12 +112,12 @@ const CardFooter = React.forwardRef<
 ))
 CardFooter.displayName = 'CardFooter'
 
-export { 
-  Card, 
-  CardHeader, 
-  CardFooter, 
-  CardTitle, 
-  CardDescription, 
+export {
+  Card,
+  CardHeader,
+  CardFooter,
+  CardTitle,
+  CardDescription,
   CardContent,
-  cardVariants 
+  cardVariants,
 }

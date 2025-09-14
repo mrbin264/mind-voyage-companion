@@ -7,15 +7,13 @@ const labelVariants = cva(
   'text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70'
 )
 
-interface LabelProps extends React.LabelHTMLAttributes<HTMLLabelElement>, VariantProps<typeof labelVariants> {}
+interface LabelProps
+  extends React.LabelHTMLAttributes<HTMLLabelElement>,
+    VariantProps<typeof labelVariants> {}
 
 const Label = React.forwardRef<HTMLLabelElement, LabelProps>(
   ({ className, ...props }, ref) => (
-    <label
-      ref={ref}
-      className={cn(labelVariants(), className)}
-      {...props}
-    />
+    <label ref={ref} className={cn(labelVariants(), className)} {...props} />
   )
 )
 Label.displayName = 'Label'
@@ -42,11 +40,11 @@ export function FormField({
   required,
   label,
   description,
-  id
+  id,
 }: FormFieldProps) {
   const generatedId = React.useId()
   const fieldId = id || generatedId
-  
+
   return (
     <div className={cn('space-y-2', className)}>
       {label && (
@@ -55,27 +53,25 @@ export function FormField({
           {required && <span className="text-error-500">*</span>}
         </Label>
       )}
-      
-      <div id={fieldId}>
-        {children}
-      </div>
-      
+
+      <div id={fieldId}>{children}</div>
+
       {description && !error && !success && !warning && (
         <p className="text-xs text-muted-foreground">{description}</p>
       )}
-      
+
       {error && (
         <p className="text-xs text-error-600 flex items-center gap-1">
           <span>⚠</span> {error}
         </p>
       )}
-      
+
       {success && (
         <p className="text-xs text-success-600 flex items-center gap-1">
           <span>✓</span> {success}
         </p>
       )}
-      
+
       {warning && (
         <p className="text-xs text-warning-600 flex items-center gap-1">
           <span>⚡</span> {warning}
@@ -96,24 +92,28 @@ interface TextareaProps
 }
 
 const Textarea = React.forwardRef<HTMLTextAreaElement, TextareaProps>(
-  ({ 
-    className, 
-    label, 
-    description, 
-    error, 
-    success, 
-    warning, 
-    ...props 
-  }, ref) => {
-    const variant = error ? 'error' : success ? 'success' : warning ? 'warning' : 'default'
-    
+  (
+    { className, label, description, error, success, warning, ...props },
+    ref
+  ) => {
+    const variant = error
+      ? 'error'
+      : success
+        ? 'success'
+        : warning
+          ? 'warning'
+          : 'default'
+
     const TextareaElement = (
       <textarea
         className={cn(
           'flex min-h-[80px] w-full rounded-lg border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 transition-colors',
-          variant === 'error' && 'border-error-500 focus-visible:ring-error-500',
-          variant === 'success' && 'border-success-500 focus-visible:ring-success-500',
-          variant === 'warning' && 'border-warning-500 focus-visible:ring-warning-500',
+          variant === 'error' &&
+            'border-error-500 focus-visible:ring-error-500',
+          variant === 'success' &&
+            'border-success-500 focus-visible:ring-success-500',
+          variant === 'warning' &&
+            'border-warning-500 focus-visible:ring-warning-500',
           className
         )}
         ref={ref}
@@ -148,7 +148,8 @@ interface SelectOption {
   disabled?: boolean
 }
 
-interface SelectProps extends Omit<React.SelectHTMLAttributes<HTMLSelectElement>, 'onChange'> {
+interface SelectProps
+  extends Omit<React.SelectHTMLAttributes<HTMLSelectElement>, 'onChange'> {
   options: SelectOption[]
   label?: string
   description?: string
@@ -160,20 +161,29 @@ interface SelectProps extends Omit<React.SelectHTMLAttributes<HTMLSelectElement>
 }
 
 const Select = React.forwardRef<HTMLSelectElement, SelectProps>(
-  ({ 
-    className, 
-    options,
-    label, 
-    description, 
-    error, 
-    success, 
-    warning,
-    placeholder,
-    onChange,
-    ...props 
-  }, ref) => {
-    const variant = error ? 'error' : success ? 'success' : warning ? 'warning' : 'default'
-    
+  (
+    {
+      className,
+      options,
+      label,
+      description,
+      error,
+      success,
+      warning,
+      placeholder,
+      onChange,
+      ...props
+    },
+    ref
+  ) => {
+    const variant = error
+      ? 'error'
+      : success
+        ? 'success'
+        : warning
+          ? 'warning'
+          : 'default'
+
     const SelectElement = (
       <select
         className={cn(
@@ -184,7 +194,7 @@ const Select = React.forwardRef<HTMLSelectElement, SelectProps>(
           className
         )}
         ref={ref}
-        onChange={(e) => onChange?.(e.target.value)}
+        onChange={e => onChange?.(e.target.value)}
         {...props}
       >
         {placeholder && (
@@ -192,9 +202,9 @@ const Select = React.forwardRef<HTMLSelectElement, SelectProps>(
             {placeholder}
           </option>
         )}
-        {options.map((option) => (
-          <option 
-            key={option.value} 
+        {options.map(option => (
+          <option
+            key={option.value}
             value={option.value}
             disabled={option.disabled}
           >
@@ -231,10 +241,10 @@ interface FormActionsProps {
   align?: 'left' | 'center' | 'right' | 'between'
 }
 
-export function FormActions({ 
-  children, 
-  className, 
-  align = 'left' 
+export function FormActions({
+  children,
+  className,
+  align = 'left',
 }: FormActionsProps) {
   const alignClasses = {
     left: 'justify-start',
@@ -244,18 +254,21 @@ export function FormActions({
   }
 
   return (
-    <div className={cn(
-      'flex items-center gap-2 pt-4',
-      alignClasses[align],
-      className
-    )}>
+    <div
+      className={cn(
+        'flex items-center gap-2 pt-4',
+        alignClasses[align],
+        className
+      )}
+    >
       {children}
     </div>
   )
 }
 
 // Checkbox Component (simple version)
-interface CheckboxProps extends Omit<React.InputHTMLAttributes<HTMLInputElement>, 'type'> {
+interface CheckboxProps
+  extends Omit<React.InputHTMLAttributes<HTMLInputElement>, 'type'> {
   label?: string
   description?: string
   error?: string
@@ -289,16 +302,14 @@ export function Checkbox({
       <div className="flex items-start gap-2">
         {checkboxElement}
         {label && (
-          <label className="text-sm font-medium leading-none">
-            {label}
-          </label>
+          <label className="text-sm font-medium leading-none">{label}</label>
         )}
       </div>
-      
+
       {description && !error && (
         <p className="text-xs text-muted-foreground ml-6">{description}</p>
       )}
-      
+
       {error && (
         <p className="text-xs text-error-600 ml-6 flex items-center gap-1">
           <span>⚠</span> {error}
