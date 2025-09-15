@@ -1,16 +1,16 @@
 @import 'tailwindcss';
+@source "../**/*.{js,ts,jsx,tsx,mdx}";
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Spectral:ital,wght@0,400;1,400&display=swap');
 
-@source "../**/*.{js,ts,jsx,tsx,mdx}";
-
+/* Design Tokens */
 @layer base {
   :root {
-    /* Mind Voyage Design Tokens - Light Theme */
-
     /* Core Palette */
     --mv-brand-primary: #6d5ae5;
     --mv-brand-primary-600: #5548d9;
     --mv-accent-cyan: #22d3ee;
+    --mv-accent-secondary: #ffb347; /* newly defined secondary accent */
+    --mv-accent-secondary-600: #f59e0b; /* deep secondary */
     --mv-neutral-900: #0f172a;
     --mv-neutral-700: #334155;
     --mv-neutral-500: #64748b;
@@ -90,7 +90,7 @@
     --mv-auth-card-padding-mobile: 16px;
     --mv-auth-aside-width-desktop: 520px;
 
-    /* Legacy Support */
+    /* Legacy mapping for Tailwind semantic fallbacks (still referenced) */
     --background: 0 0% 100%;
     --foreground: 222.2 84% 4.9%;
     --primary: 250.5 91.2% 62.7%;
@@ -99,10 +99,36 @@
     --input: 214.3 31.8% 91.4%;
     --ring: 250.5 91.2% 62.7%;
     --radius: 0.5rem;
+
+    /* Gradient token surfaces */
+    --mv-gradient-primary-from: var(--mv-brand-primary);
+    --mv-gradient-primary-to: var(--mv-brand-primary-600);
+    --mv-gradient-secondary-from: var(--mv-accent-secondary);
+    --mv-gradient-secondary-to: var(--mv-accent-secondary-600);
+
+    /* Enhanced Design System Variables */
+    --spacing-component-padding: 1rem;
+    --spacing-component-margin: 1rem;
+    --spacing-section-gap: 2rem;
+    --spacing-page-padding: 1.5rem;
+    --duration-75: 75ms;
+    --duration-100: 100ms;
+    --duration-150: 150ms;
+    --duration-200: 200ms;
+    --duration-300: 300ms;
+    --duration-500: 500ms;
+    --ease-in-out: cubic-bezier(0.4, 0, 0.2, 1);
+    --ease-in: cubic-bezier(0.4, 0, 1, 1);
+    --ease-out: cubic-bezier(0, 0, 0.2, 1);
+    --transition-colors:
+      color var(--duration-150) var(--ease-in-out),
+      background-color var(--duration-150) var(--ease-in-out);
+    --transition-opacity: opacity var(--duration-150) var(--ease-in-out);
+    --transition-transform: transform var(--duration-150) var(--ease-in-out);
+    --transition-all: all var(--duration-150) var(--ease-in-out);
   }
 
   .dark {
-    /* Mind Voyage Design Tokens - Dark Theme */
     --mv-color-bg: #0b1220;
     --mv-color-surface: var(--mv-neutral-900);
     --mv-color-text: #e5e7eb;
@@ -110,14 +136,10 @@
     --mv-color-border: #1f2937;
     --mv-color-cta: var(--mv-brand-primary-600);
     --mv-color-cta-text: #ffffff;
-
-    /* Form Dark Theme */
     --mv-form-input-bg: var(--mv-neutral-900);
     --mv-form-input-text: var(--mv-color-text);
     --mv-form-input-placeholder: #94a3b8;
     --mv-form-input-border: var(--mv-color-border);
-
-    /* Legacy Support */
     --background: 222.2 84% 4.9%;
     --foreground: 210 40% 98%;
     --primary: 217.2 91.2% 59.8%;
@@ -125,9 +147,7 @@
     --border: 217.2 32.6% 17.5%;
     --input: 217.2 32.6% 17.5%;
   }
-}
 
-@layer base {
   body {
     font-family: var(--mv-font-family-ui);
     background-color: var(--mv-color-bg);
@@ -135,9 +155,8 @@
   }
 }
 
-/* Reusable Component Classes */
+/* Components */
 @layer components {
-  /* Card Components */
   .card {
     background-color: var(--mv-color-surface);
     border: 1px solid var(--mv-color-border);
@@ -145,14 +164,11 @@
     box-shadow: var(--mv-shadow-card);
     padding: 1.5rem;
   }
-
-  /* Form Elements */
   .label {
     font-size: 0.875rem;
     color: var(--mv-color-text-subtle);
     font-weight: 500;
   }
-
   .input {
     height: 3rem;
     width: 100%;
@@ -163,18 +179,14 @@
     color: var(--mv-form-input-text);
     transition: all 150ms ease-out;
   }
-
   .input::placeholder {
     color: var(--mv-form-input-placeholder);
   }
-
   .input:focus {
     outline: none;
     border-color: var(--mv-color-cta);
     box-shadow: var(--mv-form-focus-ring);
   }
-
-  /* Button Components */
   .btn {
     display: inline-flex;
     align-items: center;
@@ -190,123 +202,70 @@
     border: none;
     text-decoration: none;
   }
-
   .btn:focus {
     outline: none;
     box-shadow: var(--mv-form-focus-ring);
   }
-
   .btn-primary {
     background-color: var(--mv-color-cta);
     color: var(--mv-color-cta-text);
   }
-
   .btn-primary:hover {
     opacity: 0.95;
     transform: translateY(-1px);
     box-shadow: var(--mv-shadow-card);
   }
-
   .btn-secondary {
     background-color: var(--mv-color-surface);
     color: var(--mv-color-text);
     border: 1px solid var(--mv-color-border);
   }
-
   .btn-secondary:hover {
     background-color: var(--mv-color-border);
     transform: translateY(-1px);
   }
-
-  /* Text Utilities */
   .muted {
     color: var(--mv-color-text-subtle);
   }
 }
 
-@layer base {
-  * {
-    border-color: hsl(var(--border));
-  }
-  body {
-    background-color: hsl(var(--background));
-    color: hsl(var(--foreground));
-    font-feature-settings:
-      'rlig' 1,
-      'calt' 1;
-  }
-}
-
-/* Enhanced Design System Variables */
-@layer base {
-  :root {
-    /* Enhanced Design System Variables */
-    --spacing-component-padding: 1rem;
-    --spacing-component-margin: 1rem;
-    --spacing-section-gap: 2rem;
-    --spacing-page-padding: 1.5rem;
-
-    /* Animation Durations */
-    --duration-75: 75ms;
-    --duration-100: 100ms;
-    --duration-150: 150ms;
-    --duration-200: 200ms;
-    --duration-300: 300ms;
-    --duration-500: 500ms;
-
-    /* Easing Functions */
-    --ease-in-out: cubic-bezier(0.4, 0, 0.2, 1);
-    --ease-in: cubic-bezier(0.4, 0, 1, 1);
-    --ease-out: cubic-bezier(0, 0, 0.2, 1);
-
-    /* Common Transitions */
-    --transition-colors:
-      color var(--duration-150) var(--ease-in-out),
-      background-color var(--duration-150) var(--ease-in-out);
-    --transition-opacity: opacity var(--duration-150) var(--ease-in-out);
-    --transition-transform: transform var(--duration-150) var(--ease-in-out);
-    --transition-all: all var(--duration-150) var(--ease-in-out);
-  }
-}
-
-/* Custom Utility Classes */
+/* Utilities */
 @layer utilities {
-  /* Ring utilities for v4 compatibility */
   .ring-ring {
     --tw-ring-color: hsl(var(--ring));
   }
-
-  /* Fix focus-visible ring utilities */
   .focus-visible\:ring-ring:focus-visible {
     --tw-ring-color: hsl(var(--ring));
   }
-
-  /* Enhanced Focus Styles */
   .focus-ring {
     @apply focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-purple-500 focus-visible:ring-offset-2;
   }
-
-  /* Component State Classes */
   .component-base {
     @apply transition-all duration-150 ease-in-out;
   }
-
-  /* Interactive States */
   .hover-lift {
     @apply hover:shadow-lg hover:-translate-y-0.5 transition-all duration-200;
   }
-
-  /* Loading States */
   .pulse-slow {
     animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
   }
-
-  /* Text Gradients */
+  /* Map gradient utilities to CSS vars to avoid unresolved from-primary-* warnings */
   .text-gradient-primary {
-    @apply bg-gradient-to-r from-primary-500 to-primary-600 bg-clip-text text-transparent;
+    background: linear-gradient(
+      90deg,
+      var(--mv-gradient-primary-from),
+      var(--mv-gradient-primary-to)
+    );
+    -webkit-background-clip: text;
+    color: transparent;
   }
-
   .text-gradient-secondary {
-    @apply bg-gradient-to-r from-secondary-500 to-secondary-600 bg-clip-text text-transparent;
+    background: linear-gradient(
+      90deg,
+      var(--mv-gradient-secondary-from),
+      var(--mv-gradient-secondary-to)
+    );
+    -webkit-background-clip: text;
+    color: transparent;
   }
 }
