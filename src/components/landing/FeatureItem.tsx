@@ -7,9 +7,10 @@ interface FeatureItemProps {
 
 export function FeatureItem({ type, text }: FeatureItemProps) {
   const Icon = type === 'core' ? CheckCircle2 : Star
-  const iconClass = type === 'core' 
-    ? 'text-[var(--mv-color-success)]' 
-    : 'text-[var(--mv-accent-cyan)]'
+  const iconClass =
+    type === 'core'
+      ? 'text-[var(--mv-color-success)]'
+      : 'text-[var(--mv-accent-cyan)]'
 
   return (
     <div className="flex items-center gap-3">

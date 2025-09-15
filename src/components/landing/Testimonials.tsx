@@ -1,23 +1,26 @@
 export function Testimonials() {
   const testimonials = [
     {
-      quote: "Mind Voyage has completely transformed my morning routine. The daily reflections help me stay grounded and intentional throughout the day.",
-      author: "Sarah Chen",
-      role: "Product Designer",
-      avatar: "SC"
+      quote:
+        'Mind Voyage has completely transformed my morning routine. The daily reflections help me stay grounded and intentional throughout the day.',
+      author: 'Sarah Chen',
+      role: 'Product Designer',
+      avatar: 'SC',
     },
     {
-      quote: "I love how private and secure it feels. Finally, a habit tracker that doesn&rsquo;t feel like it&rsquo;s spying on me.",
-      author: "Marcus Williams", 
-      role: "Software Engineer",
-      avatar: "MW"
+      quote:
+        'I love how private and secure it feels. Finally, a habit tracker that doesn&rsquo;t feel like it&rsquo;s spying on me.',
+      author: 'Marcus Williams',
+      role: 'Software Engineer',
+      avatar: 'MW',
     },
     {
-      quote: "The Stoic prompts have deepened my self-awareness in ways I never expected. This isn&rsquo;t just habit tracking&mdash;it&rsquo;s personal growth.",
-      author: "Elena Rodriguez",
-      role: "Life Coach", 
-      avatar: "ER"
-    }
+      quote:
+        'The Stoic prompts have deepened my self-awareness in ways I never expected. This isn&rsquo;t just habit tracking&mdash;it&rsquo;s personal growth.',
+      author: 'Elena Rodriguez',
+      role: 'Life Coach',
+      avatar: 'ER',
+    },
   ]
 
   return (
@@ -28,7 +31,8 @@ export function Testimonials() {
             Trusted by Mindful Habit Builders
           </h2>
           <p className="text-lg muted">
-            Hear from people who&rsquo;ve transformed their lives through consistent reflection
+            Hear from people who&rsquo;ve transformed their lives through
+            consistent reflection
           </p>
         </div>
 
@@ -49,9 +53,7 @@ export function Testimonials() {
                     <div className="font-semibold text-[var(--mv-color-text)]">
                       {testimonial.author}
                     </div>
-                    <div className="text-sm muted">
-                      {testimonial.role}
-                    </div>
+                    <div className="text-sm muted">{testimonial.role}</div>
                   </div>
                 </footer>
               </blockquote>

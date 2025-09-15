@@ -12,18 +12,22 @@ export const FormField = React.forwardRef<HTMLInputElement, FormFieldProps>(
   ({ label, error, success, helperText, className, id, ...props }, ref) => {
     const fieldId = id || `field-${label.toLowerCase().replace(/\s+/g, '-')}`
     const hasError = error && (Array.isArray(error) ? error.length > 0 : error)
-    const errorMessage = hasError ? (Array.isArray(error) ? error[0] : error) : ''
-    
+    const errorMessage = hasError
+      ? Array.isArray(error)
+        ? error[0]
+        : error
+      : ''
+
     return (
       <div className="space-y-2">
         {/* Label */}
-        <label 
+        <label
           htmlFor={fieldId}
           className="block text-small font-semibold text-mv-text"
         >
           {label}
         </label>
-        
+
         {/* Input Container */}
         <div className="relative">
           <input
@@ -43,11 +47,15 @@ export const FormField = React.forwardRef<HTMLInputElement, FormFieldProps>(
             `}
             aria-invalid={hasError ? 'true' : 'false'}
             aria-describedby={
-              hasError ? `${fieldId}-error` : helperText ? `${fieldId}-helper` : undefined
+              hasError
+                ? `${fieldId}-error`
+                : helperText
+                  ? `${fieldId}-helper`
+                  : undefined
             }
             {...props}
           />
-          
+
           {/* Success/Error Icons */}
           {(hasError || success) && (
             <div className="absolute inset-y-0 right-3 flex items-center pointer-events-none">
@@ -59,12 +67,12 @@ export const FormField = React.forwardRef<HTMLInputElement, FormFieldProps>(
             </div>
           )}
         </div>
-        
+
         {/* Helper Text / Error Message */}
         {(hasError || helperText) && (
           <div className="flex items-start gap-2">
             {hasError ? (
-              <p 
+              <p
                 id={`${fieldId}-error`}
                 className="text-small text-mv-danger font-medium"
                 role="alert"
@@ -73,7 +81,7 @@ export const FormField = React.forwardRef<HTMLInputElement, FormFieldProps>(
                 {errorMessage}
               </p>
             ) : helperText ? (
-              <p 
+              <p
                 id={`${fieldId}-helper`}
                 className="text-small text-mv-text-subtle"
               >

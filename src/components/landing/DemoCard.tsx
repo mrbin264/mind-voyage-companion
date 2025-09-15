@@ -44,7 +44,8 @@ export function JournalEntryDemo() {
     <DemoCard emoji="📔" title="Journal Entry">
       <div className="space-y-3">
         <p className="text-sm text-[var(--mv-color-text-subtle)] leading-relaxed">
-          &ldquo;Today I practiced mindful breathing for 10 minutes. I noticed my mind wandering less than yesterday...&rdquo;
+          &ldquo;Today I practiced mindful breathing for 10 minutes. I noticed
+          my mind wandering less than yesterday...&rdquo;
         </p>
         <div className="flex items-center gap-2">
           <span className="text-xl">😊</span>
@@ -59,7 +60,8 @@ export function DailyWisdomDemo() {
   return (
     <DemoCard emoji="🏛️" title="Daily Wisdom">
       <blockquote className="text-sm text-[var(--mv-color-text-subtle)] leading-relaxed italic">
-        &ldquo;You have power over your mind - not outside events. Realize this, and you will find strength.&rdquo;
+        &ldquo;You have power over your mind - not outside events. Realize this,
+        and you will find strength.&rdquo;
         <footer className="mt-2 text-xs font-medium text-[var(--mv-color-text)]">
           — Marcus Aurelius
         </footer>

@@ -1,5 +1,9 @@
 import { HeroSection } from '@/components/landing/HeroSection'
-import { HabitDashboardDemo, JournalEntryDemo, DailyWisdomDemo } from '@/components/landing/DemoCard'
+import {
+  HabitDashboardDemo,
+  JournalEntryDemo,
+  DailyWisdomDemo,
+} from '@/components/landing/DemoCard'
 import { Testimonials } from '@/components/landing/Testimonials'
 
 export default function Home() {
@@ -11,7 +15,7 @@ export default function Home() {
           <div className="grid lg:grid-cols-12 gap-12 items-start">
             {/* Left Column - Hero Content */}
             <HeroSection />
-            
+
             {/* Right Column - Demo Cards */}
             <div className="lg:col-span-7 space-y-6">
               <HabitDashboardDemo />
