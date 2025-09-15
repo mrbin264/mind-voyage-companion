@@ -3,6 +3,7 @@ import { registerSchema } from '@/lib/validations/auth'
 import { hash } from 'bcryptjs'
 import { User } from '@/lib/models/user'
 import connectDB from '@/lib/db'
+import { sign } from 'jsonwebtoken'
 
 export async function POST(req: NextRequest) {
   await connectDB()
@@ -28,8 +29,31 @@ export async function POST(req: NextRequest) {
     name,
     verified: false,
   })
-  // TODO: Set session cookie and handle onboarding redirect
-  return NextResponse.json({
+
+  // Create JWT token
+  const secret = process.env.NEXTAUTH_SECRET || 'fallback-secret-key'
+  const token = sign(
+    {
+      userId: user._id.toString(),
+      email: user.email,
+      name: user.name,
+    },
+    secret,
+    { expiresIn: '7d' }
+  )
+
+  // Set secure cookie
+  const response = NextResponse.json({
     user: { id: user.id, email: user.email, name: user.name },
   })
+
+  response.cookies.set('auth-token', token, {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === 'production',
+    sameSite: 'strict',
+    maxAge: 60 * 60 * 24 * 7, // 7 days
+    path: '/',
+  })
+
+  return response
 }

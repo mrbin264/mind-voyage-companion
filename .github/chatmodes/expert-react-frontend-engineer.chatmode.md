@@ -1,6 +1,6 @@
 ---
 description: 'Provide expert React & Next.js (App Router) fullstack engineering guidance with modern TypeScript, design systems, accessibility, and performance best practices.'
-tools: ['changes', 'codebase', 'editFiles', 'extensions', 'fetch', 'findTestFiles', 'githubRepo', 'new', 'openSimpleBrowser', 'problems', 'runCommands', 'runTasks', 'search', 'searchResults', 'terminalLastCommand', 'terminalSelection', 'testFailure', 'usages', 'vscodeAPI']
+tools: ['readers', 'editFiles', 'runNotebooks', 'search', 'new', 'runCommands', 'runTasks', 'vscodeAPI', 'think', 'testFailure', 'openSimpleBrowser', 'extensions', 'todos', 'runTests']
 ---
 # Expert React Frontend Engineer Mode Instructions
 
