@@ -1,47 +1,46 @@
+@import 'tailwindcss';
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Spectral:ital,wght@0,400;1,400&display=swap');
 
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@source "../**/*.{js,ts,jsx,tsx,mdx}";
 
 @layer base {
   :root {
     /* Mind Voyage Design Tokens - Light Theme */
-    
+
     /* Core Palette */
-    --mv-brand-primary: #6D5AE5;
-    --mv-brand-primary-600: #5548D9;
-    --mv-accent-cyan: #22D3EE;
-    --mv-neutral-900: #0F172A;
+    --mv-brand-primary: #6d5ae5;
+    --mv-brand-primary-600: #5548d9;
+    --mv-accent-cyan: #22d3ee;
+    --mv-neutral-900: #0f172a;
     --mv-neutral-700: #334155;
-    --mv-neutral-500: #64748B;
-    --mv-neutral-200: #E2E8F0;
-    --mv-neutral-50: #F8FAFC;
-    --mv-success-500: #22C55E;
-    --mv-warning-500: #F59E0B;
-    --mv-danger-500: #EF4444;
-    --mv-info-500: #0EA5E9;
-    
+    --mv-neutral-500: #64748b;
+    --mv-neutral-200: #e2e8f0;
+    --mv-neutral-50: #f8fafc;
+    --mv-success-500: #22c55e;
+    --mv-warning-500: #f59e0b;
+    --mv-danger-500: #ef4444;
+    --mv-info-500: #0ea5e9;
+
     /* Semantic Light Theme Colors */
     --mv-color-bg: var(--mv-neutral-50);
-    --mv-color-surface: #FFFFFF;
+    --mv-color-surface: #ffffff;
     --mv-color-text: var(--mv-neutral-900);
     --mv-color-text-subtle: var(--mv-neutral-700);
     --mv-color-border: var(--mv-neutral-200);
     --mv-color-cta: var(--mv-brand-primary);
-    --mv-color-cta-text: #FFFFFF;
+    --mv-color-cta-text: #ffffff;
     --mv-color-success: var(--mv-success-500);
     --mv-color-warning: var(--mv-warning-500);
     --mv-color-danger: var(--mv-danger-500);
     --mv-color-info: var(--mv-info-500);
-    
+
     /* Form Tokens */
-    --mv-form-input-bg: #FFFFFF;
+    --mv-form-input-bg: #ffffff;
     --mv-form-input-text: var(--mv-color-text);
     --mv-form-input-placeholder: var(--mv-neutral-500);
     --mv-form-input-border: var(--mv-color-border);
     --mv-form-focus-ring: 0 0 0 4px rgba(109, 90, 229, 0.25);
-    
+
     /* Component Tokens */
     --mv-button-height-md: 40px;
     --mv-button-height-lg: 48px;
@@ -49,11 +48,11 @@
     --mv-button-padding-y: 12px;
     --mv-button-gap: 8px;
     --mv-button-radius: 16px;
-    
+
     --mv-input-height: 48px;
     --mv-input-padding-x: 12px;
     --mv-input-radius: 24px;
-    
+
     /* Spacing Scale (4pt base) */
     --mv-spacing-s4: 4px;
     --mv-spacing-s8: 8px;
@@ -68,28 +67,29 @@
     --mv-spacing-s56: 56px;
     --mv-spacing-s64: 64px;
     --mv-spacing-s80: 80px;
-    
+
     /* Radius Scale */
     --mv-radius-sm: 8px;
     --mv-radius-md: 12px;
     --mv-radius-lg: 16px;
     --mv-radius-xl: 24px;
-    
+
     /* Shadows */
     --mv-shadow-card: 0 6px 18px rgba(15, 23, 42, 0.08);
     --mv-shadow-focus: 0 0 0 4px rgba(109, 90, 229, 0.25);
-    
+
     /* Typography */
-    --mv-font-family-ui: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    --mv-font-family-ui:
+      'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
     --mv-font-family-serif: 'Spectral', Georgia, serif;
-    
+
     /* Auth Flow Specific */
     --mv-auth-container-desktop-max: 1040px;
     --mv-auth-container-tablet-max: 720px;
     --mv-auth-card-padding-desktop: 32px;
     --mv-auth-card-padding-mobile: 16px;
     --mv-auth-aside-width-desktop: 520px;
-    
+
     /* Legacy Support */
     --background: 0 0% 100%;
     --foreground: 222.2 84% 4.9%;
@@ -103,20 +103,20 @@
 
   .dark {
     /* Mind Voyage Design Tokens - Dark Theme */
-    --mv-color-bg: #0B1220;
+    --mv-color-bg: #0b1220;
     --mv-color-surface: var(--mv-neutral-900);
-    --mv-color-text: #E5E7EB;
-    --mv-color-text-subtle: #CBD5E1;
-    --mv-color-border: #1F2937;
+    --mv-color-text: #e5e7eb;
+    --mv-color-text-subtle: #cbd5e1;
+    --mv-color-border: #1f2937;
     --mv-color-cta: var(--mv-brand-primary-600);
-    --mv-color-cta-text: #FFFFFF;
-    
+    --mv-color-cta-text: #ffffff;
+
     /* Form Dark Theme */
     --mv-form-input-bg: var(--mv-neutral-900);
     --mv-form-input-text: var(--mv-color-text);
-    --mv-form-input-placeholder: #94A3B8;
+    --mv-form-input-placeholder: #94a3b8;
     --mv-form-input-border: var(--mv-color-border);
-    
+
     /* Legacy Support */
     --background: 222.2 84% 4.9%;
     --foreground: 210 40% 98%;
@@ -271,9 +271,19 @@
 
 /* Custom Utility Classes */
 @layer utilities {
+  /* Ring utilities for v4 compatibility */
+  .ring-ring {
+    --tw-ring-color: hsl(var(--ring));
+  }
+
+  /* Fix focus-visible ring utilities */
+  .focus-visible\:ring-ring:focus-visible {
+    --tw-ring-color: hsl(var(--ring));
+  }
+
   /* Enhanced Focus Styles */
   .focus-ring {
-    @apply focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2;
+    @apply focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-purple-500 focus-visible:ring-offset-2;
   }
 
   /* Component State Classes */
