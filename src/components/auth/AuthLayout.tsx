@@ -84,7 +84,7 @@ function AsideCard({ type }: { type: keyof typeof authBenefits }) {
         <div className="mt-s40 pt-s32 border-t border-mv-border">
           <blockquote className="space-y-s16">
             <p className="text-body text-mv-text-subtle italic font-serif leading-relaxed">
-              "{content.testimonial.text}"
+              &ldquo;{content.testimonial.text}&rdquo;
             </p>
             <footer className="flex items-center gap-s12">
               <div className="w-10 h-10 bg-gradient-to-br from-mv-brand-primary to-mv-brand-primary-600 rounded-full flex items-center justify-center">

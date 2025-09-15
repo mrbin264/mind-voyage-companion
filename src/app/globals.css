@@ -135,6 +135,95 @@
   }
 }
 
+/* Reusable Component Classes */
+@layer components {
+  /* Card Components */
+  .card {
+    background-color: var(--mv-color-surface);
+    border: 1px solid var(--mv-color-border);
+    border-radius: 1rem;
+    box-shadow: var(--mv-shadow-card);
+    padding: 1.5rem;
+  }
+
+  /* Form Elements */
+  .label {
+    font-size: 0.875rem;
+    color: var(--mv-color-text-subtle);
+    font-weight: 500;
+  }
+
+  .input {
+    height: 3rem;
+    width: 100%;
+    border-radius: 1rem;
+    padding: 0 0.75rem;
+    border: 1px solid var(--mv-form-input-border);
+    background-color: var(--mv-form-input-bg);
+    color: var(--mv-form-input-text);
+    transition: all 150ms ease-out;
+  }
+
+  .input::placeholder {
+    color: var(--mv-form-input-placeholder);
+  }
+
+  .input:focus {
+    outline: none;
+    border-color: var(--mv-color-cta);
+    box-shadow: var(--mv-form-focus-ring);
+  }
+
+  /* Button Components */
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    height: 3rem;
+    padding: 0 1.25rem;
+    border-radius: 1rem;
+    font-weight: 600;
+    font-size: 1rem;
+    transition: all 150ms ease-out;
+    cursor: pointer;
+    border: none;
+    text-decoration: none;
+  }
+
+  .btn:focus {
+    outline: none;
+    box-shadow: var(--mv-form-focus-ring);
+  }
+
+  .btn-primary {
+    background-color: var(--mv-color-cta);
+    color: var(--mv-color-cta-text);
+  }
+
+  .btn-primary:hover {
+    opacity: 0.95;
+    transform: translateY(-1px);
+    box-shadow: var(--mv-shadow-card);
+  }
+
+  .btn-secondary {
+    background-color: var(--mv-color-surface);
+    color: var(--mv-color-text);
+    border: 1px solid var(--mv-color-border);
+  }
+
+  .btn-secondary:hover {
+    background-color: var(--mv-color-border);
+    transform: translateY(-1px);
+  }
+
+  /* Text Utilities */
+  .muted {
+    color: var(--mv-color-text-subtle);
+  }
+}
+
 @layer base {
   * {
     border-color: hsl(var(--border));
