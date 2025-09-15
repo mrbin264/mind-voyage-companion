@@ -1,61 +1,77 @@
 import * as React from 'react'
+import { Loader2 } from 'lucide-react'
 
-interface FormSubmitButtonProps
-  extends React.ButtonHTMLAttributes<HTMLButtonElement> {
+interface FormSubmitButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   pending?: boolean
+  variant?: 'primary' | 'secondary' | 'tertiary'
+  size?: 'md' | 'lg'
+  icon?: React.ReactNode
+  children: React.ReactNode
 }
 
 export function FormSubmitButton({
-  pending,
+  pending = false,
+  variant = 'primary',
+  size = 'lg',
+  icon,
   children,
   className,
   ...props
 }: FormSubmitButtonProps) {
+  const baseClasses = `
+    inline-flex items-center justify-center gap-mv-button
+    font-semibold transition-all duration-200 ease-out
+    focus:outline-none focus:ring-4 focus:ring-mv-cta/25
+    disabled:opacity-50 disabled:cursor-not-allowed
+    rounded-mv-button w-full
+  `
+  
+  const sizeClasses = {
+    md: 'h-mv-button-md px-mv-button-x text-body',
+    lg: 'h-mv-button-lg px-mv-button-x text-body'
+  }
+  
+  const variantClasses = {
+    primary: `
+      bg-mv-cta text-mv-cta-text
+      hover:opacity-95 hover:shadow-md hover:-translate-y-0.5
+      active:translate-y-0 active:shadow-sm
+    `,
+    secondary: `
+      bg-transparent text-mv-text border border-mv-border
+      hover:bg-mv-border/50 hover:border-mv-text-subtle/40
+      active:bg-mv-border/70
+    `,
+    tertiary: `
+      bg-transparent text-mv-cta
+      hover:bg-mv-cta/10 hover:text-mv-brand-primary-600
+      active:bg-mv-cta/15
+    `
+  }
+  
   return (
     <button
       type="submit"
-      className={`w-full relative flex justify-center items-center 
-        bg-gradient-to-r from-primary-600 to-primary-700 
-        hover:from-primary-700 hover:to-primary-800 
-        focus:from-primary-700 focus:to-primary-800
-        text-white font-semibold text-base
-        px-6 py-4 rounded-xl
-        focus:outline-none focus:ring-4 focus:ring-primary-500/30
-        disabled:opacity-50 disabled:cursor-not-allowed
-        transform transition-all duration-200 
-        hover:shadow-lg hover:shadow-primary-500/25
-        active:scale-[0.98]
-        ${className || ''}`}
+      className={`
+        ${baseClasses}
+        ${sizeClasses[size]}
+        ${variantClasses[variant]}
+        ${className || ''}
+      `}
       disabled={pending || props.disabled}
       {...props}
     >
-      {pending && (
-        <div className="absolute inset-0 flex items-center justify-center bg-primary-700 rounded-xl">
-          <div className="flex items-center space-x-2">
-            <svg
-              className="animate-spin h-5 w-5 text-white"
-              fill="none"
-              viewBox="0 0 24 24"
-            >
-              <circle
-                className="opacity-25"
-                cx="12"
-                cy="12"
-                r="10"
-                stroke="currentColor"
-                strokeWidth="4"
-              />
-              <path
-                className="opacity-75"
-                fill="currentColor"
-                d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-              />
-            </svg>
-            <span>Processing...</span>
-          </div>
-        </div>
+      {pending ? (
+        <>
+          <Loader2 className="w-5 h-5 animate-spin" />
+          <span>Processing...</span>
+        </>
+      ) : (
+        <>
+          {icon && <span className="flex-shrink-0">{icon}</span>}
+          {children}
+        </>
       )}
-      <span className={pending ? 'invisible' : ''}>{children}</span>
     </button>
   )
 }

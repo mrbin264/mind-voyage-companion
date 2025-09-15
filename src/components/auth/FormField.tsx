@@ -1,41 +1,90 @@
 import * as React from 'react'
+import { AlertCircle, CheckCircle2 } from 'lucide-react'
 
 interface FormFieldProps extends React.InputHTMLAttributes<HTMLInputElement> {
   label: string
   error?: string[] | string
+  success?: boolean
+  helperText?: string
 }
 
 export const FormField = React.forwardRef<HTMLInputElement, FormFieldProps>(
-  ({ label, error, className, ...props }, ref) => (
-    <div className="space-y-2">
-      <label className="block text-sm font-semibold text-slate-700">
-        {label}
-      </label>
-      <input
-        ref={ref}
-        className={`w-full px-4 py-4 bg-white/90 border-2 border-slate-200 rounded-xl 
-          text-slate-900 placeholder:text-slate-400 
-          focus:border-primary-500 focus:ring-4 focus:ring-primary-500/20 focus:outline-none 
-          hover:border-slate-300 
-          transition-all duration-200 
-          disabled:opacity-50 disabled:cursor-not-allowed
-          ${error ? 'border-red-300 focus:border-red-500 focus:ring-red-500/20' : ''}
-          ${className || ''}`}
-        {...props}
-      />
-      {error && (
-        <p className="text-sm text-red-600 font-medium flex items-center space-x-1">
-          <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-            <path
-              fillRule="evenodd"
-              d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z"
-              clipRule="evenodd"
-            />
-          </svg>
-          <span>{Array.isArray(error) ? error[0] : error}</span>
-        </p>
-      )}
-    </div>
-  )
+  ({ label, error, success, helperText, className, id, ...props }, ref) => {
+    const fieldId = id || `field-${label.toLowerCase().replace(/\s+/g, '-')}`
+    const hasError = error && (Array.isArray(error) ? error.length > 0 : error)
+    const errorMessage = hasError ? (Array.isArray(error) ? error[0] : error) : ''
+    
+    return (
+      <div className="space-y-2">
+        {/* Label */}
+        <label 
+          htmlFor={fieldId}
+          className="block text-small font-semibold text-mv-text"
+        >
+          {label}
+        </label>
+        
+        {/* Input Container */}
+        <div className="relative">
+          <input
+            id={fieldId}
+            ref={ref}
+            className={`
+              w-full h-mv-input px-mv-input-x
+              bg-mv-form-input-bg border border-mv-form-input-border rounded-mv-input
+              text-mv-form-input-text placeholder:text-mv-form-input-placeholder
+              transition-all duration-200 ease-out
+              focus:outline-none focus:border-mv-cta focus:shadow-focus-ring
+              hover:border-mv-text-subtle/40
+              disabled:opacity-50 disabled:cursor-not-allowed
+              ${hasError ? 'border-mv-danger focus:border-mv-danger focus:shadow-[0_0_0_4px_rgba(239,68,68,0.15)]' : ''}
+              ${success ? 'border-mv-success focus:border-mv-success focus:shadow-[0_0_0_4px_rgba(34,197,94,0.15)]' : ''}
+              ${className || ''}
+            `}
+            aria-invalid={hasError ? 'true' : 'false'}
+            aria-describedby={
+              hasError ? `${fieldId}-error` : helperText ? `${fieldId}-helper` : undefined
+            }
+            {...props}
+          />
+          
+          {/* Success/Error Icons */}
+          {(hasError || success) && (
+            <div className="absolute inset-y-0 right-3 flex items-center pointer-events-none">
+              {hasError ? (
+                <AlertCircle className="w-5 h-5 text-mv-danger" />
+              ) : success ? (
+                <CheckCircle2 className="w-5 h-5 text-mv-success" />
+              ) : null}
+            </div>
+          )}
+        </div>
+        
+        {/* Helper Text / Error Message */}
+        {(hasError || helperText) && (
+          <div className="flex items-start gap-2">
+            {hasError ? (
+              <p 
+                id={`${fieldId}-error`}
+                className="text-small text-mv-danger font-medium"
+                role="alert"
+                aria-live="polite"
+              >
+                {errorMessage}
+              </p>
+            ) : helperText ? (
+              <p 
+                id={`${fieldId}-helper`}
+                className="text-small text-mv-text-subtle"
+              >
+                {helperText}
+              </p>
+            ) : null}
+          </div>
+        )}
+      </div>
+    )
+  }
 )
+
 FormField.displayName = 'FormField'
