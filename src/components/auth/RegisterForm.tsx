@@ -77,19 +77,20 @@ export function RegisterForm() {
   const passwordStrength = checkPasswordStrength(password)
 
   return (
-    <div className="bg-mv-surface border border-mv-border rounded-mv-lg p-mv-auth-desktop tablet:p-mv-auth-mobile shadow-mv-card">
+    <div className="card bg-mv-surface/95 border border-mv-border/80 backdrop-blur supports-[backdrop-filter]:bg-mv-surface/80 rounded-mv-lg shadow-mv-card p-s32 tablet:p-s40 max-w-xl">
       {/* Header */}
-      <div className="space-y-s16 mb-s32">
-        <h1 className="text-h2 font-bold text-mv-text leading-tight">
-          Create account
+      <div className="space-y-s12 mb-s32">
+        <h1 className="text-h2 font-bold text-mv-text tracking-tight">
+          Create your free account
         </h1>
-        <p className="text-body text-mv-text-subtle leading-relaxed">
-          Start your mindful habit journey in under a minute
+        <p className="text-body text-mv-text-subtle leading-relaxed max-w-prose">
+          Start your mindful habit journey in under a minute. No credit card
+          required.
         </p>
       </div>
 
       {/* Form */}
-      <form action={formAction} className="space-y-s24">
+      <form action={formAction} className="space-y-s32">
         {/* Display Name Field */}
         <FormField
           label="Display name"
@@ -115,7 +116,7 @@ export function RegisterForm() {
         />
 
         {/* Password Field */}
-        <div className="space-y-2">
+        <div className="space-y-s12">
           <label
             htmlFor="password"
             className="block text-small font-semibold text-mv-text"
@@ -159,13 +160,13 @@ export function RegisterForm() {
 
           {/* Password Strength Indicator */}
           {password && (
-            <div className="space-y-2">
+            <div className="space-y-s8">
               <div className="flex items-center justify-between">
-                <span className="text-small text-mv-text-subtle">
-                  Password strength
+                <span className="text-small text-mv-text-subtle font-medium tracking-wide uppercase">
+                  Strength
                 </span>
                 <span
-                  className={`text-small font-medium ${
+                  className={`text-small font-semibold ${
                     passwordStrength.strength === 'weak'
                       ? 'text-mv-danger'
                       : passwordStrength.strength === 'medium'
@@ -180,9 +181,9 @@ export function RegisterForm() {
                       : 'Strong'}
                 </span>
               </div>
-              <div className="w-full bg-mv-border rounded-full h-2">
+              <div className="w-full h-2 rounded-full bg-gradient-to-r from-mv-border via-mv-border to-mv-border relative overflow-hidden">
                 <div
-                  className={`h-2 rounded-full transition-all duration-300 ${
+                  className={`absolute inset-y-0 left-0 rounded-full transition-all duration-500 ease-out ${
                     passwordStrength.strength === 'weak'
                       ? 'w-1/3 bg-mv-danger'
                       : passwordStrength.strength === 'medium'
@@ -191,6 +192,43 @@ export function RegisterForm() {
                   }`}
                 />
               </div>
+              <ul className="grid grid-cols-2 gap-2 text-[11px] text-mv-text-subtle tracking-wide">
+                <li
+                  className={
+                    passwordStrength.checks.length ? 'text-mv-success' : ''
+                  }
+                >
+                  8+ characters
+                </li>
+                <li
+                  className={
+                    passwordStrength.checks.uppercase ? 'text-mv-success' : ''
+                  }
+                >
+                  Uppercase
+                </li>
+                <li
+                  className={
+                    passwordStrength.checks.lowercase ? 'text-mv-success' : ''
+                  }
+                >
+                  Lowercase
+                </li>
+                <li
+                  className={
+                    passwordStrength.checks.number ? 'text-mv-success' : ''
+                  }
+                >
+                  Number
+                </li>
+                <li
+                  className={
+                    passwordStrength.checks.special ? 'text-mv-success' : ''
+                  }
+                >
+                  Symbol
+                </li>
+              </ul>
             </div>
           )}
 
@@ -203,7 +241,7 @@ export function RegisterForm() {
         </div>
 
         {/* Confirm Password Field */}
-        <div className="space-y-2">
+        <div className="space-y-s12">
           <label
             htmlFor="confirmPassword"
             className="block text-small font-semibold text-mv-text"
@@ -268,7 +306,7 @@ export function RegisterForm() {
         />
 
         {/* Terms and Marketing Checkboxes */}
-        <div className="space-y-s16">
+        <div className="space-y-s20 pt-s8 border-t border-dashed border-mv-border/60">
           <div className="flex items-start gap-3">
             <input
               id="terms"
@@ -297,7 +335,6 @@ export function RegisterForm() {
               </Link>
             </label>
           </div>
-
           <div className="flex items-start gap-3">
             <input
               id="marketing"
@@ -313,15 +350,15 @@ export function RegisterForm() {
             </label>
           </div>
         </div>
-
-        {/* Submit Button */}
-        <FormSubmitButton pending={pending} className="mt-s32">
-          Create Account
-        </FormSubmitButton>
-
-        {/* Login Link */}
-        <div className="text-center pt-s16">
-          <p className="text-small text-mv-text-subtle">
+        {/* Submit Button + Login Link */}
+        <div className="space-y-s16 pt-s8">
+          <FormSubmitButton
+            pending={pending}
+            className="w-full btn btn-primary text-center justify-center"
+          >
+            Create Account
+          </FormSubmitButton>
+          <p className="text-small text-mv-text-subtle text-center">
             Already have an account?{' '}
             <Link
               href="/login"
