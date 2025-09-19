@@ -21,6 +21,7 @@
     "test:coverage": "vitest run --coverage --config vitest.config.mjs",
     "test:e2e": "playwright test",
     "test:e2e:ui": "playwright test --ui",
+    "verify:tailwind": "bash scripts/verify-tailwind.sh",
     "prepare": "husky",
     "postinstall": "husky install"
   },

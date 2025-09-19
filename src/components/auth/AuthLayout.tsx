@@ -1,197 +1,307 @@
 import React from 'react'
 import Link from 'next/link'
-import { CheckCircle2, Shield, Users, Sparkles } from 'lucide-react'
+import type { Route } from 'next'
 
 interface AuthLayoutProps {
   children: React.ReactNode
-  type?: 'register' | 'login' | 'reset'
-  showAside?: boolean
+  type?: 'register' | 'login' | 'reset' | 'reset-confirm'
+  sidebarContent?: React.ReactNode
 }
 
-// Benefits data for the aside card
-const authBenefits = {
-  register: {
-    title: "Join thousands building better habits",
-    benefits: [
-      { icon: CheckCircle2, text: "Track daily habits with ease" },
-      { icon: Sparkles, text: "AI-powered insights & reflections" },
-      { icon: Shield, text: "Your data stays private & secure" },
-    ],
-    testimonial: {
-      text: "Mind Voyage transformed how I approach personal growth. The daily reflections help me stay mindful and intentional.",
-      author: "Sarah Chen",
-      role: "Product Designer"
-    },
-    stats: "Join 10,000+ users building better habits"
-  },
-  login: {
-    title: "Welcome back to your journey",
-    benefits: [
-      { icon: CheckCircle2, text: "Continue your habit streak" },
-      { icon: Sparkles, text: "New AI insights waiting" },
-      { icon: Users, text: "Your community missed you" },
-    ],
-    testimonial: {
-      text: "The consistency tracking keeps me motivated every day. It's become an essential part of my morning routine.",
-      author: "Marcus Williams",
-      role: "Software Engineer"
-    },
-    stats: "Welcome back to your habit journey"
-  },
-  reset: {
-    title: "Secure account recovery",
-    benefits: [
-      { icon: Shield, text: "Bank-level security encryption" },
-      { icon: CheckCircle2, text: "Quick & secure recovery process" },
-      { icon: Sparkles, text: "Get back to building habits" },
-    ],
-    testimonial: {
-      text: "The security measures give me peace of mind. I know my personal development data is safe.",
-      author: "Alex Rivera", 
-      role: "Life Coach"
-    },
-    stats: "Your account security is our priority"
+interface HighlightContent {
+  title: string
+  quote: string
+  author: string
+  tips?: string[]
+}
+
+interface NavItem {
+  text: string
+  href: string
+}
+
+interface SidebarContent {
+  title: string
+  updates: string[]
+  highlight: HighlightContent
+  footer: {
+    title: string
+    buttons: string[]
   }
 }
 
-function AsideCard({ type }: { type: keyof typeof authBenefits }) {
-  const content = authBenefits[type]
-  
+interface AuthContent {
+  nav: {
+    primary: NavItem
+    secondary: NavItem
+  }
+  sidebar: SidebarContent
+  footerText: string
+}
+
+// Content for different auth types
+const authContent: Record<string, AuthContent> = {
+  login: {
+    nav: {
+      primary: { text: 'Create Account', href: '/register' },
+      secondary: { text: 'Help', href: '/help' },
+    },
+    sidebar: {
+      title: 'Recent Updates',
+      updates: [
+        '🆕 New AI Writing Enhancement feature now available',
+        '📊 Enhanced analytics with mood correlation insights',
+        '🏛️ 50+ new wisdom quotes from Stoic philosophers',
+      ],
+      highlight: {
+        title: '💬 Community Highlight',
+        quote:
+          "I've maintained my morning pages habit for 100 days thanks to Mind Voyage!",
+        author: 'Maya, long-time user',
+      },
+      footer: {
+        title: '📱 Download our mobile app for on-the-go tracking',
+        buttons: ['📱 App Store', '🤖 Play Store'],
+      },
+    },
+    footerText:
+      '🔒 Secure login with 256-bit encryption • Privacy-first approach',
+  },
+  register: {
+    nav: {
+      primary: { text: 'Sign In', href: '/login' },
+      secondary: { text: 'Help', href: '/help' },
+    },
+    sidebar: {
+      title: 'Why Join Mind Voyage?',
+      updates: [
+        '✓ Track habits with beautiful visualizations',
+        '✓ Guided journaling prompts and mood tracking',
+        '✓ Daily wisdom and philosophical insights',
+        '✓ Privacy-first approach - your data stays yours',
+        '⭐ Pro: AI-powered writing enhancement and insights',
+      ],
+      highlight: {
+        title: 'Testimonial',
+        quote:
+          'Mind Voyage transformed my daily routine. The combination of habit tracking and reflection is powerful.',
+        author: 'Sarah K., Product Manager',
+      },
+      footer: {
+        title:
+          '📈 Join 10,000+ mindful habit builders already using Mind Voyage',
+        buttons: [],
+      },
+    },
+    footerText:
+      '🔒 Your data is encrypted and secure • No spam, ever • Cancel anytime',
+  },
+  reset: {
+    nav: {
+      primary: { text: 'Sign In', href: '/login' },
+      secondary: { text: 'Create Account', href: '/register' },
+    },
+    sidebar: {
+      title: 'Security Information',
+      updates: [
+        '✓ Password reset links expire in 1 hour for your safety.',
+        "✓ We'll never store your password in plain text.",
+        '✓ All communications are encrypted end-to-end.',
+      ],
+      highlight: {
+        title: '💡 Tips for Strong Passwords:',
+        quote: '',
+        author: '',
+        tips: [
+          'Use 12+ characters',
+          'Mix letters, numbers, & symbols',
+          'Avoid personal information',
+          'Use a password manager',
+        ],
+      },
+      footer: {
+        title: '📧 Having trouble? Our support team is here to help.',
+        buttons: ['Get Help'],
+      },
+    },
+    footerText:
+      '🔒 We take your privacy seriously • No spam, ever • Secure infrastructure',
+  },
+  'reset-confirm': {
+    nav: {
+      primary: { text: 'Sign In', href: '/login' },
+      secondary: { text: 'Create Account', href: '/register' },
+    },
+    sidebar: {
+      title: 'What Happens Next?',
+      updates: [
+        '1️⃣ Check your email inbox (and spam folder).',
+        '2️⃣ Click the "Reset Password" button in the email.',
+        '3️⃣ Create your new password on the secure form.',
+        '4️⃣ Sign in with your new password.',
+      ],
+      highlight: {
+        title: "⏰ Didn't receive the email?",
+        quote: '',
+        author: '',
+        tips: [
+          'Check your spam/junk folder',
+          'Wait 2-3 minutes for delivery',
+          'Make sure the email address is correct',
+          'Try resending the email',
+        ],
+      },
+      footer: {
+        title: '🆘 Still having trouble? Our support team can help.',
+        buttons: ['Live Chat', 'Email Support'],
+      },
+    },
+    footerText:
+      '🔒 Secure password reset process • Email link expires in 1 hour',
+  },
+}
+
+function DefaultSidebar({ type }: { type: keyof typeof authContent }) {
+  const content = authContent[type]?.sidebar
+
+  if (!content) return null
+
   return (
-    <div className="hidden desktop:block w-full">
-      <div className="bg-mv-surface border border-mv-border rounded-mv-lg p-s32 shadow-mv-card">
-        {/* Benefits Section */}
-        <div className="space-y-s24">
-          <h3 className="text-h3 font-semibold text-mv-text leading-tight">
-            {content.title}
-          </h3>
-          
-          <div className="space-y-s16">
-            {content.benefits.map((benefit, index) => (
-              <div key={index} className="flex items-center gap-s12">
-                <div className="flex-shrink-0 w-6 h-6 text-mv-success">
-                  <benefit.icon className="w-full h-full" />
-                </div>
-                <span className="text-body text-mv-text-subtle">
-                  {benefit.text}
-                </span>
-              </div>
+    <div className="lg:col-span-2 flex flex-col gap-8">
+      <div>
+        <h3 className="text-xl font-bold text-gray-200 mb-4">
+          {content.title}
+        </h3>
+        <ul className="space-y-3 text-gray-300">
+          {content.updates.map((update: string, index: number) => (
+            <li key={index} className="flex items-start gap-3">
+              <span className="text-gray-400">{update}</span>
+            </li>
+          ))}
+        </ul>
+      </div>
+
+      {content.highlight && (
+        <div className="feature-card p-6 rounded-xl">
+          <h4 className="font-semibold text-gray-200 mb-3">
+            {content.highlight.title}
+          </h4>
+          {content.highlight.quote && (
+            <>
+              <blockquote className="text-gray-300 italic">
+                &ldquo;{content.highlight.quote}&rdquo;
+              </blockquote>
+              <cite className="text-right block mt-3 text-sm font-semibold text-gray-200 not-italic">
+                &mdash; {content.highlight.author}
+              </cite>
+            </>
+          )}
+          {content.highlight.tips && (
+            <ul className="space-y-2 text-sm text-gray-400 list-disc list-inside">
+              {content.highlight.tips.map((tip: string, index: number) => (
+                <li key={index}>{tip}</li>
+              ))}
+            </ul>
+          )}
+        </div>
+      )}
+
+      <div className="bg-gray-800/50 p-6 rounded-xl text-center">
+        <p className="font-semibold text-gray-300 mb-4">
+          {content.footer.title}
+        </p>
+        {content.footer.buttons.length > 0 && (
+          <div className="flex justify-center gap-4 flex-wrap">
+            {content.footer.buttons.map((button: string, index: number) => (
+              <button
+                key={index}
+                className="bg-gray-700 hover:bg-gray-600 text-white font-semibold py-2 px-4 rounded-lg text-sm transition-colors"
+              >
+                {button}
+              </button>
             ))}
           </div>
-        </div>
-        
-        {/* Testimonial Section */}
-        <div className="mt-s40 pt-s32 border-t border-mv-border">
-          <blockquote className="space-y-s16">
-            <p className="text-body text-mv-text-subtle italic font-serif leading-relaxed">
-              "{content.testimonial.text}"
-            </p>
-            <footer className="flex items-center gap-s12">
-              <div className="w-10 h-10 bg-gradient-to-br from-mv-brand-primary to-mv-brand-primary-600 rounded-full flex items-center justify-center">
-                <span className="text-white font-semibold text-sm">
-                  {content.testimonial.author.split(' ').map(n => n[0]).join('')}
-                </span>
-              </div>
-              <div>
-                <div className="text-small font-semibold text-mv-text">
-                  {content.testimonial.author}
-                </div>
-                <div className="text-small text-mv-text-subtle">
-                  {content.testimonial.role}
-                </div>
-              </div>
-            </footer>
-          </blockquote>
-        </div>
-        
-        {/* Stats */}
-        <div className="mt-s32 pt-s24 border-t border-mv-border">
-          <div className="text-small text-mv-text-subtle font-medium">
-            {content.stats}
-          </div>
-        </div>
+        )}
       </div>
     </div>
   )
 }
 
-export function AuthLayout({ children, type = 'register', showAside = true }: AuthLayoutProps) {
+export function AuthLayout({
+  children,
+  type = 'register',
+  sidebarContent,
+}: AuthLayoutProps) {
+  const content = authContent[type]
+
   return (
-    <div className="min-h-screen bg-mv-bg flex flex-col">
-      {/* Header Navigation */}
-      <header className="w-full border-b border-mv-border bg-mv-surface/95 backdrop-blur-md sticky top-0 z-10">
-        <div className="max-w-mv-auth-desktop mx-auto px-6 h-20 flex items-center justify-between">
-          <Link href="/" className="flex items-center space-x-3 group">
-            <div className="w-12 h-12 bg-gradient-to-br from-mv-brand-primary to-mv-brand-primary-600 rounded-mv-lg flex items-center justify-center shadow-mv-card group-hover:shadow-lg transition-all duration-200">
-              <span className="text-white font-bold text-2xl">🧠</span>
-            </div>
-            <span className="text-2xl font-bold bg-gradient-to-r from-mv-text to-mv-text-subtle bg-clip-text text-transparent tracking-tight">
+    <div className="relative min-h-screen flex flex-col bg-gray-900 text-white antialiased">
+      {/* Decorative Glow Effects */}
+      <div
+        className="glow-effect -top-40 -left-60"
+        style={{
+          position: 'absolute',
+          width: '500px',
+          height: '500px',
+          background:
+            'radial-gradient(circle, rgba(129, 140, 248, 0.15) 0%, rgba(129, 140, 248, 0) 60%)',
+          zIndex: -1,
+          pointerEvents: 'none',
+        }}
+      />
+      <div
+        className="glow-effect bottom-0 -right-40"
+        style={{
+          position: 'absolute',
+          width: '500px',
+          height: '500px',
+          background:
+            'radial-gradient(circle, rgba(129, 140, 248, 0.15) 0%, rgba(129, 140, 248, 0) 60%)',
+          zIndex: -1,
+          pointerEvents: 'none',
+        }}
+      />
+
+      <div className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-7xl relative z-10">
+        {/* Header Section */}
+        <header className="flex justify-between items-center py-6">
+          <Link href="/" className="flex items-center gap-3">
+            <span className="text-3xl">🧠</span>
+            <h1 className="text-xl font-bold text-gray-200">
               Mind Voyage Companion
-            </span>
+            </h1>
           </Link>
-          <div className="flex items-center space-x-6">
-            {type === 'register' ? (
-              <Link
-                href="/login"
-                className="px-5 py-2 text-base font-semibold text-mv-text-subtle hover:text-mv-text transition-colors rounded-mv-sm hover:bg-mv-border/50"
-              >
-                Sign In
-              </Link>
-            ) : (
-              <Link
-                href="/register"
-                className="px-5 py-2 text-base font-semibold text-mv-text-subtle hover:text-mv-text transition-colors rounded-mv-sm hover:bg-mv-border/50"
-              >
-                Create Account
-              </Link>
-            )}
+          <div className="flex items-center gap-4">
             <Link
-              href="/help"
-              className="px-5 py-2 text-base font-semibold text-mv-text-subtle hover:text-mv-text transition-colors rounded-mv-sm hover:bg-mv-border/50"
+              href={(content?.nav.primary.href || '/') as Route}
+              className="text-gray-300 hover:text-white transition-colors px-4 py-2"
             >
-              Help
+              {content?.nav.primary.text}
+            </Link>
+            <Link
+              href={(content?.nav.secondary.href || '/help') as Route}
+              className="text-gray-300 hover:text-white transition-colors px-4 py-2"
+            >
+              {content?.nav.secondary.text}
             </Link>
           </div>
-        </div>
-      </header>
+        </header>
 
-      {/* Main Content - 5/7 Desktop Split Layout */}
-      <main className="flex-1 flex">
-        <div className="w-full max-w-mv-auth-desktop mx-auto px-6 py-s40">
-          <div className="desktop:grid desktop:grid-cols-12 desktop:gap-s48 items-start">
-            {/* Form Column (5/12) */}
-            <div className="desktop:col-span-5">
-              {children}
-            </div>
-            
-            {/* Aside Column (7/12) */}
-            {showAside && (
-              <div className="desktop:col-span-7 mt-s40 desktop:mt-0">
-                <AsideCard type={type} />
-              </div>
-            )}
-          </div>
-        </div>
-      </main>
+        {/* Main Content Grid */}
+        <main className="flex-grow grid grid-cols-1 lg:grid-cols-5 gap-16 items-center py-12 md:py-16">
+          {/* Form Column (3/5) */}
+          <div className="lg:col-span-3">{children}</div>
 
-      {/* Footer Security Notice */}
-      <footer className="border-t border-mv-border bg-mv-surface/80 backdrop-blur-md">
-        <div className="max-w-mv-auth-desktop mx-auto px-6 py-6">
-          <div className="flex items-center justify-center space-x-6 text-small text-mv-text-subtle tablet:flex-wrap tablet:gap-4">
-            <div className="flex items-center space-x-2">
-              <Shield className="w-4 h-4 text-mv-success" />
-              <span>Your data is encrypted and secure</span>
-            </div>
-            <div className="flex items-center space-x-2">
-              <CheckCircle2 className="w-4 h-4 text-mv-success" />
-              <span>No spam, ever</span>
-            </div>
-            <div className="flex items-center space-x-2">
-              <Users className="w-4 h-4 text-mv-success" />
-              <span>Cancel anytime</span>
-            </div>
-          </div>
-        </div>
+          {/* Sidebar Column (2/5) */}
+          {sidebarContent ? sidebarContent : <DefaultSidebar type={type} />}
+        </main>
+      </div>
+
+      {/* Footer */}
+      <footer className="text-center py-6">
+        <p className="text-sm text-gray-500">
+          {content?.footerText || '🔒 Your data is secure'}
+        </p>
       </footer>
     </div>
   )

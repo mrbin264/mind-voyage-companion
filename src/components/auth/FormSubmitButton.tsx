@@ -1,7 +1,8 @@
 import * as React from 'react'
 import { Loader2 } from 'lucide-react'
 
-interface FormSubmitButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
+interface FormSubmitButtonProps
+  extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   pending?: boolean
   variant?: 'primary' | 'secondary' | 'tertiary'
   size?: 'md' | 'lg'
@@ -25,12 +26,12 @@ export function FormSubmitButton({
     disabled:opacity-50 disabled:cursor-not-allowed
     rounded-mv-button w-full
   `
-  
+
   const sizeClasses = {
     md: 'h-mv-button-md px-mv-button-x text-body',
-    lg: 'h-mv-button-lg px-mv-button-x text-body'
+    lg: 'h-mv-button-lg px-mv-button-x text-body',
   }
-  
+
   const variantClasses = {
     primary: `
       bg-mv-cta text-mv-cta-text
@@ -46,9 +47,9 @@ export function FormSubmitButton({
       bg-transparent text-mv-cta
       hover:bg-mv-cta/10 hover:text-mv-brand-primary-600
       active:bg-mv-cta/15
-    `
+    `,
   }
-  
+
   return (
     <button
       type="submit"

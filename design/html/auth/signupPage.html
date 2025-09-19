@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create Your Account - Mind Voyage Companion</title>
+    
+    <!-- Tailwind CSS for styling -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Google Fonts: Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <style>
+        /* Use the Inter font family */
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #0A0A0A; /* A slightly darker background */
+        }
+        .feature-card {
+            background-color: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+        }
+        .glow-effect {
+            position: absolute;
+            width: 500px;
+            height: 500px;
+            background: radial-gradient(circle, rgba(129, 140, 248, 0.15) 0%, rgba(129, 140, 248, 0) 60%);
+            z-index: -1;
+            pointer-events: none;
+        }
+        /* Custom styles for form elements */
+        .form-input {
+            @apply w-full bg-gray-800/50 border border-gray-600 text-gray-200 rounded-xl px-4 py-3 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:bg-gray-800 transition-all duration-200;
+        }
+        .form-checkbox {
+            @apply w-5 h-5 bg-gray-700 border-gray-600 rounded text-blue-500 focus:ring-blue-600;
+        }
+    </style>
+</head>
+<body class="bg-gray-900 text-white antialiased">
+
+    <div class="relative min-h-screen flex flex-col">
+        <!-- Decorative Glow -->
+        <div class="glow-effect -top-40 -left-60"></div>
+        <div class="glow-effect bottom-0 -right-40"></div>
+        
+        <div class="container mx-auto px-4 sm:px-6 lg:px-8 max-w-7xl relative z-10">
+        
+            <!-- Header Section -->
+            <header class="flex justify-between items-center py-6">
+                <div class="flex items-center gap-3">
+                    <span class="text-3xl">🧠</span>
+                    <h1 class="text-xl font-bold text-gray-200">Mind Voyage Companion</h1>
+                </div>
+                <div class="flex items-center gap-4">
+                    <button class="text-gray-300 hover:text-white transition-colors px-4 py-2">Sign In</button>
+                    <button class="text-gray-300 hover:text-white transition-colors px-4 py-2">Help</button>
+                </div>
+            </header>
+
+            <!-- Main Content Grid -->
+            <main class="flex-grow grid grid-cols-1 lg:grid-cols-5 gap-16 items-center py-12 md:py-16">
+
+                <!-- Left Column: Sign Up Form -->
+                <div class="lg:col-span-3 bg-gray-900/50 feature-card p-8 rounded-2xl">
+                    <div class="max-w-lg mx-auto">
+                        <h2 class="text-3xl font-bold text-gray-100">Create Your Account</h2>
+                        <p class="text-gray-400 mt-2 mb-8">Start your journey to better habits and mindful reflection.</p>
+
+                        <form class="space-y-5">
+                            <div>
+                                <label for="name" class="sr-only">Display Name</label>
+                                <div class="relative">
+                                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                        <svg class="w-5 h-5 text-gray-500" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                                            <path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd" />
+                                        </svg>
+                                    </div>
+                                    <input type="text" id="name" placeholder="Display Name" class="form-input pl-10">
+                                </div>
+                            </div>
+                             <div>
+                                <label for="email" class="sr-only">Email Address</label>
+                                <div class="relative">
+                                     <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                        <svg class="w-5 h-5 text-gray-500" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                                          <path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z" />
+                                          <path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z" />
+                                        </svg>
+                                    </div>
+                                    <input type="email" id="email" placeholder="Email Address" class="form-input pl-10">
+                                </div>
+                            </div>
+                            <div>
+                                <label for="password" class="sr-only">Password</label>
+                                <div class="relative">
+                                     <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                        <svg class="w-5 h-5 text-gray-500" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                                          <path fill-rule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clip-rule="evenodd" />
+                                        </svg>
+                                    </div>
+                                    <input type="password" id="password" placeholder="Password (8+ characters)" class="form-input pl-10">
+                                </div>
+                            </div>
+                            <div>
+                                <label for="confirm-password" class="sr-only">Confirm Password</label>
+                                <div class="relative">
+                                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                        <svg class="w-5 h-5 text-gray-500" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                                          <path fill-rule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clip-rule="evenodd" />
+                                        </svg>
+                                    </div>
+                                    <input type="password" id="confirm-password" placeholder="Confirm Password" class="form-input pl-10">
+                                </div>
+                            </div>
+                            <div>
+                                <label for="timezone" class="sr-only">Timezone</label>
+                                <div class="relative">
+                                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                        <svg class="w-5 h-5 text-gray-500" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                                          <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM4.332 8.027a6.012 6.012 0 011.912-2.706C6.512 5.73 6.974 6 7.5 6A1.5 1.5 0 019 7.5V8a2 2 0 004 0 2 2 0 011.523-1.943A5.977 5.977 0 0116 10c0 .34-.028.675-.083 1H15a2 2 0 00-2 2v1.5a1.5 1.5 0 01-3 0V12a2 2 0 00-2-2 2 2 0 01-2-2V8.707a5.969 5.969 0 01-1.668-.68z" clip-rule="evenodd" />
+                                        </svg>
+                                    </div>
+                                    <select id="timezone" class="form-input appearance-none pl-10">
+                                        <option>Timezone: America/New_York</option>
+                                        <option>Timezone: Europe/London</option>
+                                        <option>Timezone: Asia/Tokyo</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="space-y-4 pt-2">
+                                <div class="flex items-start">
+                                    <input id="terms" type="checkbox" class="form-checkbox mt-1">
+                                    <label for="terms" class="ml-3 text-sm text-gray-400">I agree to the <a href="#" class="font-medium text-blue-400 hover:underline">Terms of Service</a> and <a href="#" class="font-medium text-blue-400 hover:underline">Privacy Policy</a>.</label>
+                                </div>
+                                <div class="flex items-center">
+                                    <input id="updates" type="checkbox" class="form-checkbox">
+                                    <label for="updates" class="ml-3 text-sm text-gray-400">Send me occasional product updates (optional).</label>
+                                </div>
+                            </div>
+                            <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-4 rounded-lg transition-all duration-300 transform hover:scale-105 !mt-8">
+                                Create Account
+                            </button>
+                        </form>
+                        <p class="text-center text-sm text-gray-400 mt-8">
+                            Already have an account? <a href="#" class="font-medium text-blue-400 hover:underline">Sign in here</a>.
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Right Column: Value Props -->
+                <div class="lg:col-span-2 flex flex-col gap-8">
+                    <div>
+                        <h3 class="text-xl font-bold text-gray-200 mb-4">Why Join Mind Voyage?</h3>
+                        <ul class="space-y-3 text-gray-300">
+                             <li class="flex items-start gap-3">✓ <span class="text-gray-400">Track habits with beautiful visualizations</span></li>
+                             <li class="flex items-start gap-3">✓ <span class="text-gray-400">Guided journaling prompts and mood tracking</span></li>
+                             <li class="flex items-start gap-3">✓ <span class="text-gray-400">Daily wisdom and philosophical insights</span></li>
+                             <li class="flex items-start gap-3">✓ <span class="text-gray-400">Privacy-first approach - your data stays yours</span></li>
+                             <li class="flex items-start gap-3">⭐ <span class="text-gray-400">Pro: AI-powered writing enhancement and insights</span></li>
+                        </ul>
+                    </div>
+                    <div class="feature-card p-6 rounded-xl">
+                         <blockquote class="text-gray-300 italic">"Mind Voyage transformed my daily routine. The combination of habit tracking and reflection is powerful."</blockquote>
+                         <cite class="text-right block mt-4 text-sm font-semibold text-gray-200 not-italic">— Sarah K., Product Manager</cite>
+                    </div>
+                    <div class="bg-gray-800/50 p-4 rounded-xl text-center">
+                        <p class="font-semibold text-gray-300">📈 Join 10,000+ mindful habit builders already using Mind Voyage</p>
+                    </div>
+                </div>
+            </main>
+        </div>
+        
+        <!-- Footer -->
+        <footer class="text-center py-6">
+            <p class="text-sm text-gray-500">🔒 Your data is encrypted and secure • No spam, ever • Cancel anytime</p>
+        </footer>
+    </div>
+</body>
+</html>
