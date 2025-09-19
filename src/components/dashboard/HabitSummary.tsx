@@ -54,7 +54,7 @@ export function HabitSummaryCards({ summary, loading = false }: HabitSummaryCard
             <CheckCircle className="h-5 w-5 text-primary" />
           </div>
           <div className="flex-1">
-            <h3 className="font-semibold text-slate-900">Today's Progress</h3>
+            <h3 className="font-semibold text-slate-900">Today&apos;s Progress</h3>
             <p className="text-2xl font-bold text-primary">
               {summary.completedToday}/{summary.totalCompletedToday}
             </p>
@@ -64,7 +64,7 @@ export function HabitSummaryCards({ summary, loading = false }: HabitSummaryCard
         <div className="mt-4">
           <Progress value={todayProgress} className="h-2" />
           <p className="text-xs text-muted-foreground mt-1">
-            {Math.round(todayProgress)}% of today's habits
+            {Math.round(todayProgress)}% of today&apos;s habits
           </p>
         </div>
       </Card>
@@ -161,7 +161,7 @@ export function TodaysFocusCard({ summary, loading = false }: TodaysFocusCardPro
   return (
     <Card className="p-6">
       <h3 className="font-bold text-lg flex items-center gap-2 mb-4">
-        🎯 Today's Focus
+        🎯 Today&apos;s Focus
       </h3>
       <p className="text-muted-foreground mb-4">
         {remainingHabits > 0 

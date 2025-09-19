@@ -12,11 +12,11 @@ import {
   Settings,
   Star,
   Search,
-  Bell,
-  User
+  Bell
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
+import { UserProfileDropdown } from './UserProfileDropdown'
 
 interface DashboardLayoutProps {
   children: React.ReactNode
@@ -24,6 +24,7 @@ interface DashboardLayoutProps {
     name: string
     email: string
   }
+  showDefaultHeader?: boolean
 }
 
 const navigationItems = [
@@ -35,7 +36,7 @@ const navigationItems = [
   { href: '/dashboard/settings', icon: Settings, label: 'Settings' },
 ]
 
-export function DashboardLayout({ children, user }: DashboardLayoutProps) {
+export function DashboardLayout({ children, user, showDefaultHeader = true }: DashboardLayoutProps) {
   const pathname = usePathname()
 
   // Format greeting based on time of day
@@ -101,34 +102,31 @@ export function DashboardLayout({ children, user }: DashboardLayoutProps) {
       {/* Main Content */}
       <main className="flex-1 overflow-y-auto p-6 lg:p-10">
         {/* Top Header */}
-        <header className="flex flex-wrap justify-between items-center gap-4 mb-8">
-          <div className="w-full lg:w-auto">
-            <h2 className="text-3xl font-bold text-gray-100">
-              {getGreeting()}, {user.name}! ☀️
-            </h2>
-            <p className="text-gray-400">{getFormattedDate()}</p>
-          </div>
-          <div className="flex items-center gap-4 w-full lg:w-auto">
-            <div className="relative flex-grow">
-              <Search className="w-5 h-5 text-gray-500 absolute top-1/2 left-3 -translate-y-1/2" />
-              <Input
-                type="search"
-                placeholder="Search..."
-                className="w-full bg-gray-800 border-gray-700 rounded-lg pl-10 pr-4 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none text-white placeholder-gray-500"
-              />
+        {showDefaultHeader && (
+          <header className="flex flex-wrap justify-between items-center gap-4 mb-8">
+            <div className="w-full lg:w-auto">
+              <h2 className="text-3xl font-bold text-gray-100">
+                {getGreeting()}, {user.name}! ☀️
+              </h2>
+              <p className="text-gray-400">{getFormattedDate()}</p>
             </div>
-            <button className="relative text-gray-400 hover:text-white p-2">
-              <Bell className="w-6 h-6" />
-              <span className="absolute top-1 right-1 w-3 h-3 bg-red-500 rounded-full border-2 border-gray-900"></span>
-            </button>
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 bg-purple-600 rounded-full flex items-center justify-center text-white font-semibold">
-                {user.name.charAt(0).toUpperCase()}
+            <div className="flex items-center gap-4 w-full lg:w-auto">
+              <div className="relative flex-grow">
+                <Search className="w-5 h-5 text-gray-500 absolute top-1/2 left-3 -translate-y-1/2" />
+                <Input
+                  type="search"
+                  placeholder="Search..."
+                  className="w-full bg-gray-800 border-gray-700 rounded-lg pl-10 pr-4 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none text-white placeholder-gray-500"
+                />
               </div>
-              <span className="font-semibold hidden sm:inline">{user.name}</span>
+              <button className="relative text-gray-400 hover:text-white p-2">
+                <Bell className="w-6 h-6" />
+                <span className="absolute top-1 right-1 w-3 h-3 bg-red-500 rounded-full border-2 border-gray-900"></span>
+              </button>
+              <UserProfileDropdown user={user} />
             </div>
-          </div>
-        </header>
+          </header>
+        )}
 
         {/* Page Content */}
         {children}

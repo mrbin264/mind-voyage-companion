@@ -3,7 +3,7 @@ import { HabitCard } from './HabitCard'
 import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
 import type { HabitProgress, HabitFilters } from '@/types/habit'
-import { Plus, Filter, Search } from 'lucide-react'
+import { Plus, Filter, Search, Settings } from 'lucide-react'
 
 interface HabitListProps {
   habits: HabitProgress[]
@@ -21,10 +21,10 @@ interface HabitListProps {
 }
 
 const filterTabs = [
-  { key: 'all', label: 'All Habits' },
-  { key: 'active', label: 'Active' },
-  { key: 'paused', label: 'Paused' },
-  { key: 'archived', label: 'Archived' },
+  { key: 'all', label: 'All Habits', count: 0 },
+  { key: 'active', label: 'Active', count: 6 },
+  { key: 'paused', label: 'Paused', count: 2 },
+  { key: 'archived', label: 'Archive', count: 0 },
 ]
 
 export function HabitList({
@@ -69,52 +69,50 @@ export function HabitList({
 
   return (
     <div className="space-y-6">
-      {/* Header with Add Button */}
-      {onAddHabit && (
-        <div className="flex items-center justify-between">
-          <h2 className="text-2xl font-bold">
-            {compact ? "Today's Habits" : "My Habits"}
-          </h2>
-          <Button onClick={onAddHabit} className="flex items-center gap-2">
-            <Plus className="h-4 w-4" />
-            Add Habit
+      {/* Header with Page Title and Add Button */}
+      <div className="flex flex-wrap justify-between items-center gap-4">
+        <div>
+          <h2 className="text-3xl font-bold text-gray-100">📈 My Habits</h2>
+        </div>
+        <div className="flex items-center gap-2">
+          {onAddHabit && (
+            <Button 
+              onClick={onAddHabit}
+              className="text-sm bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-lg transition-colors flex items-center gap-2"
+            >
+              <Plus className="w-4 h-4" />
+              Add New Habit
+            </Button>
+          )}
+          <Button 
+            variant="secondary"
+            className="text-sm bg-gray-700 hover:bg-gray-600 text-gray-200 font-semibold py-2 px-4 rounded-lg transition-colors flex items-center gap-2"
+          >
+            <Settings className="w-4 h-4" />
+            Settings
           </Button>
         </div>
-      )}
+      </div>
 
       {/* Filters */}
       {showFilters && !compact && (
         <div className="space-y-4">
-          {/* Status Filter Tabs */}
-          <div className="flex flex-wrap gap-2">
+          {/* Filter Tabs - Dark theme matching HTML design */}
+          <div className="flex flex-wrap gap-4">
             {filterTabs.map((tab) => (
-              <Button
+              <button
                 key={tab.key}
-                variant={filters.status === tab.key ? "default" : "outline"}
-                size="sm"
+                className={`flex-1 sm:flex-auto font-semibold py-3 px-6 rounded-lg transition-colors ${
+                  filters.status === tab.key 
+                    ? 'bg-blue-600/20 text-blue-300' 
+                    : 'bg-gray-800 hover:bg-gray-700 text-gray-300'
+                }`}
                 onClick={() => handleFilterChange('status', tab.key)}
-                className="flex-1 sm:flex-none"
               >
                 {tab.label}
-              </Button>
+                {tab.key !== 'all' && tab.count > 0 && ` (${tab.count})`}
+              </button>
             ))}
-          </div>
-
-          {/* Search and Additional Filters */}
-          <div className="flex gap-4">
-            <div className="relative flex-1">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
-              <input
-                type="text"
-                placeholder="Search habits..."
-                value={filters.search || ''}
-                onChange={(e) => handleFilterChange('search', e.target.value)}
-                className="w-full pl-10 pr-4 py-2 border border-input rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
-              />
-            </div>
-            <Button variant="outline" size="icon">
-              <Filter className="h-4 w-4" />
-            </Button>
           </div>
         </div>
       )}
@@ -137,7 +135,7 @@ export function HabitList({
           </div>
         </Card>
       ) : (
-        <div className={`grid gap-4 ${compact ? 'grid-cols-1' : 'grid-cols-1 lg:grid-cols-2'}`}>
+        <div className="space-y-6">
           {habits.map((habitProgress) => (
             <HabitCard
               key={habitProgress.habit._id}

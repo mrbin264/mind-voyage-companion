@@ -95,18 +95,18 @@ export function HabitsPageContent({ user }: HabitsPageContentProps) {
 
   return (
     <div className="space-y-8">
-      {/* Summary Cards */}
-      <Card className="p-6 bg-white/80 backdrop-blur-sm">
+      {/* Summary Card */}
+      <div className="bg-zinc-900 border border-white/10 rounded-xl p-6 text-center sm:text-left">
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
           <div>
-            <p className="text-muted-foreground text-sm">Today's Progress</p>
-            <p className="text-xl font-semibold text-slate-900">
-              {summary ? `${summary.completedToday}/${summary.totalCompletedToday} habits completed` : 'Loading...'}
+            <p className="text-gray-400 text-sm">Today&apos;s Progress</p>
+            <p className="text-xl font-semibold text-white">
+              {summary ? `${summary.completedToday}/${summary.totalCompletedToday} habits completed (${Math.round((summary.completedToday / summary.totalCompletedToday) * 100) || 0}%)` : 'Loading...'}
             </p>
           </div>
           <div>
-            <p className="text-muted-foreground text-sm">Current Longest Streak</p>
-            <p className="text-xl font-semibold text-slate-900">
+            <p className="text-gray-400 text-sm">Current Longest Streak</p>
+            <p className="text-xl font-semibold text-white">
               {summary && summary.longestCurrentStreak.streakCount > 0 
                 ? `🔥 ${summary.longestCurrentStreak.streakCount} days (${summary.longestCurrentStreak.habitTitle})`
                 : '🔥 0 days'
@@ -114,13 +114,13 @@ export function HabitsPageContent({ user }: HabitsPageContentProps) {
             </p>
           </div>
           <div>
-            <p className="text-muted-foreground text-sm">This Week's Completions</p>
-            <p className="text-xl font-semibold text-slate-900">
+            <p className="text-gray-400 text-sm">This Week&apos;s Completions</p>
+            <p className="text-xl font-semibold text-white">
               {summary ? `📊 ${summary.weeklyCompletions}/${summary.weeklyTotal} total` : 'Loading...'}
             </p>
           </div>
         </div>
-      </Card>
+      </div>
 
       {/* Main Habit List */}
       <HabitList

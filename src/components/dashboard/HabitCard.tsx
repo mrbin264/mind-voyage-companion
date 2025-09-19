@@ -28,29 +28,28 @@ interface HabitCardProps {
   timezone?: string
 }
 
-const getStatusColor = (status: string) => {
+const getHabitStatusInfo = (status: string, streak: number = 0) => {
   switch (status) {
     case 'completed':
-      return 'text-green-600 border-green-300 bg-green-50'
+      return {
+        badge: `${streak > 0 ? `🔥 ${streak} day streak` : 'Completed'}`,
+        badgeClass: 'bg-orange-500/10 text-orange-400 text-sm font-semibold px-3 py-1 rounded-full'
+      }
     case 'in-progress':
-      return 'text-yellow-600 border-yellow-300 bg-yellow-50'
-    case 'skipped':
-      return 'text-gray-500 border-gray-300 bg-gray-50'
+      return {
+        badge: 'In Progress',
+        badgeClass: 'bg-yellow-500/10 text-yellow-400 text-sm font-semibold px-3 py-1 rounded-full'
+      }
+    case 'paused':
+      return {
+        badge: 'Paused',
+        badgeClass: 'bg-red-500/10 text-red-400 text-sm font-semibold px-3 py-1 rounded-full'
+      }
     default:
-      return 'text-gray-600 border-gray-300 bg-gray-50'
-  }
-}
-
-const getStatusIcon = (status: string) => {
-  switch (status) {
-    case 'completed':
-      return <CheckCircle className="h-4 w-4 text-green-600" />
-    case 'in-progress':
-      return <Play className="h-4 w-4 text-yellow-600" />
-    case 'skipped':
-      return <SkipForward className="h-4 w-4 text-gray-500" />
-    default:
-      return <Circle className="h-4 w-4 text-gray-400" />
+      return {
+        badge: 'Not Started',
+        badgeClass: 'bg-gray-700 text-gray-300 text-sm font-semibold px-3 py-1 rounded-full'
+      }
   }
 }
 
@@ -79,6 +78,23 @@ const formatProgress = (habit: Habit, todayLog?: HabitLog) => {
   return `${current}/${target} ${habit.target.unit || 'units'}`
 }
 
+const formatScheduleInfo = (habit: Habit, todayLog?: HabitLog) => {
+  const frequency = habit.frequency.type === 'daily' ? 'Every day' : 
+                   habit.frequency.type === 'weekly' ? `${habit.frequency.daysOfWeek?.join(', ')}` :
+                   'Custom schedule'
+  
+  let statusInfo = ''
+  if (todayLog?.completed) {
+    statusInfo = `Last completed: Today at ${new Date(todayLog.completedAt!).toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true })}`
+  } else if (todayLog?.value && todayLog.value > 0) {
+    statusInfo = `Current: ${todayLog.value}/${habit.target.value} ${habit.target.unit || 'units'} • Goal: ${habit.target.value} ${habit.target.unit || 'units'}`
+  } else {
+    statusInfo = `Next scheduled: Today at ${habit.reminderTime || '6:00 PM'}`
+  }
+  
+  return `${frequency} • ${statusInfo}`
+}
+
 export function HabitCard({ 
   habitProgress, 
   onComplete, 
@@ -90,12 +106,17 @@ export function HabitCard({
   const { habit, todayLog, currentStreak, weeklyProgress } = habitProgress
   const status = getHabitDisplayStatus(habit, todayLog)
   const progressPercentage = getHabitProgressPercentage(habit, todayLog)
+  
+  const isCompleted = status === 'completed'
+  const isPaused = habit.status.pausedAt !== undefined
+  const isArchived = habit.status.archived
+  const isInProgress = status === 'in-progress'
+  const statusInfo = getHabitStatusInfo(isCompleted ? 'completed' : isPaused ? 'paused' : isInProgress ? 'in-progress' : 'not-started', currentStreak)
 
   const handleComplete = () => {
     if (habit.target.type === 'boolean') {
       onComplete?.(habit._id!, 1)
     } else {
-      // For non-boolean habits, you might want to open a dialog to input the value
       const value = prompt(`Enter value for ${habit.title}:`)
       if (value && !isNaN(Number(value))) {
         onComplete?.(habit._id!, Number(value))
@@ -103,154 +124,142 @@ export function HabitCard({
     }
   }
 
-  if (compact) {
-    return (
-      <Card className={`p-4 transition-all hover:shadow-md ${status === 'completed' ? 'border-l-4 border-l-green-500' : ''}`}>
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <span className="text-xl">{habit.emoji || '📋'}</span>
-            <div>
-              <h4 className="font-semibold text-sm">{habit.title}</h4>
-              <p className="text-xs text-muted-foreground">{formatProgress(habit, todayLog)}</p>
-            </div>
-          </div>
-          <div className="flex items-center gap-2">
-            {status !== 'completed' && (
-              <Button
-                size="sm"
-                variant="ghost"
-                onClick={handleComplete}
-                className="h-8 px-2"
-              >
-                {getStatusIcon(status)}
-              </Button>
-            )}
-            {status === 'completed' && (
-              <Badge variant="success" className="text-xs">
-                ✓ Done
-              </Badge>
-            )}
-          </div>
-        </div>
-        {habit.target.type !== 'boolean' && (
-          <div className="mt-2">
-            <Progress value={progressPercentage} className="h-2" />
-          </div>
-        )}
-      </Card>
-    )
+  const handleAddProgress = () => {
+    if (habit.target.type === 'count' || habit.target.type === 'amount') {
+      const current = todayLog?.value || 0
+      onComplete?.(habit._id!, current + 1)
+    } else {
+      handleComplete()
+    }
   }
 
+  // Dark theme habit card matching the HTML design
   return (
-    <Card className={`p-6 transition-all hover:shadow-md ${status === 'completed' ? 'border-l-4 border-l-green-500' : ''}`}>
+    <div className={`bg-zinc-900 border border-white/10 rounded-xl p-6 ${isPaused ? 'opacity-60' : ''}`}>
       {/* Header */}
-      <div className="flex items-start justify-between mb-4">
-        <div className="flex items-start gap-3">
-          <span className="text-2xl">{habit.emoji || '📋'}</span>
-          <div>
-            <h3 className="font-bold text-lg">{habit.title}</h3>
-            {habit.description && (
-              <p className="text-sm text-muted-foreground mt-1">{habit.description}</p>
-            )}
-            <div className="flex items-center gap-4 mt-2 text-xs text-muted-foreground">
-              <span className="flex items-center gap-1">
-                <Target className="h-3 w-3" />
-                {formatTarget(habit)}
-              </span>
-              <span className="flex items-center gap-1">
-                <Calendar className="h-3 w-3" />
-                {habit.frequency.type === 'daily' ? 'Daily' : 
-                 habit.frequency.type === 'weekly' ? `${habit.frequency.daysOfWeek?.length || 0} days/week` :
-                 'Custom schedule'}
-              </span>
+      <div className="flex flex-wrap justify-between items-start gap-4">
+        <div>
+          <h3 className="text-lg font-bold text-white flex items-center gap-2">
+            {isCompleted && '✅'} {habit.emoji || '📋'} {habit.title}
+          </h3>
+          <p className="text-sm text-gray-400 mt-1">{habit.description}</p>
+          <p className="text-xs text-gray-500 mt-2">
+            {formatScheduleInfo(habit, todayLog)}
+          </p>
+        </div>
+        
+        {/* Status Badge or Progress */}
+        {isCompleted ? (
+          <div className={statusInfo.badgeClass}>
+            {statusInfo.badge}
+          </div>
+        ) : isInProgress && habit.target.type !== 'boolean' ? (
+          <div className="text-right">
+            <p className="text-sm font-semibold text-blue-400">Progress</p>
+            <div className="w-24 mt-1 bg-white/10 rounded-full h-2">
+              <div className="bg-blue-500 h-2 rounded-full" style={{ width: `${progressPercentage}%` }}></div>
             </div>
+            <p className="text-xs text-gray-300 mt-1">{formatProgress(habit, todayLog)}</p>
+          </div>
+        ) : (
+          <div className={statusInfo.badgeClass}>
+            {statusInfo.badge}
+          </div>
+        )}
+      </div>
+
+      {/* Footer with Weekly Progress and Actions */}
+      <div className="mt-4 border-t border-gray-700 pt-4">
+        <div className="flex justify-between items-center text-sm">
+          {/* Weekly Progress */}
+          <span className="text-gray-400">
+            Weekly Progress: {'●'.repeat(weeklyProgress.completed)}{'○'.repeat(weeklyProgress.total - weeklyProgress.completed)} {weeklyProgress.percentage}% ({weeklyProgress.completed}/{weeklyProgress.total})
+            {isPaused && ' - Paused'}
+          </span>
+          
+          {/* Action Buttons */}
+          <div className="flex gap-2 flex-wrap justify-end">
+            {isCompleted ? (
+              <>
+                <button className="text-xs font-semibold text-blue-400 hover:underline" onClick={() => onViewDetails?.(habit._id!)}>
+                  View Details
+                </button>
+                <button className="text-xs font-semibold text-gray-400 hover:underline" onClick={() => onEdit?.(habit._id!)}>
+                  Edit Habit
+                </button>
+                <button className="text-xs font-semibold text-gray-400 hover:underline">
+                  ⋮ More
+                </button>
+              </>
+            ) : isInProgress ? (
+              <>
+                {habit.target.type !== 'boolean' && (
+                  <button 
+                    className="text-xs bg-blue-600 hover:bg-blue-700 text-white font-semibold py-1 px-3 rounded-md"
+                    onClick={handleAddProgress}
+                  >
+                    {habit.target.type === 'amount' ? 'Add Glass' : 'Add Progress'}
+                  </button>
+                )}
+                <button 
+                  className="text-xs bg-yellow-600 hover:bg-yellow-700 text-white font-semibold py-1 px-3 rounded-md"
+                  onClick={handleComplete}
+                >
+                  {habit.target.type === 'duration' ? 'Continue Timer' : 'Complete'}
+                </button>
+                <button className="text-xs font-semibold text-gray-400 hover:underline">
+                  Pause
+                </button>
+                <button className="text-xs font-semibold text-gray-400 hover:underline" onClick={() => onViewDetails?.(habit._id!)}>
+                  View History
+                </button>
+                <button className="text-xs font-semibold text-gray-400 hover:underline">
+                  Edit
+                </button>
+                <button className="text-xs font-semibold text-gray-400 hover:underline">
+                  ⋮ More
+                </button>
+              </>
+            ) : isPaused ? (
+              <>
+                <button className="text-xs bg-purple-600 hover:bg-purple-700 text-white font-semibold py-1 px-3 rounded-md">
+                  Resume Habit
+                </button>
+                <button className="text-xs font-semibold text-gray-400 hover:underline">
+                  Delete
+                </button>
+                <button className="text-xs font-semibold text-gray-400 hover:underline" onClick={() => onViewDetails?.(habit._id!)}>
+                  View History
+                </button>
+                <button className="text-xs font-semibold text-gray-400 hover:underline">
+                  ⋮ More
+                </button>
+              </>
+            ) : (
+              <>
+                <button 
+                  className="text-xs bg-green-600 hover:bg-green-700 text-white font-semibold py-1 px-3 rounded-md"
+                  onClick={handleComplete}
+                >
+                  {habit.target.type === 'duration' ? `Start ${habit.title.includes('Walk') ? 'Walk' : 'Timer'}` : 'Start'}
+                </button>
+                <button 
+                  className="text-xs font-semibold text-gray-400 hover:underline"
+                  onClick={() => onSkip?.(habit._id!)}
+                >
+                  Skip Today
+                </button>
+                <button className="text-xs font-semibold text-gray-400 hover:underline" onClick={() => onEdit?.(habit._id!)}>
+                  Edit Schedule
+                </button>
+                <button className="text-xs font-semibold text-gray-400 hover:underline">
+                  ⋮ More
+                </button>
+              </>
+            )}
           </div>
         </div>
-        <div className="flex items-center gap-2">
-          {currentStreak > 0 && (
-            <Badge variant="outline" className="flex items-center gap-1">
-              <Flame className="h-3 w-3 text-orange-500" />
-              {currentStreak} days
-            </Badge>
-          )}
-          <Button variant="ghost" size="sm" onClick={() => onEdit?.(habit._id!)}>
-            <MoreVertical className="h-4 w-4" />
-          </Button>
-        </div>
       </div>
-
-      {/* Progress */}
-      <div className="mb-4">
-        <div className="flex items-center justify-between mb-2">
-          <span className="text-sm font-medium">Progress</span>
-          <span className="text-sm text-muted-foreground">
-            {formatProgress(habit, todayLog)}
-          </span>
-        </div>
-        {habit.target.type !== 'boolean' && (
-          <Progress value={progressPercentage} className="h-2 mb-2" />
-        )}
-        <div className={`inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-medium ${getStatusColor(status)}`}>
-          {getStatusIcon(status)}
-          <span className="capitalize">{status.replace('-', ' ')}</span>
-        </div>
-      </div>
-
-      {/* Weekly Progress */}
-      <div className="mb-4 p-3 bg-muted/50 rounded-lg">
-        <div className="flex justify-between items-center mb-2">
-          <span className="text-sm font-medium">This Week</span>
-          <span className="text-sm font-bold">{weeklyProgress.percentage}%</span>
-        </div>
-        <div className="flex gap-1">
-          {Array.from({ length: 7 }, (_, i) => {
-            const isCompleted = i < weeklyProgress.completed
-            return (
-              <div
-                key={i}
-                className={`h-2 flex-1 rounded-sm ${
-                  isCompleted ? 'bg-green-500' : 'bg-gray-200'
-                }`}
-              />
-            )
-          })}
-        </div>
-        <p className="text-xs text-muted-foreground mt-1">
-          {weeklyProgress.completed}/{weeklyProgress.total} completed
-        </p>
-      </div>
-
-      {/* Actions */}
-      <div className="flex gap-2">
-        {status === 'completed' ? (
-          <Button variant="success" className="flex-1" disabled>
-            <CheckCircle className="h-4 w-4" />
-            Completed
-          </Button>
-        ) : (
-          <>
-            <Button 
-              variant="default" 
-              className="flex-1"
-              onClick={handleComplete}
-            >
-              {status === 'in-progress' ? 'Complete' : 'Start'}
-            </Button>
-            <Button 
-              variant="outline" 
-              onClick={() => onSkip?.(habit._id!)}
-            >
-              Skip
-            </Button>
-          </>
-        )}
-        <Button 
-          variant="ghost" 
-          onClick={() => onViewDetails?.(habit._id!)}
-        >
-          Details
-        </Button>
-      </div>
-    </Card>
+    </div>
   )
 }

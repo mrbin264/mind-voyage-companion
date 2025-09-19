@@ -78,7 +78,7 @@ export function DashboardContent({ user }: DashboardContentProps) {
           <WidgetCard className="p-6 lg:col-span-2">
             <h3 className="font-bold text-lg flex items-center gap-2 mb-4 text-gray-100">🏛️ Daily Wisdom</h3>
             <blockquote className="text-xl text-gray-300 italic mb-2">
-              "The best time to plant a tree was 20 years ago. The second best time is now."
+              &ldquo;The best time to plant a tree was 20 years ago. The second best time is now.&rdquo;
             </blockquote>
             <cite className="block text-right text-gray-500 mb-4">
               — Chinese Proverb
@@ -101,7 +101,7 @@ export function DashboardContent({ user }: DashboardContentProps) {
           
           {/* Today's Focus */}
           <WidgetCard className="p-6 flex flex-col justify-center">
-            <h3 className="font-bold text-lg flex items-center gap-2 mb-2 text-gray-100">🎯 Today's Focus</h3>
+            <h3 className="font-bold text-lg flex items-center gap-2 mb-2 text-gray-100">🎯 Today&apos;s Focus</h3>
             <p className="text-gray-400 mb-4">
               Complete 3 habits to maintain your momentum.
             </p>
@@ -113,7 +113,7 @@ export function DashboardContent({ user }: DashboardContentProps) {
                 className="bg-blue-600 h-2.5 rounded-full" 
                 style={{ 
                   width: summary?.totalCompletedToday 
-                    ? `\${(summary.completedToday / summary.totalCompletedToday) * 100}%` 
+                    ? `${(summary.completedToday / summary.totalCompletedToday) * 100}%` 
                     : '0%' 
                 }}
               ></div>
@@ -128,7 +128,7 @@ export function DashboardContent({ user }: DashboardContentProps) {
         <div className="xl:col-span-3">
           <WidgetCard className="p-6">
             <div className="flex justify-between items-center mb-6">
-              <h3 className="font-bold text-lg text-gray-100">📈 Today's Habits</h3>
+              <h3 className="font-bold text-lg text-gray-100">📈 Today&apos;s Habits</h3>
               <Button 
                 size="sm" 
                 onClick={() => setShowCreateForm(true)}
@@ -209,7 +209,7 @@ export function DashboardContent({ user }: DashboardContentProps) {
               {moods.map((mood) => (
                 <button
                   key={mood}
-                  className={`text-3xl p-2 transition-transform rounded-full \${
+                  className={`text-3xl p-2 transition-transform rounded-full ${
                     selectedMood === mood 
                       ? 'transform scale-125 bg-blue-600/30' 
                       : 'hover:transform hover:scale-110'
@@ -257,42 +257,64 @@ export function DashboardContent({ user }: DashboardContentProps) {
                 </div>
               )}
             </div>
+            {habits.length > 0 && (
+              <div className="mt-6 border-t border-gray-700 pt-4">
+                <h4 className="font-semibold text-gray-200 mb-2">🎖️ Achievements This Week:</h4>
+                <ul className="space-y-1 text-sm text-gray-400">
+                  <li>✓ 7-day Morning Pages streak</li>
+                  <li>✓ 5 consecutive journaling days</li>
+                  <li className="text-yellow-400">⭐ Ready for: Consistency Champion</li>
+                </ul>
+              </div>
+            )}
           </WidgetCard>
         </div>
 
-        {/* Quick Actions */}
-        <div className="xl:col-span-3">
-          <WidgetCard className="p-6">
+        {/* Recommendations & Quick Actions */}
+        <div className="xl:col-span-3 grid grid-cols-1 lg:grid-cols-5 gap-6">
+          {/* Recommendations */}
+          <WidgetCard className="p-6 lg:col-span-2">
+            <h3 className="font-bold text-lg mb-4 text-gray-100">🎯 Recommendations</h3>
+            <p className="text-sm text-gray-400 mb-3">Based on your patterns:</p>
+            <ul className="space-y-2 text-sm text-gray-300">
+              <li>• Try meditating after reading</li>
+              <li>• Your hydration improves on journaling days</li>
+              <li>• Consider an evening routine</li>
+            </ul>
+            <button className="text-sm font-semibold text-purple-400 mt-4 hover:underline">
+              ✨ Get Pro AI Insights
+            </button>
+          </WidgetCard>
+
+          {/* Quick Actions */}
+          <WidgetCard className="p-6 lg:col-span-3">
             <h3 className="font-bold text-lg mb-4 text-gray-100">⚡ Quick Actions</h3>
-            <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+            <div className="grid grid-cols-2 gap-4">
               <button 
                 className="p-4 bg-[#18181B] border border-white/10 rounded-lg hover:border-blue-500 text-left transition-colors"
                 onClick={() => setShowCreateForm(true)}
               >
-                <Target className="h-5 w-5 mb-1 text-gray-300" />
-                <h4 className="font-bold text-gray-200 text-sm">Add Habit</h4>
-                <p className="text-xs text-gray-400">Create New</p>
+                <h4 className="font-bold text-gray-200">📝 Journal</h4>
+                <p className="text-sm text-gray-400">Quick Entry</p>
               </button>
               <button className="p-4 bg-[#18181B] border border-white/10 rounded-lg hover:border-blue-500 text-left transition-colors">
-                <span className="text-lg mb-1 block">📝</span>
-                <h4 className="font-bold text-gray-200 text-sm">Journal</h4>
-                <p className="text-xs text-gray-400">Quick Entry</p>
+                <h4 className="font-bold text-gray-200">🏛️ Get Daily Wisdom</h4>
+                <p className="text-sm text-gray-400">New Quote</p>
               </button>
               <button className="p-4 bg-[#18181B] border border-white/10 rounded-lg hover:border-blue-500 text-left transition-colors">
-                <span className="text-lg mb-1 block">🏛️</span>
-                <h4 className="font-bold text-gray-200 text-sm">Wisdom</h4>
-                <p className="text-xs text-gray-400">New Quote</p>
+                <h4 className="font-bold text-gray-200">📊 Analytics</h4>
+                <p className="text-sm text-gray-400">View Reports</p>
               </button>
               <Link href="/dashboard/habits" className="block">
                 <button className="p-4 bg-[#18181B] border border-white/10 rounded-lg hover:border-blue-500 text-left transition-colors w-full">
-                  <span className="text-lg mb-1 block">📊</span>
-                  <h4 className="font-bold text-gray-200 text-sm">All Habits</h4>
-                  <p className="text-xs text-gray-400">Manage & Track</p>
+                  <h4 className="font-bold text-gray-200">⚙️ Settings</h4>
+                  <p className="text-sm text-gray-400">Preferences</p>
                 </button>
               </Link>
             </div>
           </WidgetCard>
         </div>
+        
       </div>
 
       {/* Create Habit Form Modal */}

@@ -83,7 +83,14 @@ export default function RegisterForm() {
               Display Name
             </label>
             <div className="relative">
-              <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+              <input
+                type="text"
+                id="name"
+                placeholder="Display Name"
+                className="form-input pr-10"
+                {...register('name')}
+              />
+              <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
                 <svg
                   className="w-5 h-5 text-gray-500"
                   xmlns="http://www.w3.org/2000/svg"
@@ -97,13 +104,6 @@ export default function RegisterForm() {
                   />
                 </svg>
               </div>
-              <input
-                type="text"
-                id="name"
-                placeholder="Display Name"
-                className="form-input pl-10"
-                {...register('name')}
-              />
             </div>
             {errors.name && (
               <p className="text-red-400 text-sm mt-2">{errors.name.message}</p>
@@ -115,7 +115,14 @@ export default function RegisterForm() {
               Email Address
             </label>
             <div className="relative">
-              <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+              <input
+                type="email"
+                id="email"
+                placeholder="Email Address"
+                className="form-input pr-10"
+                {...register('email')}
+              />
+              <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
                 <svg
                   className="w-5 h-5 text-gray-500"
                   xmlns="http://www.w3.org/2000/svg"
@@ -126,13 +133,6 @@ export default function RegisterForm() {
                   <path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z" />
                 </svg>
               </div>
-              <input
-                type="email"
-                id="email"
-                placeholder="Email Address"
-                className="form-input pl-10"
-                {...register('email')}
-              />
             </div>
             {errors.email && (
               <p className="text-red-400 text-sm mt-2">
@@ -146,7 +146,14 @@ export default function RegisterForm() {
               Password
             </label>
             <div className="relative">
-              <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+              <input
+                type="password"
+                id="password"
+                placeholder="Password (8+ characters)"
+                className="form-input pl-10"
+                {...register('password')}
+              />
+              <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
                 <svg
                   className="w-5 h-5 text-gray-500"
                   xmlns="http://www.w3.org/2000/svg"
@@ -160,13 +167,6 @@ export default function RegisterForm() {
                   />
                 </svg>
               </div>
-              <input
-                type="password"
-                id="password"
-                placeholder="Password (8+ characters)"
-                className="form-input pl-10"
-                {...register('password')}
-              />
             </div>
             {errors.password && (
               <p className="text-red-400 text-sm mt-2">
@@ -180,7 +180,14 @@ export default function RegisterForm() {
               Confirm Password
             </label>
             <div className="relative">
-              <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+              <input
+                type="password"
+                id="confirm-password"
+                placeholder="Confirm Password"
+                className="form-input pl-10"
+                {...register('confirmPassword')}
+              />
+              <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
                 <svg
                   className="w-5 h-5 text-gray-500"
                   xmlns="http://www.w3.org/2000/svg"
@@ -194,13 +201,6 @@ export default function RegisterForm() {
                   />
                 </svg>
               </div>
-              <input
-                type="password"
-                id="confirm-password"
-                placeholder="Confirm Password"
-                className="form-input pl-10"
-                {...register('confirmPassword')}
-              />
             </div>
             {errors.confirmPassword && (
               <p className="text-red-400 text-sm mt-2">
@@ -214,20 +214,6 @@ export default function RegisterForm() {
               Timezone
             </label>
             <div className="relative">
-              <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                <svg
-                  className="w-5 h-5 text-gray-500"
-                  xmlns="http://www.w3.org/2000/svg"
-                  viewBox="0 0 20 20"
-                  fill="currentColor"
-                >
-                  <path
-                    fillRule="evenodd"
-                    d="M10 18a8 8 0 100-16 8 8 0 000 16zM4.332 8.027a6.012 6.012 0 011.912-2.706C6.512 5.73 6.974 6 7.5 6A1.5 1.5 0 019 7.5V8a2 2 0 004 0 2 2 0 011.523-1.943A5.977 5.977 0 0116 10c0 .34-.028.675-.083 1H15a2 2 0 00-2 2v1.5a1.5 1.5 0 01-3 0V12a2 2 0 00-2-2 2 2 0 01-2-2V8.707a5.969 5.969 0 01-1.668-.68z"
-                    clipRule="evenodd"
-                  />
-                </svg>
-              </div>
               <select
                 id="timezone"
                 className="form-input appearance-none pl-10"
@@ -248,6 +234,20 @@ export default function RegisterForm() {
                   Timezone: Australia/Sydney
                 </option>
               </select>
+              <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+                <svg
+                  className="w-5 h-5 text-gray-500"
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 20 20"
+                  fill="currentColor"
+                >
+                  <path
+                    fillRule="evenodd"
+                    d="M10 18a8 8 0 100-16 8 8 0 000 16zM4.332 8.027a6.012 6.012 0 011.912-2.706C6.512 5.73 6.974 6 7.5 6A1.5 1.5 0 019 7.5V8a2 2 0 004 0 2 2 0 011.523-1.943A5.977 5.977 0 0116 10c0 .34-.028.675-.083 1H15a2 2 0 00-2 2v1.5a1.5 1.5 0 01-3 0V12a2 2 0 00-2-2 2 2 0 01-2-2V8.707a5.969 5.969 0 01-1.668-.68z"
+                    clipRule="evenodd"
+                  />
+                </svg>
+              </div>
             </div>
             {errors.timezone && (
               <p className="text-red-400 text-sm mt-2">
