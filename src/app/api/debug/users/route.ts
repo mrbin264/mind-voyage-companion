@@ -6,15 +6,21 @@ import connectDB from '@/lib/db'
 export async function GET() {
   try {
     await connectDB()
-    
-    const users = await User.find({}, { email: 1, name: 1, verified: 1, createdAt: 1 })
-    
+
+    const users = await User.find(
+      {},
+      { email: 1, name: 1, verified: 1, createdAt: 1 }
+    )
+
     return NextResponse.json({
       count: users.length,
-      users: users
+      users: users,
     })
   } catch (error) {
     console.error('Debug users error:', error)
-    return NextResponse.json({ error: 'Failed to fetch users' }, { status: 500 })
+    return NextResponse.json(
+      { error: 'Failed to fetch users' },
+      { status: 500 }
+    )
   }
 }

@@ -33,7 +33,7 @@ export async function middleware(request: NextRequest) {
 
       // Decode the payload to check expiration
       const payload = JSON.parse(Buffer.from(parts[1], 'base64').toString())
-      
+
       // Check if token is expired
       if (payload.exp && payload.exp < Date.now() / 1000) {
         throw new Error('Token expired')

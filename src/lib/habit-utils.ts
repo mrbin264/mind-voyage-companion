@@ -1,10 +1,19 @@
 import { HabitModel, HabitLogModel } from './models/habit'
-import type { Habit, HabitLog, HabitProgress, HabitStreak, HabitSummary } from '../types/habit'
+import type {
+  Habit,
+  HabitLog,
+  HabitProgress,
+  HabitStreak,
+  HabitSummary,
+} from '../types/habit'
 
 /**
  * Formats a date to YYYY-MM-DD string in user's timezone
  */
-export function formatDateToString(date: Date, timezone: string = 'UTC'): string {
+export function formatDateToString(
+  date: Date,
+  timezone: string = 'UTC'
+): string {
   return date.toLocaleDateString('en-CA', { timeZone: timezone })
 }
 
@@ -20,7 +29,7 @@ export function getTodayString(timezone: string = 'UTC'): string {
  */
 export function isHabitScheduledForDate(habit: Habit, date: Date): boolean {
   const dayOfWeek = date.getDay() // 0 = Sunday, 6 = Saturday
-  
+
   switch (habit.frequency.type) {
     case 'daily':
       return true
@@ -35,22 +44,30 @@ export function isHabitScheduledForDate(habit: Habit, date: Date): boolean {
 /**
  * Generates date strings for a date range
  */
-export function generateDateRange(startDate: Date, endDate: Date, timezone: string = 'UTC'): string[] {
+export function generateDateRange(
+  startDate: Date,
+  endDate: Date,
+  timezone: string = 'UTC'
+): string[] {
   const dates: string[] = []
   const current = new Date(startDate)
-  
+
   while (current <= endDate) {
     dates.push(formatDateToString(current, timezone))
     current.setDate(current.getDate() + 1)
   }
-  
+
   return dates
 }
 
 /**
  * Calculates streak information for a habit
  */
-export function calculateHabitStreak(habit: Habit, logs: HabitLog[], timezone: string = 'UTC'): HabitStreak {
+export function calculateHabitStreak(
+  habit: Habit,
+  logs: HabitLog[],
+  timezone: string = 'UTC'
+): HabitStreak {
   // Sort logs by date (newest first)
   const sortedLogs = logs
     .filter(log => log.completed)
@@ -60,19 +77,24 @@ export function calculateHabitStreak(habit: Habit, logs: HabitLog[], timezone: s
     return {
       habitId: habit._id!,
       currentStreak: 0,
-      longestStreak: 0
+      longestStreak: 0,
     }
   }
 
   const today = getTodayString(timezone)
-  const yesterday = formatDateToString(new Date(Date.now() - 24 * 60 * 60 * 1000), timezone)
+  const yesterday = formatDateToString(
+    new Date(Date.now() - 24 * 60 * 60 * 1000),
+    timezone
+  )
 
   let currentStreak = 0
   let longestStreak = 0
   let tempStreak = 0
-    const lastCompletedDate = logs
+  const lastCompletedDate = logs
     .filter(log => log.completed)
-    .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())[0]?.date
+    .sort(
+      (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
+    )[0]?.date
 
   // Calculate current streak
   const latestLog = sortedLogs[0]
@@ -92,7 +114,10 @@ export function calculateHabitStreak(habit: Habit, logs: HabitLog[], timezone: s
         // Move to previous scheduled day
         do {
           currentDate.setDate(currentDate.getDate() - 1)
-        } while (!isHabitScheduledForDate(habit, currentDate) && currentDate > new Date('2020-01-01'))
+        } while (
+          !isHabitScheduledForDate(habit, currentDate) &&
+          currentDate > new Date('2020-01-01')
+        )
       } else if (isHabitScheduledForDate(habit, currentDate)) {
         break // Streak broken
       } else {
@@ -104,11 +129,11 @@ export function calculateHabitStreak(habit: Habit, logs: HabitLog[], timezone: s
 
   // Calculate longest streak
   let streakStart: Date | null = null
-  
+
   for (let i = 0; i < sortedLogs.length; i++) {
     const log = sortedLogs[i]
     const logDate = new Date(log.date + 'T00:00:00')
-    
+
     if (isHabitScheduledForDate(habit, logDate)) {
       if (streakStart === null) {
         streakStart = logDate
@@ -117,12 +142,15 @@ export function calculateHabitStreak(habit: Habit, logs: HabitLog[], timezone: s
         // Check if this log continues the streak
         const expectedDate: Date = new Date(streakStart)
         expectedDate.setDate(expectedDate.getDate() - 1)
-        
+
         // Find next scheduled day
-        while (!isHabitScheduledForDate(habit, expectedDate) && expectedDate > new Date('2020-01-01')) {
+        while (
+          !isHabitScheduledForDate(habit, expectedDate) &&
+          expectedDate > new Date('2020-01-01')
+        ) {
           expectedDate.setDate(expectedDate.getDate() - 1)
         }
-        
+
         if (formatDateToString(expectedDate, timezone) === log.date) {
           tempStreak++
           streakStart = expectedDate
@@ -135,30 +163,34 @@ export function calculateHabitStreak(habit: Habit, logs: HabitLog[], timezone: s
       }
     }
   }
-  
+
   longestStreak = Math.max(longestStreak, tempStreak)
 
   return {
     habitId: habit._id!,
     currentStreak,
     longestStreak,
-    lastCompletedDate
+    lastCompletedDate,
   }
 }
 
 /**
  * Calculates weekly progress for a habit
  */
-export function calculateWeeklyProgress(habit: Habit, logs: HabitLog[], timezone: string = 'UTC') {
+export function calculateWeeklyProgress(
+  habit: Habit,
+  logs: HabitLog[],
+  timezone: string = 'UTC'
+) {
   const today = new Date()
   const startOfWeek = new Date(today)
   startOfWeek.setDate(today.getDate() - today.getDay()) // Go to Sunday
-  
+
   const weekDates = generateDateRange(startOfWeek, today, timezone)
-  
+
   let total = 0
   let completed = 0
-  
+
   weekDates.forEach(date => {
     const dateObj = new Date(date + 'T00:00:00')
     if (isHabitScheduledForDate(habit, dateObj)) {
@@ -169,26 +201,30 @@ export function calculateWeeklyProgress(habit: Habit, logs: HabitLog[], timezone
       }
     }
   })
-  
+
   return {
     completed,
     total,
-    percentage: total > 0 ? Math.round((completed / total) * 100) : 0
+    percentage: total > 0 ? Math.round((completed / total) * 100) : 0,
   }
 }
 
 /**
  * Calculates monthly progress for a habit
  */
-export function calculateMonthlyProgress(habit: Habit, logs: HabitLog[], timezone: string = 'UTC') {
+export function calculateMonthlyProgress(
+  habit: Habit,
+  logs: HabitLog[],
+  timezone: string = 'UTC'
+) {
   const today = new Date()
   const startOfMonth = new Date(today.getFullYear(), today.getMonth(), 1)
-  
+
   const monthDates = generateDateRange(startOfMonth, today, timezone)
-  
+
   let total = 0
   let completed = 0
-  
+
   monthDates.forEach(date => {
     const dateObj = new Date(date + 'T00:00:00')
     if (isHabitScheduledForDate(habit, dateObj)) {
@@ -199,11 +235,11 @@ export function calculateMonthlyProgress(habit: Habit, logs: HabitLog[], timezon
       }
     }
   })
-  
+
   return {
     completed,
     total,
-    percentage: total > 0 ? Math.round((completed / total) * 100) : 0
+    percentage: total > 0 ? Math.round((completed / total) * 100) : 0,
   }
 }
 
@@ -211,8 +247,8 @@ export function calculateMonthlyProgress(habit: Habit, logs: HabitLog[], timezon
  * Calculates comprehensive progress for a habit
  */
 export function calculateHabitProgress(
-  habit: Habit, 
-  logs: HabitLog[], 
+  habit: Habit,
+  logs: HabitLog[],
   timezone: string = 'UTC'
 ): HabitProgress {
   const today = getTodayString(timezone)
@@ -227,7 +263,7 @@ export function calculateHabitProgress(
     currentStreak: streak.currentStreak,
     longestStreak: streak.longestStreak,
     weeklyProgress,
-    monthlyProgress
+    monthlyProgress,
   }
 }
 
@@ -235,34 +271,34 @@ export function calculateHabitProgress(
  * Calculates summary statistics for all user habits
  */
 export function calculateHabitSummary(
-  habits: Habit[], 
-  logs: HabitLog[], 
+  habits: Habit[],
+  logs: HabitLog[],
   timezone: string = 'UTC'
 ): HabitSummary {
   const today = getTodayString(timezone)
   const activeHabits = habits.filter(h => h.status.active && !h.status.archived)
-  
+
   // Today's completions
   const todayLogs = logs.filter(log => log.date === today)
   const completedToday = todayLogs.filter(log => log.completed).length
-  
+
   // Total habits scheduled for today
   const todayDate = new Date()
-  const totalCompletedToday = activeHabits.filter(habit => 
+  const totalCompletedToday = activeHabits.filter(habit =>
     isHabitScheduledForDate(habit, todayDate)
   ).length
 
   // Find longest current streak
   let longestCurrentStreak = { habitTitle: '', streakCount: 0 }
-  
+
   activeHabits.forEach(habit => {
     const habitLogs = logs.filter(log => log.habitId === habit._id)
     const streak = calculateHabitStreak(habit, habitLogs, timezone)
-    
+
     if (streak.currentStreak > longestCurrentStreak.streakCount) {
       longestCurrentStreak = {
         habitTitle: habit.title,
-        streakCount: streak.currentStreak
+        streakCount: streak.currentStreak,
       }
     }
   })
@@ -272,9 +308,15 @@ export function calculateHabitSummary(
     const habitLogs = logs.filter(log => log.habitId === habit._id)
     return calculateWeeklyProgress(habit, habitLogs, timezone)
   })
-  
-  const weeklyCompletions = weeklyProgress.reduce((sum, progress) => sum + progress.completed, 0)
-  const weeklyTotal = weeklyProgress.reduce((sum, progress) => sum + progress.total, 0)
+
+  const weeklyCompletions = weeklyProgress.reduce(
+    (sum, progress) => sum + progress.completed,
+    0
+  )
+  const weeklyTotal = weeklyProgress.reduce(
+    (sum, progress) => sum + progress.total,
+    0
+  )
 
   return {
     totalHabits: habits.length,
@@ -283,7 +325,7 @@ export function calculateHabitSummary(
     totalCompletedToday,
     longestCurrentStreak,
     weeklyCompletions,
-    weeklyTotal
+    weeklyTotal,
   }
 }
 
@@ -294,38 +336,41 @@ export function getHabitDisplayStatus(habit: Habit, todayLog?: HabitLog) {
   if (todayLog?.completed) {
     return 'completed'
   }
-  
+
   if (todayLog?.skipped) {
     return 'skipped'
   }
-  
+
   if (habit.target.type === 'boolean') {
     return 'pending'
   }
-  
+
   if (todayLog?.value && habit.target.value) {
     const progress = (todayLog.value / habit.target.value) * 100
     if (progress >= 100) return 'completed'
     if (progress > 0) return 'in-progress'
   }
-  
+
   return 'pending'
 }
 
 /**
  * Gets the progress percentage for a habit based on today's log
  */
-export function getHabitProgressPercentage(habit: Habit, todayLog?: HabitLog): number {
+export function getHabitProgressPercentage(
+  habit: Habit,
+  todayLog?: HabitLog
+): number {
   if (todayLog?.completed) return 100
   if (todayLog?.skipped) return 0
-  
+
   if (habit.target.type === 'boolean') {
     return 0
   }
-  
+
   if (todayLog?.value && habit.target.value) {
     return Math.min((todayLog.value / habit.target.value) * 100, 100)
   }
-  
+
   return 0
 }

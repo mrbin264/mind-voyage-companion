@@ -20,7 +20,10 @@ export function UserProfileDropdown({ user }: UserProfileDropdownProps) {
   // Close dropdown when clicking outside
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+      if (
+        dropdownRef.current &&
+        !dropdownRef.current.contains(event.target as Node)
+      ) {
         setIsOpen(false)
       }
     }
@@ -65,10 +68,10 @@ export function UserProfileDropdown({ user }: UserProfileDropdownProps) {
           <div className="font-semibold text-gray-100">{user.name}</div>
           <div className="text-sm text-gray-400">{user.email}</div>
         </div>
-        <ChevronDown 
+        <ChevronDown
           className={`w-4 h-4 text-gray-400 transition-transform ${
             isOpen ? 'rotate-180' : ''
-          }`} 
+          }`}
         />
       </button>
 
@@ -85,7 +88,7 @@ export function UserProfileDropdown({ user }: UserProfileDropdownProps) {
             {/* Menu Items */}
             <div className="py-1">
               <Link
-                href={"/dashboard/profile" as any}
+                href={'/dashboard/profile' as any}
                 onClick={handleCloseDropdown}
                 className="flex items-center gap-3 px-4 py-2 text-gray-300 hover:bg-gray-800 hover:text-white transition-colors"
               >
@@ -94,22 +97,22 @@ export function UserProfileDropdown({ user }: UserProfileDropdownProps) {
               </Link>
 
               <Link
-                href={"/dashboard/settings" as any}
+                href={'/dashboard/settings' as any}
                 onClick={handleCloseDropdown}
                 className="flex items-center gap-3 px-4 py-2 text-gray-300 hover:bg-gray-800 hover:text-white transition-colors"
               >
                 <Settings className="h-4 w-4" />
                 Settings
               </Link>
-              
+
               {/* Divider */}
               <div className="h-px bg-gray-700 my-1" />
-              
+
               {/* Logout Button */}
               <div className="px-2 py-1">
-                <LogoutButton 
-                  variant="ghost" 
-                  size="sm" 
+                <LogoutButton
+                  variant="ghost"
+                  size="sm"
                   className="w-full justify-start text-red-400 hover:text-red-300 hover:bg-red-500/10"
                   showIcon={true}
                 >

@@ -49,7 +49,7 @@ export async function GET(
 
     const habit = await HabitModel.findOne({
       _id: id,
-      userId: user.userId
+      userId: user.userId,
     })
 
     if (!habit) {
@@ -59,13 +59,12 @@ export async function GET(
     // Get logs for progress calculation
     const logs = await HabitLogModel.find({
       habitId: habit._id,
-      userId: user.userId
+      userId: user.userId,
     }).sort({ date: -1 })
 
     const habitWithProgress = calculateHabitProgress(habit, logs)
 
     return NextResponse.json({ habit: habitWithProgress })
-
   } catch (error) {
     console.error('Error fetching habit:', error)
     return NextResponse.json(
@@ -95,17 +94,25 @@ export async function PUT(
 
     // Validate frequency if provided
     if (body.frequency) {
-      if (body.frequency.type === 'weekly' || body.frequency.type === 'custom') {
-        if (!body.frequency.daysOfWeek || body.frequency.daysOfWeek.length === 0) {
+      if (
+        body.frequency.type === 'weekly' ||
+        body.frequency.type === 'custom'
+      ) {
+        if (
+          !body.frequency.daysOfWeek ||
+          body.frequency.daysOfWeek.length === 0
+        ) {
           return NextResponse.json(
             { error: 'Weekly and custom habits must specify days of week' },
             { status: 400 }
           )
         }
-        
+
         if (!body.frequency.daysOfWeek.every(day => day >= 0 && day <= 6)) {
           return NextResponse.json(
-            { error: 'Days of week must be between 0 (Sunday) and 6 (Saturday)' },
+            {
+              error: 'Days of week must be between 0 (Sunday) and 6 (Saturday)',
+            },
             { status: 400 }
           )
         }
@@ -113,7 +120,11 @@ export async function PUT(
     }
 
     // Validate target if provided
-    if (body.target && ['count', 'duration', 'amount'].includes(body.target.type) && !body.target.value) {
+    if (
+      body.target &&
+      ['count', 'duration', 'amount'].includes(body.target.type) &&
+      !body.target.value
+    ) {
       return NextResponse.json(
         { error: `${body.target.type} habits must have a target value` },
         { status: 400 }
@@ -133,10 +144,9 @@ export async function PUT(
     }
 
     return NextResponse.json({ habit })
-
   } catch (error) {
     console.error('Error updating habit:', error)
-    
+
     if (error instanceof mongoose.Error.ValidationError) {
       return NextResponse.json(
         { error: 'Validation error', details: error.message },
@@ -172,7 +182,7 @@ export async function DELETE(
     // Check if habit exists and belongs to user
     const habit = await HabitModel.findOne({
       _id: id,
-      userId: user.userId
+      userId: user.userId,
     })
 
     if (!habit) {
@@ -182,11 +192,10 @@ export async function DELETE(
     // Delete the habit and all associated logs
     await Promise.all([
       HabitModel.deleteOne({ _id: id, userId: user.userId }),
-      HabitLogModel.deleteMany({ habitId: id, userId: user.userId })
+      HabitLogModel.deleteMany({ habitId: id, userId: user.userId }),
     ])
 
     return NextResponse.json({ message: 'Habit deleted successfully' })
-
   } catch (error) {
     console.error('Error deleting habit:', error)
     return NextResponse.json(

@@ -7,36 +7,39 @@ import connectDB from '@/lib/db'
 export async function GET() {
   try {
     await connectDB()
-    
+
     // Create a test user
     const email = 'test@example.com'
     const password = 'password123'
     const hashedPassword = await hash(password, 10)
-    
+
     const existingUser = await User.findOne({ email })
     if (existingUser) {
       return NextResponse.json({
         message: 'Test user already exists',
-        credentials: { email, password }
+        credentials: { email, password },
       })
     }
-    
+
     const user = new User({
       name: 'Test User',
       email,
       password: hashedPassword,
       verified: true,
-      timezone: 'UTC'
+      timezone: 'UTC',
     })
-    
+
     await user.save()
-    
+
     return NextResponse.json({
       message: 'Test user created',
-      credentials: { email, password }
+      credentials: { email, password },
     })
   } catch (error) {
     console.error('Seed user error:', error)
-    return NextResponse.json({ error: 'Failed to create test user' }, { status: 500 })
+    return NextResponse.json(
+      { error: 'Failed to create test user' },
+      { status: 500 }
+    )
   }
 }

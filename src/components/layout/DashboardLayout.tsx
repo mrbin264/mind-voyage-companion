@@ -3,16 +3,16 @@
 import React from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { 
-  Home, 
-  TrendingUp, 
-  Edit3, 
-  BarChart2, 
-  Shield, 
+import {
+  Home,
+  TrendingUp,
+  Edit3,
+  BarChart2,
+  Shield,
   Settings,
   Star,
   Search,
-  Bell
+  Bell,
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -36,7 +36,11 @@ const navigationItems = [
   { href: '/dashboard/settings', icon: Settings, label: 'Settings' },
 ]
 
-export function DashboardLayout({ children, user, showDefaultHeader = true }: DashboardLayoutProps) {
+export function DashboardLayout({
+  children,
+  user,
+  showDefaultHeader = true,
+}: DashboardLayoutProps) {
   const pathname = usePathname()
 
   // Format greeting based on time of day
@@ -50,10 +54,10 @@ export function DashboardLayout({ children, user, showDefaultHeader = true }: Da
   // Format date
   const getFormattedDate = () => {
     const date = new Date()
-    return date.toLocaleDateString('en-US', { 
-      weekday: 'long', 
-      month: 'long', 
-      day: 'numeric' 
+    return date.toLocaleDateString('en-US', {
+      weekday: 'long',
+      month: 'long',
+      day: 'numeric',
     })
   }
 
@@ -69,10 +73,12 @@ export function DashboardLayout({ children, user, showDefaultHeader = true }: Da
 
         {/* Navigation */}
         <nav className="flex-grow space-y-2">
-          {navigationItems.map((item) => {
-            const isActive = pathname === item.href || (item.href !== '/dashboard' && pathname.startsWith(item.href))
+          {navigationItems.map(item => {
+            const isActive =
+              pathname === item.href ||
+              (item.href !== '/dashboard' && pathname.startsWith(item.href))
             const Icon = item.icon
-            
+
             return (
               <Link
                 key={item.href}

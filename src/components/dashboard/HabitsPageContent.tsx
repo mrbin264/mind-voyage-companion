@@ -22,7 +22,7 @@ interface HabitsPageContentProps {
 
 export function HabitsPageContent({ user }: HabitsPageContentProps) {
   const [showCreateForm, setShowCreateForm] = useState(false)
-  
+
   const {
     habits,
     summary,
@@ -85,9 +85,7 @@ export function HabitsPageContent({ user }: HabitsPageContentProps) {
       <div className="text-center py-12">
         <Card className="p-6 max-w-md mx-auto">
           <p className="text-red-600 mb-4">Error loading habits: {error}</p>
-          <Button onClick={() => window.location.reload()}>
-            Refresh Page
-          </Button>
+          <Button onClick={() => window.location.reload()}>Refresh Page</Button>
         </Card>
       </div>
     )
@@ -101,22 +99,27 @@ export function HabitsPageContent({ user }: HabitsPageContentProps) {
           <div>
             <p className="text-gray-400 text-sm">Today&apos;s Progress</p>
             <p className="text-xl font-semibold text-white">
-              {summary ? `${summary.completedToday}/${summary.totalCompletedToday} habits completed (${Math.round((summary.completedToday / summary.totalCompletedToday) * 100) || 0}%)` : 'Loading...'}
+              {summary
+                ? `${summary.completedToday}/${summary.totalCompletedToday} habits completed (${Math.round((summary.completedToday / summary.totalCompletedToday) * 100) || 0}%)`
+                : 'Loading...'}
             </p>
           </div>
           <div>
             <p className="text-gray-400 text-sm">Current Longest Streak</p>
             <p className="text-xl font-semibold text-white">
-              {summary && summary.longestCurrentStreak.streakCount > 0 
+              {summary && summary.longestCurrentStreak.streakCount > 0
                 ? `🔥 ${summary.longestCurrentStreak.streakCount} days (${summary.longestCurrentStreak.habitTitle})`
-                : '🔥 0 days'
-              }
+                : '🔥 0 days'}
             </p>
           </div>
           <div>
-            <p className="text-gray-400 text-sm">This Week&apos;s Completions</p>
+            <p className="text-gray-400 text-sm">
+              This Week&apos;s Completions
+            </p>
             <p className="text-xl font-semibold text-white">
-              {summary ? `📊 ${summary.weeklyCompletions}/${summary.weeklyTotal} total` : 'Loading...'}
+              {summary
+                ? `📊 ${summary.weeklyCompletions}/${summary.weeklyTotal} total`
+                : 'Loading...'}
             </p>
           </div>
         </div>
@@ -136,8 +139,8 @@ export function HabitsPageContent({ user }: HabitsPageContentProps) {
         compact={false}
         showFilters={true}
         emptyMessage={
-          filters.status === 'all' 
-            ? "No habits found. Create your first habit to get started!"
+          filters.status === 'all'
+            ? 'No habits found. Create your first habit to get started!'
             : `No ${filters.status} habits found. Try adjusting your filters.`
         }
       />

@@ -10,7 +10,11 @@ export interface AuthUser {
 export function getCurrentUser(request: NextRequest): AuthUser | null {
   try {
     const token = request.cookies.get('auth-token')?.value
-    console.log('🍪 Auth token present:', !!token, token ? token.substring(0, 20) + '...' : 'none')
+    console.log(
+      '🍪 Auth token present:',
+      !!token,
+      token ? token.substring(0, 20) + '...' : 'none'
+    )
 
     if (!token) {
       return null
@@ -22,7 +26,10 @@ export function getCurrentUser(request: NextRequest): AuthUser | null {
 
     return decoded
   } catch (error) {
-    console.log('❌ Token verification failed:', error instanceof Error ? error.message : String(error))
+    console.log(
+      '❌ Token verification failed:',
+      error instanceof Error ? error.message : String(error)
+    )
     return null
   }
 }

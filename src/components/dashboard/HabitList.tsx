@@ -39,9 +39,8 @@ export function HabitList({
   onViewHabitDetails,
   compact = false,
   showFilters = true,
-  emptyMessage = "No habits found. Create your first habit to get started!"
+  emptyMessage = 'No habits found. Create your first habit to get started!',
 }: HabitListProps) {
-  
   const handleFilterChange = (key: string, value: any) => {
     onFiltersChange?.({ ...filters, [key]: value })
   }
@@ -76,7 +75,7 @@ export function HabitList({
         </div>
         <div className="flex items-center gap-2">
           {onAddHabit && (
-            <Button 
+            <Button
               onClick={onAddHabit}
               className="text-sm bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-lg transition-colors flex items-center gap-2"
             >
@@ -84,7 +83,7 @@ export function HabitList({
               Add New Habit
             </Button>
           )}
-          <Button 
+          <Button
             variant="secondary"
             className="text-sm bg-gray-700 hover:bg-gray-600 text-gray-200 font-semibold py-2 px-4 rounded-lg transition-colors flex items-center gap-2"
           >
@@ -99,12 +98,12 @@ export function HabitList({
         <div className="space-y-4">
           {/* Filter Tabs - Dark theme matching HTML design */}
           <div className="flex flex-wrap gap-4">
-            {filterTabs.map((tab) => (
+            {filterTabs.map(tab => (
               <button
                 key={tab.key}
                 className={`flex-1 sm:flex-auto font-semibold py-3 px-6 rounded-lg transition-colors ${
-                  filters.status === tab.key 
-                    ? 'bg-blue-600/20 text-blue-300' 
+                  filters.status === tab.key
+                    ? 'bg-blue-600/20 text-blue-300'
                     : 'bg-gray-800 hover:bg-gray-700 text-gray-300'
                 }`}
                 onClick={() => handleFilterChange('status', tab.key)}
@@ -123,9 +122,7 @@ export function HabitList({
           <div className="max-w-md mx-auto">
             <div className="text-6xl mb-4">🎯</div>
             <h3 className="text-lg font-semibold mb-2">No habits yet</h3>
-            <p className="text-muted-foreground mb-6">
-              {emptyMessage}
-            </p>
+            <p className="text-muted-foreground mb-6">{emptyMessage}</p>
             {onAddHabit && (
               <Button onClick={onAddHabit}>
                 <Plus className="h-4 w-4 mr-2" />
@@ -136,7 +133,7 @@ export function HabitList({
         </Card>
       ) : (
         <div className="space-y-6">
-          {habits.map((habitProgress) => (
+          {habits.map(habitProgress => (
             <HabitCard
               key={habitProgress.habit._id}
               habitProgress={habitProgress}

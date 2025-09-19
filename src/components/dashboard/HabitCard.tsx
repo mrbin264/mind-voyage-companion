@@ -4,18 +4,21 @@ import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Progress } from '@/components/ui/progress'
 import type { HabitProgress, Habit, HabitLog } from '@/types/habit'
-import { getHabitDisplayStatus, getHabitProgressPercentage } from '@/lib/habit-utils'
-import { 
-  Clock, 
-  Target, 
-  Calendar, 
-  Flame, 
-  MoreVertical, 
+import {
+  getHabitDisplayStatus,
+  getHabitProgressPercentage,
+} from '@/lib/habit-utils'
+import {
+  Clock,
+  Target,
+  Calendar,
+  Flame,
+  MoreVertical,
   Play,
   Pause,
   CheckCircle,
   Circle,
-  SkipForward 
+  SkipForward,
 } from 'lucide-react'
 
 interface HabitCardProps {
@@ -33,22 +36,26 @@ const getHabitStatusInfo = (status: string, streak: number = 0) => {
     case 'completed':
       return {
         badge: `${streak > 0 ? `🔥 ${streak} day streak` : 'Completed'}`,
-        badgeClass: 'bg-orange-500/10 text-orange-400 text-sm font-semibold px-3 py-1 rounded-full'
+        badgeClass:
+          'bg-orange-500/10 text-orange-400 text-sm font-semibold px-3 py-1 rounded-full',
       }
     case 'in-progress':
       return {
         badge: 'In Progress',
-        badgeClass: 'bg-yellow-500/10 text-yellow-400 text-sm font-semibold px-3 py-1 rounded-full'
+        badgeClass:
+          'bg-yellow-500/10 text-yellow-400 text-sm font-semibold px-3 py-1 rounded-full',
       }
     case 'paused':
       return {
         badge: 'Paused',
-        badgeClass: 'bg-red-500/10 text-red-400 text-sm font-semibold px-3 py-1 rounded-full'
+        badgeClass:
+          'bg-red-500/10 text-red-400 text-sm font-semibold px-3 py-1 rounded-full',
       }
     default:
       return {
         badge: 'Not Started',
-        badgeClass: 'bg-gray-700 text-gray-300 text-sm font-semibold px-3 py-1 rounded-full'
+        badgeClass:
+          'bg-gray-700 text-gray-300 text-sm font-semibold px-3 py-1 rounded-full',
       }
   }
 }
@@ -72,17 +79,20 @@ const formatProgress = (habit: Habit, todayLog?: HabitLog) => {
   if (habit.target.type === 'boolean') {
     return todayLog?.completed ? 'Completed' : 'Not started'
   }
-  
+
   const current = todayLog?.value || 0
   const target = habit.target.value || 1
   return `${current}/${target} ${habit.target.unit || 'units'}`
 }
 
 const formatScheduleInfo = (habit: Habit, todayLog?: HabitLog) => {
-  const frequency = habit.frequency.type === 'daily' ? 'Every day' : 
-                   habit.frequency.type === 'weekly' ? `${habit.frequency.daysOfWeek?.join(', ')}` :
-                   'Custom schedule'
-  
+  const frequency =
+    habit.frequency.type === 'daily'
+      ? 'Every day'
+      : habit.frequency.type === 'weekly'
+        ? `${habit.frequency.daysOfWeek?.join(', ')}`
+        : 'Custom schedule'
+
   let statusInfo = ''
   if (todayLog?.completed) {
     statusInfo = `Last completed: Today at ${new Date(todayLog.completedAt!).toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true })}`
@@ -91,27 +101,36 @@ const formatScheduleInfo = (habit: Habit, todayLog?: HabitLog) => {
   } else {
     statusInfo = `Next scheduled: Today at ${habit.reminderTime || '6:00 PM'}`
   }
-  
+
   return `${frequency} • ${statusInfo}`
 }
 
-export function HabitCard({ 
-  habitProgress, 
-  onComplete, 
-  onSkip, 
-  onEdit, 
+export function HabitCard({
+  habitProgress,
+  onComplete,
+  onSkip,
+  onEdit,
   onViewDetails,
-  compact = false 
+  compact = false,
 }: HabitCardProps) {
   const { habit, todayLog, currentStreak, weeklyProgress } = habitProgress
   const status = getHabitDisplayStatus(habit, todayLog)
   const progressPercentage = getHabitProgressPercentage(habit, todayLog)
-  
+
   const isCompleted = status === 'completed'
   const isPaused = habit.status.pausedAt !== undefined
   const isArchived = habit.status.archived
   const isInProgress = status === 'in-progress'
-  const statusInfo = getHabitStatusInfo(isCompleted ? 'completed' : isPaused ? 'paused' : isInProgress ? 'in-progress' : 'not-started', currentStreak)
+  const statusInfo = getHabitStatusInfo(
+    isCompleted
+      ? 'completed'
+      : isPaused
+        ? 'paused'
+        : isInProgress
+          ? 'in-progress'
+          : 'not-started',
+    currentStreak
+  )
 
   const handleComplete = () => {
     if (habit.target.type === 'boolean') {
@@ -135,7 +154,9 @@ export function HabitCard({
 
   // Dark theme habit card matching the HTML design
   return (
-    <div className={`bg-zinc-900 border border-white/10 rounded-xl p-6 ${isPaused ? 'opacity-60' : ''}`}>
+    <div
+      className={`bg-zinc-900 border border-white/10 rounded-xl p-6 ${isPaused ? 'opacity-60' : ''}`}
+    >
       {/* Header */}
       <div className="flex flex-wrap justify-between items-start gap-4">
         <div>
@@ -147,24 +168,25 @@ export function HabitCard({
             {formatScheduleInfo(habit, todayLog)}
           </p>
         </div>
-        
+
         {/* Status Badge or Progress */}
         {isCompleted ? (
-          <div className={statusInfo.badgeClass}>
-            {statusInfo.badge}
-          </div>
+          <div className={statusInfo.badgeClass}>{statusInfo.badge}</div>
         ) : isInProgress && habit.target.type !== 'boolean' ? (
           <div className="text-right">
             <p className="text-sm font-semibold text-blue-400">Progress</p>
             <div className="w-24 mt-1 bg-white/10 rounded-full h-2">
-              <div className="bg-blue-500 h-2 rounded-full" style={{ width: `${progressPercentage}%` }}></div>
+              <div
+                className="bg-blue-500 h-2 rounded-full"
+                style={{ width: `${progressPercentage}%` }}
+              ></div>
             </div>
-            <p className="text-xs text-gray-300 mt-1">{formatProgress(habit, todayLog)}</p>
+            <p className="text-xs text-gray-300 mt-1">
+              {formatProgress(habit, todayLog)}
+            </p>
           </div>
         ) : (
-          <div className={statusInfo.badgeClass}>
-            {statusInfo.badge}
-          </div>
+          <div className={statusInfo.badgeClass}>{statusInfo.badge}</div>
         )}
       </div>
 
@@ -173,18 +195,26 @@ export function HabitCard({
         <div className="flex justify-between items-center text-sm">
           {/* Weekly Progress */}
           <span className="text-gray-400">
-            Weekly Progress: {'●'.repeat(weeklyProgress.completed)}{'○'.repeat(weeklyProgress.total - weeklyProgress.completed)} {weeklyProgress.percentage}% ({weeklyProgress.completed}/{weeklyProgress.total})
-            {isPaused && ' - Paused'}
+            Weekly Progress: {'●'.repeat(weeklyProgress.completed)}
+            {'○'.repeat(weeklyProgress.total - weeklyProgress.completed)}{' '}
+            {weeklyProgress.percentage}% ({weeklyProgress.completed}/
+            {weeklyProgress.total}){isPaused && ' - Paused'}
           </span>
-          
+
           {/* Action Buttons */}
           <div className="flex gap-2 flex-wrap justify-end">
             {isCompleted ? (
               <>
-                <button className="text-xs font-semibold text-blue-400 hover:underline" onClick={() => onViewDetails?.(habit._id!)}>
+                <button
+                  className="text-xs font-semibold text-blue-400 hover:underline"
+                  onClick={() => onViewDetails?.(habit._id!)}
+                >
                   View Details
                 </button>
-                <button className="text-xs font-semibold text-gray-400 hover:underline" onClick={() => onEdit?.(habit._id!)}>
+                <button
+                  className="text-xs font-semibold text-gray-400 hover:underline"
+                  onClick={() => onEdit?.(habit._id!)}
+                >
                   Edit Habit
                 </button>
                 <button className="text-xs font-semibold text-gray-400 hover:underline">
@@ -194,23 +224,30 @@ export function HabitCard({
             ) : isInProgress ? (
               <>
                 {habit.target.type !== 'boolean' && (
-                  <button 
+                  <button
                     className="text-xs bg-blue-600 hover:bg-blue-700 text-white font-semibold py-1 px-3 rounded-md"
                     onClick={handleAddProgress}
                   >
-                    {habit.target.type === 'amount' ? 'Add Glass' : 'Add Progress'}
+                    {habit.target.type === 'amount'
+                      ? 'Add Glass'
+                      : 'Add Progress'}
                   </button>
                 )}
-                <button 
+                <button
                   className="text-xs bg-yellow-600 hover:bg-yellow-700 text-white font-semibold py-1 px-3 rounded-md"
                   onClick={handleComplete}
                 >
-                  {habit.target.type === 'duration' ? 'Continue Timer' : 'Complete'}
+                  {habit.target.type === 'duration'
+                    ? 'Continue Timer'
+                    : 'Complete'}
                 </button>
                 <button className="text-xs font-semibold text-gray-400 hover:underline">
                   Pause
                 </button>
-                <button className="text-xs font-semibold text-gray-400 hover:underline" onClick={() => onViewDetails?.(habit._id!)}>
+                <button
+                  className="text-xs font-semibold text-gray-400 hover:underline"
+                  onClick={() => onViewDetails?.(habit._id!)}
+                >
                   View History
                 </button>
                 <button className="text-xs font-semibold text-gray-400 hover:underline">
@@ -228,7 +265,10 @@ export function HabitCard({
                 <button className="text-xs font-semibold text-gray-400 hover:underline">
                   Delete
                 </button>
-                <button className="text-xs font-semibold text-gray-400 hover:underline" onClick={() => onViewDetails?.(habit._id!)}>
+                <button
+                  className="text-xs font-semibold text-gray-400 hover:underline"
+                  onClick={() => onViewDetails?.(habit._id!)}
+                >
                   View History
                 </button>
                 <button className="text-xs font-semibold text-gray-400 hover:underline">
@@ -237,19 +277,24 @@ export function HabitCard({
               </>
             ) : (
               <>
-                <button 
+                <button
                   className="text-xs bg-green-600 hover:bg-green-700 text-white font-semibold py-1 px-3 rounded-md"
                   onClick={handleComplete}
                 >
-                  {habit.target.type === 'duration' ? `Start ${habit.title.includes('Walk') ? 'Walk' : 'Timer'}` : 'Start'}
+                  {habit.target.type === 'duration'
+                    ? `Start ${habit.title.includes('Walk') ? 'Walk' : 'Timer'}`
+                    : 'Start'}
                 </button>
-                <button 
+                <button
                   className="text-xs font-semibold text-gray-400 hover:underline"
                   onClick={() => onSkip?.(habit._id!)}
                 >
                   Skip Today
                 </button>
-                <button className="text-xs font-semibold text-gray-400 hover:underline" onClick={() => onEdit?.(habit._id!)}>
+                <button
+                  className="text-xs font-semibold text-gray-400 hover:underline"
+                  onClick={() => onEdit?.(habit._id!)}
+                >
                   Edit Schedule
                 </button>
                 <button className="text-xs font-semibold text-gray-400 hover:underline">

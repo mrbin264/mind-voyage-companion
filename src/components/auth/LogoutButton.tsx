@@ -6,26 +6,32 @@ import { Button } from '@/components/ui/button'
 import { LogOut, Loader2 } from 'lucide-react'
 
 interface LogoutButtonProps {
-  variant?: 'default' | 'destructive' | 'outline' | 'secondary' | 'ghost' | 'link'
+  variant?:
+    | 'default'
+    | 'destructive'
+    | 'outline'
+    | 'secondary'
+    | 'ghost'
+    | 'link'
   size?: 'default' | 'sm' | 'lg' | 'icon'
   className?: string
   showIcon?: boolean
   children?: React.ReactNode
 }
 
-export function LogoutButton({ 
-  variant = 'ghost', 
+export function LogoutButton({
+  variant = 'ghost',
   size = 'default',
   className = '',
   showIcon = true,
-  children = 'Logout'
+  children = 'Logout',
 }: LogoutButtonProps) {
   const [isLoading, setIsLoading] = useState(false)
   const router = useRouter()
 
   const handleLogout = async () => {
     setIsLoading(true)
-    
+
     try {
       const response = await fetch('/api/auth/logout', {
         method: 'POST',
@@ -37,7 +43,7 @@ export function LogoutButton({
       if (data.success) {
         // Clear any client-side auth state if needed
         // localStorage.removeItem('user') // if you store user data locally
-        
+
         // Redirect to login page
         router.replace('/login')
         router.refresh()
