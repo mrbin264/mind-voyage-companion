@@ -20,7 +20,9 @@ export function ThemeToggle() {
       {/* Sun icon for light mode */}
       <svg
         className={`w-5 h-5 transition-all duration-300 ${
-          theme === 'light' ? 'opacity-100 rotate-0 scale-100' : 'opacity-0 rotate-90 scale-75'
+          theme === 'light'
+            ? 'opacity-100 rotate-0 scale-100'
+            : 'opacity-0 rotate-90 scale-75'
         } absolute text-yellow-500`}
         fill="none"
         stroke="currentColor"
@@ -29,11 +31,13 @@ export function ThemeToggle() {
         <circle cx="12" cy="12" r="5" />
         <path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42" />
       </svg>
-      
+
       {/* Moon icon for dark mode */}
       <svg
         className={`w-5 h-5 transition-all duration-300 ${
-          theme === 'dark' ? 'opacity-100 rotate-0 scale-100' : 'opacity-0 -rotate-90 scale-75'
+          theme === 'dark'
+            ? 'opacity-100 rotate-0 scale-100'
+            : 'opacity-0 -rotate-90 scale-75'
         } absolute text-blue-400`}
         fill="none"
         stroke="currentColor"

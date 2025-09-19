@@ -30,6 +30,7 @@ export default function LoginForm() {
   const onSubmit = async (data: LoginFormValues) => {
     setLoading(true)
     setError(null)
+
     try {
       const res = await fetch('/api/auth/login', {
         method: 'POST',
@@ -42,7 +43,28 @@ export default function LoginForm() {
         setLoading(false)
         return
       }
-      router.replace('/dashboard')
+
+      // Check onboarding status
+      try {
+        const onboardingRes = await fetch('/api/onboarding/complete')
+        if (onboardingRes.ok) {
+          const onboardingData = await onboardingRes.json()
+          if (
+            onboardingData.success &&
+            onboardingData.data.onboardingCompleted
+          ) {
+            router.replace('/dashboard')
+          } else {
+            router.replace('/onboarding')
+          }
+        } else {
+          // If onboarding check fails, redirect to onboarding to be safe
+          router.replace('/onboarding')
+        }
+      } catch {
+        // If onboarding check fails, redirect to onboarding to be safe
+        router.replace('/onboarding')
+      }
     } catch (e) {
       setError('Network error')
       setLoading(false)
