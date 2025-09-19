@@ -1,8 +1,15 @@
 import Link from 'next/link'
+import { ThemeToggle } from '@/components/ui/ThemeToggle'
 
 export default function Home() {
   return (
-    <div className="relative min-h-screen bg-gray-900 text-white antialiased overflow-x-hidden">
+    <div 
+      className="relative min-h-screen antialiased overflow-x-hidden"
+      style={{
+        backgroundColor: 'var(--mv-color-bg)',
+        color: 'var(--mv-color-text)',
+      }}
+    >
       {/* Decorative Glow */}
       <div
         className="glow-effect -top-40 -left-60"
@@ -34,23 +41,35 @@ export default function Home() {
         <header className="flex justify-between items-center py-6">
           <div className="flex items-center gap-3">
             <span className="text-3xl">🧠</span>
-            <h1 className="text-xl font-bold text-gray-200">
+            <h1 
+              className="text-xl font-bold"
+              style={{ color: 'var(--mv-color-text)' }}
+            >
               Mind Voyage Companion
             </h1>
           </div>
-          <div className="hidden md:flex items-center gap-4">
-            <Link
-              href="/login"
-              className="text-gray-300 hover:text-white transition-colors px-4 py-2"
-            >
-              Sign In
-            </Link>
-            <Link
-              href="/register"
-              className="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-4 py-2 rounded-lg transition-colors"
-            >
-              Start Free Trial
-            </Link>
+          <div className="flex items-center gap-4">
+            {/* Mobile Theme Toggle */}
+            <div className="md:hidden">
+              <ThemeToggle />
+            </div>
+            {/* Desktop Navigation */}
+            <div className="hidden md:flex items-center gap-4">
+              <Link
+                href="/login"
+                className="transition-colors px-4 py-2 hover:opacity-80"
+                style={{ color: 'var(--mv-color-text-subtle)' }}
+              >
+                Sign In
+              </Link>
+              <Link
+                href="/register"
+                className="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-4 py-2 rounded-lg transition-colors"
+              >
+                Get Started
+              </Link>
+              <ThemeToggle />
+            </div>
           </div>
         </header>
 
@@ -58,11 +77,17 @@ export default function Home() {
         <main className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center py-16 md:py-24">
           {/* Left Column: Marketing Copy */}
           <div className="flex flex-col gap-8">
-            <h2 className="text-5xl md:text-6xl font-extrabold leading-tight text-gray-100">
+            <h2 
+              className="text-5xl md:text-6xl font-extrabold leading-tight"
+              style={{ color: 'var(--mv-color-text)' }}
+            >
               Build Better Habits Through{' '}
               <span className="gradient-text">Mindful Reflection</span>
             </h2>
-            <p className="text-lg text-gray-400">
+            <p 
+              className="text-lg"
+              style={{ color: 'var(--mv-color-text-subtle)' }}
+            >
               A privacy-first platform combining habit tracking with
               philosophical reflection for meaningful personal growth.
             </p>
