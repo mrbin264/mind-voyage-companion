@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Set Up Profile - Mind Voyage Companion</title>
+    
+    <!-- Tailwind CSS for styling -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Google Fonts: Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <style>
+        /* Use the Inter font family */
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #0A0A0A; /* A slightly darker background */
+        }
+        .feature-card {
+            background-color: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+        }
+        .glow-effect {
+            position: absolute;
+            width: 500px;
+            height: 500px;
+            background: radial-gradient(circle, rgba(129, 140, 248, 0.15) 0%, rgba(129, 140, 248, 0) 60%);
+            z-index: -1;
+            pointer-events: none;
+        }
+        /* Custom styles for form elements */
+        .form-input {
+            @apply w-full bg-gray-800/50 border border-gray-600 text-gray-200 rounded-xl px-4 py-3 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:bg-gray-800 transition-all duration-200 appearance-none;
+        }
+    </style>
+</head>
+<body class="bg-gray-900 text-white antialiased">
+
+    <div class="relative min-h-screen flex flex-col">
+        <!-- Decorative Glow -->
+        <div class="glow-effect -top-40 -left-60"></div>
+        <div class="glow-effect bottom-0 -right-40"></div>
+        
+        <div class="container mx-auto px-4 sm:px-6 lg:px-8 max-w-7xl relative z-10 flex flex-col flex-grow">
+        
+            <!-- Header Section -->
+            <header class="flex justify-between items-center py-6">
+                <div class="flex items-center gap-3">
+                    <span class="text-3xl">🧠</span>
+                    <h1 class="text-xl font-bold text-gray-200">Mind Voyage Companion</h1>
+                </div>
+                <div class="flex items-center gap-4 text-sm font-semibold">
+                    <button class="text-gray-400 hover:text-white transition-colors px-4 py-2">← Back</button>
+                    <button class="text-gray-400 hover:text-white transition-colors px-4 py-2">Skip Step</button>
+                </div>
+            </header>
+
+            <!-- Main Content Grid -->
+            <main class="flex-grow grid grid-cols-1 lg:grid-cols-5 gap-16 items-center py-12 md:py-16">
+
+                <!-- Left Column: Profile Form -->
+                <div class="lg:col-span-3">
+                    <div class="max-w-xl mx-auto">
+                        <h2 class="text-4xl font-bold text-gray-100">Set Up Your Profile ⚙️</h2>
+                        <p class="text-gray-400 mt-3 mb-8">Help us personalize your experience with these quick preferences.</p>
+
+                        <form class="space-y-6">
+                            <div>
+                                <label for="display-name" class="block text-sm font-medium text-gray-400 mb-2">Display Name</label>
+                                <input type="text" id="display-name" value="Maya" class="form-input">
+                            </div>
+                            
+                            <div>
+                                <label for="timezone" class="block text-sm font-medium text-gray-400 mb-2">📍 Your Location</label>
+                                <select id="timezone" class="form-input">
+                                    <option>🌍 America/New_York (UTC-5)</option>
+                                    <option>🌍 Europe/London (UTC+0)</option>
+                                    <option>🌍 Asia/Tokyo (UTC+9)</option>
+                                    <option selected>🌍 Asia/Ho_Chi_Minh (UTC+7)</option>
+                                </select>
+                            </div>
+                            
+                            <div>
+                               <label class="block text-sm font-medium text-gray-400 mb-2">🗣️ Preferred Language</label>
+                               <div class="space-y-2">
+                                   <button type="button" class="w-full text-left form-input !py-0 !px-0 overflow-hidden border-2 border-blue-500">
+                                       <div class="bg-blue-500/10 px-4 py-3">🇺🇸 English</div>
+                                   </button>
+                                   <button type="button" class="w-full text-left form-input !py-0 !px-0 overflow-hidden">
+                                       <div class="hover:bg-gray-700/50 px-4 py-3 transition-colors">🇻🇳 Tiếng Việt</div>
+                                   </button>
+                               </div>
+                            </div>
+                            
+                            <div>
+                                <label class="block text-sm font-medium text-gray-400 mb-2">🌅 Daily Rhythm (Optional)</label>
+                                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                    <div>
+                                        <label for="wake-up" class="sr-only">I wake up at:</label>
+                                        <select id="wake-up" class="form-input">
+                                            <option>I wake up at: 6:00 AM</option>
+                                            <option selected>I wake up at: 7:00 AM</option>
+                                            <option>I wake up at: 8:00 AM</option>
+                                        </select>
+                                    </div>
+                                    <div>
+                                        <label for="sleep-at" class="sr-only">I sleep at:</label>
+                                        <select id="sleep-at" class="form-input">
+                                            <option>I sleep at: 10:00 PM</option>
+                                            <option selected>I sleep at: 11:00 PM</option>
+                                            <option>I sleep at: 12:00 AM</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-4 rounded-lg transition-all duration-300 transform hover:scale-105 !mt-10">
+                                Continue
+                            </button>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- Right Column: Personalization Tips -->
+                <div class="lg:col-span-2 flex flex-col gap-6 h-full justify-center">
+                    <div class="feature-card p-6 rounded-xl">
+                        <h3 class="text-xl font-bold text-gray-200 mb-4">Personalization Tips</h3>
+                        <dl class="space-y-4 text-gray-300">
+                             <div>
+                                <dt class="font-semibold text-gray-200">👤 Display Name</dt>
+                                <dd class="text-sm text-gray-400">This is how you'll appear in your journal entries.</dd>
+                             </div>
+                             <div>
+                                <dt class="font-semibold text-gray-200">🌍 Timezone</dt>
+                                <dd class="text-sm text-gray-400">Ensures accurate daily tracking and reminders.</dd>
+                             </div>
+                             <div>
+                                <dt class="font-semibold text-gray-200">🗣️ Language</dt>
+                                <dd class="text-sm text-gray-400">Choose your preferred language for the interface.</dd>
+                             </div>
+                             <div>
+                                <dt class="font-semibold text-gray-200">📅 Daily Rhythm</dt>
+                                <dd class="text-sm text-gray-400">Helps us suggest optimal reminder times for your habits.</dd>
+                             </div>
+                        </dl>
+                    </div>
+                    <div class="bg-gray-800/50 p-6 rounded-xl text-center">
+                         <p class="font-semibold text-gray-200">💡 You can change these anytime in your settings.</p>
+                    </div>
+                </div>
+            </main>
+        
+            <!-- Footer -->
+            <footer class="text-center py-6">
+                <div class="flex items-center justify-center gap-4">
+                    <div class="flex items-center gap-2">
+                        <span class="w-3 h-3 bg-gray-700 rounded-full"></span>
+                        <span class="w-3 h-3 bg-blue-500 rounded-full"></span>
+                        <span class="w-3 h-3 bg-gray-700 rounded-full"></span>
+                        <span class="w-3 h-3 bg-gray-700 rounded-full"></span>
+                    </div>
+                    <p class="text-sm text-gray-500">Progress: Step 2 of 4</p>
+                </div>
+            </footer>
+        </div>
+    </div>
+</body>
+</html>

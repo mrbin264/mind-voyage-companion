@@ -59,7 +59,8 @@ export default function RegisterForm() {
         setLoading(false)
         return
       }
-      router.replace('/dashboard')
+      // New users always go to onboarding
+      router.replace('/onboarding')
     } catch (e) {
       setError('Network error')
       setLoading(false)
