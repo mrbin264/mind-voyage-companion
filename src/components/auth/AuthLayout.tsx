@@ -55,7 +55,8 @@ const authContent: Record<string, AuthContent> = {
       ],
       highlight: {
         title: '💬 Community Highlight',
-        quote: "I've maintained my morning pages habit for 100 days thanks to Mind Voyage!",
+        quote:
+          "I've maintained my morning pages habit for 100 days thanks to Mind Voyage!",
         author: 'Maya, long-time user',
       },
       footer: {
@@ -63,7 +64,8 @@ const authContent: Record<string, AuthContent> = {
         buttons: ['📱 App Store', '🤖 Play Store'],
       },
     },
-    footerText: '🔒 Secure login with 256-bit encryption • Privacy-first approach',
+    footerText:
+      '🔒 Secure login with 256-bit encryption • Privacy-first approach',
   },
   register: {
     nav: {
@@ -81,15 +83,18 @@ const authContent: Record<string, AuthContent> = {
       ],
       highlight: {
         title: 'Testimonial',
-        quote: 'Mind Voyage transformed my daily routine. The combination of habit tracking and reflection is powerful.',
+        quote:
+          'Mind Voyage transformed my daily routine. The combination of habit tracking and reflection is powerful.',
         author: 'Sarah K., Product Manager',
       },
       footer: {
-        title: '📈 Join 10,000+ mindful habit builders already using Mind Voyage',
+        title:
+          '📈 Join 10,000+ mindful habit builders already using Mind Voyage',
         buttons: [],
       },
     },
-    footerText: '🔒 Your data is encrypted and secure • No spam, ever • Cancel anytime',
+    footerText:
+      '🔒 Your data is encrypted and secure • No spam, ever • Cancel anytime',
   },
   reset: {
     nav: {
@@ -100,7 +105,7 @@ const authContent: Record<string, AuthContent> = {
       title: 'Security Information',
       updates: [
         '✓ Password reset links expire in 1 hour for your safety.',
-        '✓ We\'ll never store your password in plain text.',
+        "✓ We'll never store your password in plain text.",
         '✓ All communications are encrypted end-to-end.',
       ],
       highlight: {
@@ -119,7 +124,8 @@ const authContent: Record<string, AuthContent> = {
         buttons: ['Get Help'],
       },
     },
-    footerText: '🔒 We take your privacy seriously • No spam, ever • Secure infrastructure',
+    footerText:
+      '🔒 We take your privacy seriously • No spam, ever • Secure infrastructure',
   },
   'reset-confirm': {
     nav: {
@@ -135,7 +141,7 @@ const authContent: Record<string, AuthContent> = {
         '4️⃣ Sign in with your new password.',
       ],
       highlight: {
-        title: '⏰ Didn\'t receive the email?',
+        title: "⏰ Didn't receive the email?",
         quote: '',
         author: '',
         tips: [
@@ -150,7 +156,8 @@ const authContent: Record<string, AuthContent> = {
         buttons: ['Live Chat', 'Email Support'],
       },
     },
-    footerText: '🔒 Secure password reset process • Email link expires in 1 hour',
+    footerText:
+      '🔒 Secure password reset process • Email link expires in 1 hour',
   },
 }
 
@@ -162,7 +169,9 @@ function DefaultSidebar({ type }: { type: keyof typeof authContent }) {
   return (
     <div className="lg:col-span-2 flex flex-col gap-8">
       <div>
-        <h3 className="text-xl font-bold text-gray-200 mb-4">{content.title}</h3>
+        <h3 className="text-xl font-bold text-gray-200 mb-4">
+          {content.title}
+        </h3>
         <ul className="space-y-3 text-gray-300">
           {content.updates.map((update: string, index: number) => (
             <li key={index} className="flex items-start gap-3">
@@ -174,10 +183,14 @@ function DefaultSidebar({ type }: { type: keyof typeof authContent }) {
 
       {content.highlight && (
         <div className="feature-card p-6 rounded-xl">
-          <h4 className="font-semibold text-gray-200 mb-3">{content.highlight.title}</h4>
+          <h4 className="font-semibold text-gray-200 mb-3">
+            {content.highlight.title}
+          </h4>
           {content.highlight.quote && (
             <>
-              <blockquote className="text-gray-300 italic">&ldquo;{content.highlight.quote}&rdquo;</blockquote>
+              <blockquote className="text-gray-300 italic">
+                &ldquo;{content.highlight.quote}&rdquo;
+              </blockquote>
               <cite className="text-right block mt-3 text-sm font-semibold text-gray-200 not-italic">
                 &mdash; {content.highlight.author}
               </cite>
@@ -194,11 +207,13 @@ function DefaultSidebar({ type }: { type: keyof typeof authContent }) {
       )}
 
       <div className="bg-gray-800/50 p-6 rounded-xl text-center">
-        <p className="font-semibold text-gray-300 mb-4">{content.footer.title}</p>
+        <p className="font-semibold text-gray-300 mb-4">
+          {content.footer.title}
+        </p>
         {content.footer.buttons.length > 0 && (
           <div className="flex justify-center gap-4 flex-wrap">
             {content.footer.buttons.map((button: string, index: number) => (
-              <button 
+              <button
                 key={index}
                 className="bg-gray-700 hover:bg-gray-600 text-white font-semibold py-2 px-4 rounded-lg text-sm transition-colors"
               >
@@ -222,24 +237,26 @@ export function AuthLayout({
   return (
     <div className="relative min-h-screen flex flex-col bg-gray-900 text-white antialiased">
       {/* Decorative Glow Effects */}
-      <div 
-        className="glow-effect -top-40 -left-60" 
+      <div
+        className="glow-effect -top-40 -left-60"
         style={{
           position: 'absolute',
           width: '500px',
           height: '500px',
-          background: 'radial-gradient(circle, rgba(129, 140, 248, 0.15) 0%, rgba(129, 140, 248, 0) 60%)',
+          background:
+            'radial-gradient(circle, rgba(129, 140, 248, 0.15) 0%, rgba(129, 140, 248, 0) 60%)',
           zIndex: -1,
           pointerEvents: 'none',
         }}
       />
-      <div 
-        className="glow-effect bottom-0 -right-40" 
+      <div
+        className="glow-effect bottom-0 -right-40"
         style={{
           position: 'absolute',
           width: '500px',
           height: '500px',
-          background: 'radial-gradient(circle, rgba(129, 140, 248, 0.15) 0%, rgba(129, 140, 248, 0) 60%)',
+          background:
+            'radial-gradient(circle, rgba(129, 140, 248, 0.15) 0%, rgba(129, 140, 248, 0) 60%)',
           zIndex: -1,
           pointerEvents: 'none',
         }}
@@ -250,16 +267,18 @@ export function AuthLayout({
         <header className="flex justify-between items-center py-6">
           <Link href="/" className="flex items-center gap-3">
             <span className="text-3xl">🧠</span>
-            <h1 className="text-xl font-bold text-gray-200">Mind Voyage Companion</h1>
+            <h1 className="text-xl font-bold text-gray-200">
+              Mind Voyage Companion
+            </h1>
           </Link>
           <div className="flex items-center gap-4">
-            <Link 
+            <Link
               href={(content?.nav.primary.href || '/') as Route}
               className="text-gray-300 hover:text-white transition-colors px-4 py-2"
             >
               {content?.nav.primary.text}
             </Link>
-            <Link 
+            <Link
               href={(content?.nav.secondary.href || '/help') as Route}
               className="text-gray-300 hover:text-white transition-colors px-4 py-2"
             >
@@ -271,9 +290,7 @@ export function AuthLayout({
         {/* Main Content Grid */}
         <main className="flex-grow grid grid-cols-1 lg:grid-cols-5 gap-16 items-center py-12 md:py-16">
           {/* Form Column (3/5) */}
-          <div className="lg:col-span-3">
-            {children}
-          </div>
+          <div className="lg:col-span-3">{children}</div>
 
           {/* Sidebar Column (2/5) */}
           {sidebarContent ? sidebarContent : <DefaultSidebar type={type} />}

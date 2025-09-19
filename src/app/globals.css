@@ -150,7 +150,7 @@
 
   body {
     font-family: 'Inter', sans-serif;
-    background-color: #0A0A0A; /* A slightly darker background - matching HTML */
+    background-color: #0a0a0a; /* A slightly darker background - matching HTML */
     color: #ffffff;
   }
 }
@@ -262,7 +262,11 @@
     position: absolute;
     width: 500px;
     height: 500px;
-    background: radial-gradient(circle, rgba(129, 140, 248, 0.15) 0%, rgba(129, 140, 248, 0) 60%);
+    background: radial-gradient(
+      circle,
+      rgba(129, 140, 248, 0.15) 0%,
+      rgba(129, 140, 248, 0) 60%
+    );
     z-index: -1;
     pointer-events: none;
   }

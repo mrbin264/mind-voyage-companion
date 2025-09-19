@@ -6,15 +6,17 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { useSearchParams } from 'next/navigation'
 import Link from 'next/link'
 
-const resetConfirmSchema = z.object({
-  password: z
-    .string()
-    .min(8, { message: 'Password must be at least 8 characters' }),
-  confirmPassword: z.string(),
-}).refine(data => data.password === data.confirmPassword, {
-  message: "Passwords don't match",
-  path: ["confirmPassword"],
-})
+const resetConfirmSchema = z
+  .object({
+    password: z
+      .string()
+      .min(8, { message: 'Password must be at least 8 characters' }),
+    confirmPassword: z.string(),
+  })
+  .refine(data => data.password === data.confirmPassword, {
+    message: "Passwords don't match",
+    path: ['confirmPassword'],
+  })
 
 type ResetConfirmValues = z.infer<typeof resetConfirmSchema>
 
@@ -60,16 +62,24 @@ export default function PasswordResetConfirmForm() {
       <div className="bg-gray-900/50 feature-card p-8 sm:p-12 rounded-2xl">
         <div className="max-w-md mx-auto text-center">
           <h2 className="text-4xl font-bold text-gray-100">🔗 Invalid Link</h2>
-          <p className="text-gray-400 mt-4">This password reset link is invalid or has expired.</p>
-          
+          <p className="text-gray-400 mt-4">
+            This password reset link is invalid or has expired.
+          </p>
+
           <div className="mt-8 text-sm text-gray-400 space-y-2">
             <p>
-              <Link href="/reset-request" className="font-medium text-blue-400 hover:underline">
+              <Link
+                href="/reset-request"
+                className="font-medium text-blue-400 hover:underline"
+              >
                 Request a new reset link
               </Link>
             </p>
             <p>
-              <Link href="/login" className="font-medium text-blue-400 hover:underline">
+              <Link
+                href="/login"
+                className="font-medium text-blue-400 hover:underline"
+              >
                 Back to Sign In
               </Link>
             </p>
@@ -83,10 +93,14 @@ export default function PasswordResetConfirmForm() {
     return (
       <div className="bg-gray-900/50 feature-card p-8 sm:p-12 rounded-2xl">
         <div className="max-w-md mx-auto text-center">
-          <h2 className="text-4xl font-bold text-gray-100">✅ Password Reset</h2>
-          <p className="text-gray-400 mt-4">Your password has been successfully reset.</p>
-          
-          <Link 
+          <h2 className="text-4xl font-bold text-gray-100">
+            ✅ Password Reset
+          </h2>
+          <p className="text-gray-400 mt-4">
+            Your password has been successfully reset.
+          </p>
+
+          <Link
             href="/login"
             className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-4 rounded-lg transition-all duration-300 transform hover:scale-105 mt-8 block text-center"
           >
@@ -101,34 +115,44 @@ export default function PasswordResetConfirmForm() {
     <div className="bg-gray-900/50 feature-card p-8 sm:p-12 rounded-2xl">
       <div className="max-w-md mx-auto">
         <h2 className="text-4xl font-bold text-gray-100">🔒 New Password</h2>
-        <p className="text-gray-400 mt-3 mb-8">Enter your new password below.</p>
+        <p className="text-gray-400 mt-3 mb-8">
+          Enter your new password below.
+        </p>
 
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
           <div>
-            <label htmlFor="password" className="sr-only">New Password</label>
-            <input 
-              type="password" 
-              id="password" 
-              placeholder="New Password (8+ characters)" 
+            <label htmlFor="password" className="sr-only">
+              New Password
+            </label>
+            <input
+              type="password"
+              id="password"
+              placeholder="New Password (8+ characters)"
               className="form-input"
               {...register('password')}
             />
             {errors.password && (
-              <p className="text-red-400 text-sm mt-2">{errors.password.message}</p>
+              <p className="text-red-400 text-sm mt-2">
+                {errors.password.message}
+              </p>
             )}
           </div>
 
           <div>
-            <label htmlFor="confirmPassword" className="sr-only">Confirm New Password</label>
-            <input 
-              type="password" 
-              id="confirmPassword" 
-              placeholder="Confirm New Password" 
+            <label htmlFor="confirmPassword" className="sr-only">
+              Confirm New Password
+            </label>
+            <input
+              type="password"
+              id="confirmPassword"
+              placeholder="Confirm New Password"
               className="form-input"
               {...register('confirmPassword')}
             />
             {errors.confirmPassword && (
-              <p className="text-red-400 text-sm mt-2">{errors.confirmPassword.message}</p>
+              <p className="text-red-400 text-sm mt-2">
+                {errors.confirmPassword.message}
+              </p>
             )}
           </div>
 
@@ -137,19 +161,22 @@ export default function PasswordResetConfirmForm() {
               <p className="text-sm text-red-400">{error}</p>
             </div>
           )}
-          
-          <button 
-            type="submit" 
+
+          <button
+            type="submit"
             disabled={loading}
             className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-4 rounded-lg transition-all duration-300 transform hover:scale-105 !mt-8 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
           >
             {loading ? 'Resetting...' : 'Reset Password'}
           </button>
         </form>
-        
+
         <p className="text-center text-sm text-gray-400 mt-8">
           Remember your password?{' '}
-          <Link href="/login" className="font-medium text-blue-400 hover:underline">
+          <Link
+            href="/login"
+            className="font-medium text-blue-400 hover:underline"
+          >
             Back to Sign In
           </Link>
           .

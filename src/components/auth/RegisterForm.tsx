@@ -6,20 +6,24 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 
-const registerSchema = z.object({
-  name: z.string().min(1, { message: 'Display name is required' }),
-  email: z.string().email({ message: 'Invalid email address' }),
-  password: z
-    .string()
-    .min(8, { message: 'Password must be at least 8 characters' }),
-  confirmPassword: z.string(),
-  timezone: z.string().min(1, { message: 'Timezone is required' }),
-  termsAccepted: z.boolean().refine(val => val, { message: 'You must accept the terms of service' }),
-  updatesOptIn: z.boolean().optional(),
-}).refine(data => data.password === data.confirmPassword, {
-  message: "Passwords don't match",
-  path: ["confirmPassword"],
-})
+const registerSchema = z
+  .object({
+    name: z.string().min(1, { message: 'Display name is required' }),
+    email: z.string().email({ message: 'Invalid email address' }),
+    password: z
+      .string()
+      .min(8, { message: 'Password must be at least 8 characters' }),
+    confirmPassword: z.string(),
+    timezone: z.string().min(1, { message: 'Timezone is required' }),
+    termsAccepted: z
+      .boolean()
+      .refine(val => val, { message: 'You must accept the terms of service' }),
+    updatesOptIn: z.boolean().optional(),
+  })
+  .refine(data => data.password === data.confirmPassword, {
+    message: "Passwords don't match",
+    path: ['confirmPassword'],
+  })
 
 type RegisterFormValues = z.infer<typeof registerSchema>
 
@@ -65,22 +69,37 @@ export default function RegisterForm() {
   return (
     <div className="bg-gray-900/50 feature-card p-8 rounded-2xl">
       <div className="max-w-lg mx-auto">
-        <h2 className="text-3xl font-bold text-gray-100">Create Your Account</h2>
-        <p className="text-gray-400 mt-2 mb-8">Start your journey to better habits and mindful reflection.</p>
+        <h2 className="text-3xl font-bold text-gray-100">
+          Create Your Account
+        </h2>
+        <p className="text-gray-400 mt-2 mb-8">
+          Start your journey to better habits and mindful reflection.
+        </p>
 
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
           <div>
-            <label htmlFor="name" className="sr-only">Display Name</label>
+            <label htmlFor="name" className="sr-only">
+              Display Name
+            </label>
             <div className="relative">
               <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                <svg className="w-5 h-5 text-gray-500" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
-                  <path fillRule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clipRule="evenodd" />
+                <svg
+                  className="w-5 h-5 text-gray-500"
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 20 20"
+                  fill="currentColor"
+                >
+                  <path
+                    fillRule="evenodd"
+                    d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z"
+                    clipRule="evenodd"
+                  />
                 </svg>
               </div>
-              <input 
-                type="text" 
-                id="name" 
-                placeholder="Display Name" 
+              <input
+                type="text"
+                id="name"
+                placeholder="Display Name"
                 className="form-input pl-10"
                 {...register('name')}
               />
@@ -91,119 +110,187 @@ export default function RegisterForm() {
           </div>
 
           <div>
-            <label htmlFor="email" className="sr-only">Email Address</label>
+            <label htmlFor="email" className="sr-only">
+              Email Address
+            </label>
             <div className="relative">
               <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                <svg className="w-5 h-5 text-gray-500" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                <svg
+                  className="w-5 h-5 text-gray-500"
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 20 20"
+                  fill="currentColor"
+                >
                   <path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z" />
                   <path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z" />
                 </svg>
               </div>
-              <input 
-                type="email" 
-                id="email" 
-                placeholder="Email Address" 
+              <input
+                type="email"
+                id="email"
+                placeholder="Email Address"
                 className="form-input pl-10"
                 {...register('email')}
               />
             </div>
             {errors.email && (
-              <p className="text-red-400 text-sm mt-2">{errors.email.message}</p>
+              <p className="text-red-400 text-sm mt-2">
+                {errors.email.message}
+              </p>
             )}
           </div>
 
           <div>
-            <label htmlFor="password" className="sr-only">Password</label>
+            <label htmlFor="password" className="sr-only">
+              Password
+            </label>
             <div className="relative">
               <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                <svg className="w-5 h-5 text-gray-500" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
-                  <path fillRule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clipRule="evenodd" />
+                <svg
+                  className="w-5 h-5 text-gray-500"
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 20 20"
+                  fill="currentColor"
+                >
+                  <path
+                    fillRule="evenodd"
+                    d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z"
+                    clipRule="evenodd"
+                  />
                 </svg>
               </div>
-              <input 
-                type="password" 
-                id="password" 
-                placeholder="Password (8+ characters)" 
+              <input
+                type="password"
+                id="password"
+                placeholder="Password (8+ characters)"
                 className="form-input pl-10"
                 {...register('password')}
               />
             </div>
             {errors.password && (
-              <p className="text-red-400 text-sm mt-2">{errors.password.message}</p>
+              <p className="text-red-400 text-sm mt-2">
+                {errors.password.message}
+              </p>
             )}
           </div>
 
           <div>
-            <label htmlFor="confirm-password" className="sr-only">Confirm Password</label>
+            <label htmlFor="confirm-password" className="sr-only">
+              Confirm Password
+            </label>
             <div className="relative">
               <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                <svg className="w-5 h-5 text-gray-500" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
-                  <path fillRule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clipRule="evenodd" />
+                <svg
+                  className="w-5 h-5 text-gray-500"
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 20 20"
+                  fill="currentColor"
+                >
+                  <path
+                    fillRule="evenodd"
+                    d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z"
+                    clipRule="evenodd"
+                  />
                 </svg>
               </div>
-              <input 
-                type="password" 
-                id="confirm-password" 
-                placeholder="Confirm Password" 
+              <input
+                type="password"
+                id="confirm-password"
+                placeholder="Confirm Password"
                 className="form-input pl-10"
                 {...register('confirmPassword')}
               />
             </div>
             {errors.confirmPassword && (
-              <p className="text-red-400 text-sm mt-2">{errors.confirmPassword.message}</p>
+              <p className="text-red-400 text-sm mt-2">
+                {errors.confirmPassword.message}
+              </p>
             )}
           </div>
 
           <div>
-            <label htmlFor="timezone" className="sr-only">Timezone</label>
+            <label htmlFor="timezone" className="sr-only">
+              Timezone
+            </label>
             <div className="relative">
               <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                <svg className="w-5 h-5 text-gray-500" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
-                  <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM4.332 8.027a6.012 6.012 0 011.912-2.706C6.512 5.73 6.974 6 7.5 6A1.5 1.5 0 019 7.5V8a2 2 0 004 0 2 2 0 011.523-1.943A5.977 5.977 0 0116 10c0 .34-.028.675-.083 1H15a2 2 0 00-2 2v1.5a1.5 1.5 0 01-3 0V12a2 2 0 00-2-2 2 2 0 01-2-2V8.707a5.969 5.969 0 01-1.668-.68z" clipRule="evenodd" />
+                <svg
+                  className="w-5 h-5 text-gray-500"
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 20 20"
+                  fill="currentColor"
+                >
+                  <path
+                    fillRule="evenodd"
+                    d="M10 18a8 8 0 100-16 8 8 0 000 16zM4.332 8.027a6.012 6.012 0 011.912-2.706C6.512 5.73 6.974 6 7.5 6A1.5 1.5 0 019 7.5V8a2 2 0 004 0 2 2 0 011.523-1.943A5.977 5.977 0 0116 10c0 .34-.028.675-.083 1H15a2 2 0 00-2 2v1.5a1.5 1.5 0 01-3 0V12a2 2 0 00-2-2 2 2 0 01-2-2V8.707a5.969 5.969 0 01-1.668-.68z"
+                    clipRule="evenodd"
+                  />
                 </svg>
               </div>
-              <select id="timezone" className="form-input appearance-none pl-10" {...register('timezone')}>
-                <option value="America/New_York">Timezone: America/New_York</option>
+              <select
+                id="timezone"
+                className="form-input appearance-none pl-10"
+                {...register('timezone')}
+              >
+                <option value="America/New_York">
+                  Timezone: America/New_York
+                </option>
                 <option value="Europe/London">Timezone: Europe/London</option>
                 <option value="Asia/Tokyo">Timezone: Asia/Tokyo</option>
-                <option value="America/Los_Angeles">Timezone: America/Los_Angeles</option>
-                <option value="America/Chicago">Timezone: America/Chicago</option>
-                <option value="Australia/Sydney">Timezone: Australia/Sydney</option>
+                <option value="America/Los_Angeles">
+                  Timezone: America/Los_Angeles
+                </option>
+                <option value="America/Chicago">
+                  Timezone: America/Chicago
+                </option>
+                <option value="Australia/Sydney">
+                  Timezone: Australia/Sydney
+                </option>
               </select>
             </div>
             {errors.timezone && (
-              <p className="text-red-400 text-sm mt-2">{errors.timezone.message}</p>
+              <p className="text-red-400 text-sm mt-2">
+                {errors.timezone.message}
+              </p>
             )}
           </div>
 
           <div className="space-y-4 pt-2">
             <div className="flex items-start">
-              <input 
-                id="terms" 
-                type="checkbox" 
+              <input
+                id="terms"
+                type="checkbox"
                 className="form-checkbox mt-1"
                 {...register('termsAccepted')}
               />
               <label htmlFor="terms" className="ml-3 text-sm text-gray-400">
                 I agree to the{' '}
-                <Link href="/terms" className="font-medium text-blue-400 hover:underline">
+                <Link
+                  href="/terms"
+                  className="font-medium text-blue-400 hover:underline"
+                >
                   Terms of Service
-                </Link>
-                {' '}and{' '}
-                <Link href="/privacy" className="font-medium text-blue-400 hover:underline">
+                </Link>{' '}
+                and{' '}
+                <Link
+                  href="/privacy"
+                  className="font-medium text-blue-400 hover:underline"
+                >
                   Privacy Policy
                 </Link>
                 .
               </label>
             </div>
             {errors.termsAccepted && (
-              <p className="text-red-400 text-sm">{errors.termsAccepted.message}</p>
+              <p className="text-red-400 text-sm">
+                {errors.termsAccepted.message}
+              </p>
             )}
 
             <div className="flex items-center">
-              <input 
-                id="updates" 
-                type="checkbox" 
+              <input
+                id="updates"
+                type="checkbox"
                 className="form-checkbox"
                 {...register('updatesOptIn')}
               />
@@ -219,8 +306,8 @@ export default function RegisterForm() {
             </div>
           )}
 
-          <button 
-            type="submit" 
+          <button
+            type="submit"
             disabled={loading}
             className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-4 rounded-lg transition-all duration-300 transform hover:scale-105 !mt-8 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
           >
@@ -230,7 +317,10 @@ export default function RegisterForm() {
 
         <p className="text-center text-sm text-gray-400 mt-8">
           Already have an account?{' '}
-          <Link href="/login" className="font-medium text-blue-400 hover:underline">
+          <Link
+            href="/login"
+            className="font-medium text-blue-400 hover:underline"
+          >
             Sign in here
           </Link>
           .
@@ -239,4 +329,3 @@ export default function RegisterForm() {
     </div>
   )
 }
-

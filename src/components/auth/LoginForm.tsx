@@ -53,43 +53,58 @@ export default function LoginForm() {
     <div className="bg-gray-900/50 feature-card p-8 sm:p-12 rounded-2xl">
       <div className="max-w-md mx-auto">
         <h2 className="text-4xl font-bold text-gray-100">Welcome Back! 👋</h2>
-        <p className="text-gray-400 mt-2 mb-8">Sign in to continue your personal growth journey.</p>
+        <p className="text-gray-400 mt-2 mb-8">
+          Sign in to continue your personal growth journey.
+        </p>
 
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
           <div>
-            <label htmlFor="email" className="sr-only">Email Address</label>
-            <input 
-              type="email" 
-              id="email" 
-              placeholder="Email Address" 
+            <label htmlFor="email" className="sr-only">
+              Email Address
+            </label>
+            <input
+              type="email"
+              id="email"
+              placeholder="Email Address"
               className="form-input"
               {...register('email')}
             />
             {errors.email && (
-              <p className="text-red-400 text-sm mt-2">{errors.email.message}</p>
+              <p className="text-red-400 text-sm mt-2">
+                {errors.email.message}
+              </p>
             )}
           </div>
-          
+
           <div>
-            <label htmlFor="password" className="sr-only">Password</label>
-            <input 
-              type="password" 
-              id="password" 
-              placeholder="Password" 
+            <label htmlFor="password" className="sr-only">
+              Password
+            </label>
+            <input
+              type="password"
+              id="password"
+              placeholder="Password"
               className="form-input"
               {...register('password')}
             />
             {errors.password && (
-              <p className="text-red-400 text-sm mt-2">{errors.password.message}</p>
+              <p className="text-red-400 text-sm mt-2">
+                {errors.password.message}
+              </p>
             )}
           </div>
 
           <div className="flex items-center justify-between !mt-4">
             <div className="flex items-center">
               <input id="remember" type="checkbox" className="form-checkbox" />
-              <label htmlFor="remember" className="ml-2 text-sm text-gray-400">Keep me signed in</label>
+              <label htmlFor="remember" className="ml-2 text-sm text-gray-400">
+                Keep me signed in
+              </label>
             </div>
-            <Link href="/reset-request" className="text-sm font-medium text-blue-400 hover:underline">
+            <Link
+              href="/reset-request"
+              className="text-sm font-medium text-blue-400 hover:underline"
+            >
               Forgot password?
             </Link>
           </div>
@@ -99,9 +114,9 @@ export default function LoginForm() {
               <p className="text-sm text-red-400">{error}</p>
             </div>
           )}
-          
-          <button 
-            type="submit" 
+
+          <button
+            type="submit"
             disabled={loading}
             className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-4 rounded-lg transition-all duration-300 transform hover:scale-105 !mt-8 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
           >
@@ -113,16 +128,16 @@ export default function LoginForm() {
             <span className="flex-shrink mx-4 text-gray-500">or</span>
             <div className="flex-grow border-t border-gray-700"></div>
           </div>
-          
+
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <button 
-              type="button" 
+            <button
+              type="button"
               className="w-full bg-gray-700/50 hover:bg-gray-700 text-gray-300 font-semibold py-3 px-4 rounded-lg transition-colors"
             >
               🔗 SSO Login
             </button>
-            <button 
-              type="button" 
+            <button
+              type="button"
               className="w-full bg-gray-700/50 hover:bg-gray-700 text-gray-300 font-semibold py-3 px-4 rounded-lg transition-colors"
             >
               📧 Magic Link
@@ -132,7 +147,10 @@ export default function LoginForm() {
 
         <p className="text-center text-sm text-gray-400 mt-8">
           New to Mind Voyage?{' '}
-          <Link href="/register" className="font-medium text-blue-400 hover:underline">
+          <Link
+            href="/register"
+            className="font-medium text-blue-400 hover:underline"
+          >
             Create your free account
           </Link>
           .

@@ -42,22 +42,16 @@ export const FormField = React.forwardRef<HTMLInputElement, FormFieldProps>(
 
         {/* Error Message */}
         {hasError && (
-          <p className="text-red-400 text-sm mt-2">
-            {errorMessage}
-          </p>
+          <p className="text-red-400 text-sm mt-2">{errorMessage}</p>
         )}
 
         {/* Success Message or Helper Text */}
         {success && !hasError && (
-          <p className="text-green-400 text-sm mt-2">
-            ✓ Looks good
-          </p>
+          <p className="text-green-400 text-sm mt-2">✓ Looks good</p>
         )}
 
         {helperText && !hasError && !success && (
-          <p className="text-gray-400 text-sm mt-2">
-            {helperText}
-          </p>
+          <p className="text-gray-400 text-sm mt-2">{helperText}</p>
         )}
       </div>
     )
