@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reset Password - Mind Voyage Companion</title>
+    
+    <!-- Tailwind CSS for styling -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Google Fonts: Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <style>
+        /* Use the Inter font family */
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #0A0A0A; /* A slightly darker background */
+        }
+        .feature-card {
+            background-color: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+        }
+        .glow-effect {
+            position: absolute;
+            width: 500px;
+            height: 500px;
+            background: radial-gradient(circle, rgba(129, 140, 248, 0.15) 0%, rgba(129, 140, 248, 0) 60%);
+            z-index: -1;
+            pointer-events: none;
+        }
+        /* Custom styles for form elements */
+        .form-input {
+            @apply w-full bg-gray-800/50 border border-gray-600 text-gray-200 rounded-xl px-4 py-3 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:bg-gray-800 transition-all duration-200;
+        }
+    </style>
+</head>
+<body class="bg-gray-900 text-white antialiased">
+
+    <div class="relative min-h-screen flex flex-col">
+        <!-- Decorative Glow -->
+        <div class="glow-effect -top-40 -left-60"></div>
+        <div class="glow-effect bottom-0 -right-40"></div>
+        
+        <div class="container mx-auto px-4 sm:px-6 lg:px-8 max-w-7xl relative z-10">
+        
+            <!-- Header Section -->
+            <header class="flex justify-between items-center py-6">
+                <div class="flex items-center gap-3">
+                    <span class="text-3xl">🧠</span>
+                    <h1 class="text-xl font-bold text-gray-200">Mind Voyage Companion</h1>
+                </div>
+                <div class="flex items-center gap-4">
+                    <button class="text-gray-300 hover:text-white transition-colors px-4 py-2">Sign In</button>
+                    <button class="text-gray-300 hover:text-white transition-colors px-4 py-2">Create Account</button>
+                </div>
+            </header>
+
+            <!-- Main Content Grid -->
+            <main class="flex-grow grid grid-cols-1 lg:grid-cols-5 gap-16 items-center py-12 md:py-16">
+
+                <!-- Left Column: Reset Form -->
+                <div class="lg:col-span-3 bg-gray-900/50 feature-card p-8 sm:p-12 rounded-2xl">
+                    <div class="max-w-md mx-auto">
+                        <h2 class="text-4xl font-bold text-gray-100">Reset Your Password 🔑</h2>
+                        <p class="text-gray-400 mt-3 mb-8">Enter your email address and we'll send you a secure link to reset your password.</p>
+
+                        <form class="space-y-6">
+                             <div>
+                                <label for="email" class="sr-only">Email Address</label>
+                                <input type="email" id="email" placeholder="Email Address" class="form-input">
+                            </div>
+                            
+                            <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-4 rounded-lg transition-all duration-300 transform hover:scale-105 !mt-8">
+                                Send Reset Link
+                            </button>
+                        </form>
+                        
+                        <p class="text-center text-sm text-gray-400 mt-8">
+                            Remember your password? <a href="#" class="font-medium text-blue-400 hover:underline">Back to Sign In</a>.
+                        </p>
+                         <p class="text-center text-sm text-gray-400 mt-2">
+                            Need help? <a href="#" class="font-medium text-blue-400 hover:underline">Contact Support</a>.
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Right Column: Security Info -->
+                <div class="lg:col-span-2 flex flex-col gap-6">
+                    <div class="feature-card p-6 rounded-xl">
+                        <h3 class="text-xl font-bold text-gray-200 mb-4">Security Information</h3>
+                        <ul class="space-y-3 text-gray-300">
+                             <li class="flex items-start gap-3">✓ <span class="text-gray-400">Password reset links expire in 1 hour for your safety.</span></li>
+                             <li class="flex items-start gap-3">✓ <span class="text-gray-400">We'll never store your password in plain text.</span></li>
+                             <li class="flex items-start gap-3">✓ <span class="text-gray-400">All communications are encrypted end-to-end.</span></li>
+                        </ul>
+                    </div>
+                    <div class="bg-gray-800/50 p-6 rounded-xl">
+                         <h4 class="font-semibold text-gray-200 mb-3">💡 Tips for Strong Passwords:</h4>
+                         <ul class="space-y-2 text-sm text-gray-400 list-disc list-inside">
+                            <li>Use 12+ characters</li>
+                            <li>Mix letters, numbers, & symbols</li>
+                            <li>Avoid personal information</li>
+                            <li>Use a password manager</li>
+                         </ul>
+                    </div>
+                     <div class="text-center text-gray-400 text-sm">
+                        <p>📧 Having trouble? Our support team is here to help.</p>
+                        <a href="#" class="font-semibold text-blue-400 hover:underline">Get Help</a>
+                    </div>
+                </div>
+            </main>
+        </div>
+        
+        <!-- Footer -->
+        <footer class="text-center py-6">
+            <p class="text-sm text-gray-500">🔒 We take your privacy seriously • No spam, ever • Secure infrastructure</p>
+        </footer>
+    </div>
+</body>
+</html>

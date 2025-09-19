@@ -1,374 +1,242 @@
 'use client'
-import * as React from 'react'
-import { registerSchema } from '@/lib/validations/auth'
-import { FormSubmitButton } from './FormSubmitButton'
-import { FormField } from './FormField'
+import { useState } from 'react'
+import { z } from 'zod'
+import { useForm } from 'react-hook-form'
+import { zodResolver } from '@hookform/resolvers/zod'
+import { useRouter } from 'next/navigation'
 import Link from 'next/link'
-import { Eye, EyeOff, AlertCircle } from 'lucide-react'
 
-async function registerAction(prevState: any, formData: FormData) {
-  const data = {
-    email: formData.get('email'),
-    password: formData.get('password'),
-    confirmPassword: formData.get('confirmPassword'),
-    name: formData.get('name'),
-    timezone: formData.get('timezone'),
-  }
+const registerSchema = z.object({
+  name: z.string().min(1, { message: 'Display name is required' }),
+  email: z.string().email({ message: 'Invalid email address' }),
+  password: z
+    .string()
+    .min(8, { message: 'Password must be at least 8 characters' }),
+  confirmPassword: z.string(),
+  timezone: z.string().min(1, { message: 'Timezone is required' }),
+  termsAccepted: z.boolean().refine(val => val, { message: 'You must accept the terms of service' }),
+  updatesOptIn: z.boolean().optional(),
+}).refine(data => data.password === data.confirmPassword, {
+  message: "Passwords don't match",
+  path: ["confirmPassword"],
+})
 
-  const parsed = registerSchema.safeParse(data)
-  if (!parsed.success) {
-    return { fieldErrors: parsed.error.flatten().fieldErrors }
-  }
+type RegisterFormValues = z.infer<typeof registerSchema>
 
-  const res = await fetch('/api/auth/signup', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(parsed.data),
+export default function RegisterForm() {
+  const router = useRouter()
+  const [error, setError] = useState<string | null>(null)
+  const [loading, setLoading] = useState(false)
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<RegisterFormValues>({
+    resolver: zodResolver(registerSchema),
+    defaultValues: {
+      timezone: 'America/New_York',
+      termsAccepted: false,
+      updatesOptIn: false,
+    },
   })
 
-  if (!res.ok) {
-    const result = await res.json()
-    return { fieldErrors: result.errors }
+  const onSubmit = async (data: RegisterFormValues) => {
+    setLoading(true)
+    setError(null)
+    try {
+      const res = await fetch('/api/auth/register', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data),
+      })
+      if (!res.ok) {
+        const result = await res.json()
+        setError(result.message || 'Registration failed')
+        setLoading(false)
+        return
+      }
+      router.replace('/dashboard')
+    } catch (e) {
+      setError('Network error')
+      setLoading(false)
+    }
   }
-
-  window.location.href = '/dashboard'
-  return {}
-}
-
-// Utility to detect user's timezone
-function getUserTimezone() {
-  try {
-    return Intl.DateTimeFormat().resolvedOptions().timeZone
-  } catch {
-    return 'America/New_York'
-  }
-}
-
-// Password strength checker
-function checkPasswordStrength(password: string) {
-  const checks = {
-    length: password.length >= 8,
-    uppercase: /[A-Z]/.test(password),
-    lowercase: /[a-z]/.test(password),
-    number: /\d/.test(password),
-    special: /[!@#$%^&*(),.?":{}|<>]/.test(password),
-  }
-
-  const score = Object.values(checks).filter(Boolean).length
-  return {
-    checks,
-    score,
-    strength: score < 3 ? 'weak' : score < 5 ? 'medium' : 'strong',
-  }
-}
-
-export function RegisterForm() {
-  const [state, formAction] = React.useActionState(registerAction, null)
-  const [pending, startTransition] = React.useTransition()
-  const [showPassword, setShowPassword] = React.useState(false)
-  const [showConfirmPassword, setShowConfirmPassword] = React.useState(false)
-  const [password, setPassword] = React.useState('')
-  const [userTimezone, setUserTimezone] = React.useState('')
-
-  React.useEffect(() => {
-    setUserTimezone(getUserTimezone())
-  }, [])
-
-  const passwordStrength = checkPasswordStrength(password)
 
   return (
-    <div className="card bg-mv-surface/95 border border-mv-border/80 backdrop-blur supports-[backdrop-filter]:bg-mv-surface/80 rounded-mv-lg shadow-mv-card p-s32 tablet:p-s40 max-w-xl">
-      {/* Header */}
-      <div className="space-y-s12 mb-s32">
-        <h1 className="text-h2 font-bold text-mv-text tracking-tight">
-          Create your free account
-        </h1>
-        <p className="text-body text-mv-text-subtle leading-relaxed max-w-prose">
-          Start your mindful habit journey in under a minute. No credit card
-          required.
-        </p>
-      </div>
+    <div className="bg-gray-900/50 feature-card p-8 rounded-2xl">
+      <div className="max-w-lg mx-auto">
+        <h2 className="text-3xl font-bold text-gray-100">Create Your Account</h2>
+        <p className="text-gray-400 mt-2 mb-8">Start your journey to better habits and mindful reflection.</p>
 
-      {/* Form */}
-      <form action={formAction} className="space-y-s32">
-        {/* Display Name Field */}
-        <FormField
-          label="Display name"
-          id="name"
-          name="name"
-          type="text"
-          autoComplete="name"
-          required
-          placeholder="Your full name"
-          error={state?.fieldErrors?.name}
-        />
-
-        {/* Email Field */}
-        <FormField
-          label="Email address"
-          id="email"
-          name="email"
-          type="email"
-          autoComplete="email"
-          required
-          placeholder="you@example.com"
-          error={state?.fieldErrors?.email}
-        />
-
-        {/* Password Field */}
-        <div className="space-y-s12">
-          <label
-            htmlFor="password"
-            className="block text-small font-semibold text-mv-text"
-          >
-            Password
-          </label>
-          <div className="relative">
-            <input
-              id="password"
-              name="password"
-              type={showPassword ? 'text' : 'password'}
-              autoComplete="new-password"
-              required
-              placeholder="Create a strong password"
-              value={password}
-              onChange={e => setPassword(e.target.value)}
-              className={`
-                w-full h-mv-input px-mv-input-x pr-12
-                bg-mv-form-input-bg border border-mv-form-input-border rounded-mv-input
-                text-mv-form-input-text placeholder:text-mv-form-input-placeholder
-                transition-all duration-200 ease-out
-                focus:outline-none focus:border-mv-cta focus:shadow-focus-ring
-                hover:border-mv-text-subtle/40
-                ${state?.fieldErrors?.password ? 'border-mv-danger focus:border-mv-danger focus:shadow-[0_0_0_4px_rgba(239,68,68,0.15)]' : ''}
-              `}
-              aria-invalid={state?.fieldErrors?.password ? 'true' : 'false'}
-            />
-            <button
-              type="button"
-              className="absolute inset-y-0 right-3 flex items-center"
-              onClick={() => setShowPassword(!showPassword)}
-              aria-label={showPassword ? 'Hide password' : 'Show password'}
-            >
-              {showPassword ? (
-                <EyeOff className="w-5 h-5 text-mv-text-subtle" />
-              ) : (
-                <Eye className="w-5 h-5 text-mv-text-subtle" />
-              )}
-            </button>
+        <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
+          <div>
+            <label htmlFor="name" className="sr-only">Display Name</label>
+            <div className="relative">
+              <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                <svg className="w-5 h-5 text-gray-500" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                  <path fillRule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clipRule="evenodd" />
+                </svg>
+              </div>
+              <input 
+                type="text" 
+                id="name" 
+                placeholder="Display Name" 
+                className="form-input pl-10"
+                {...register('name')}
+              />
+            </div>
+            {errors.name && (
+              <p className="text-red-400 text-sm mt-2">{errors.name.message}</p>
+            )}
           </div>
 
-          {/* Password Strength Indicator */}
-          {password && (
-            <div className="space-y-s8">
-              <div className="flex items-center justify-between">
-                <span className="text-small text-mv-text-subtle font-medium tracking-wide uppercase">
-                  Strength
-                </span>
-                <span
-                  className={`text-small font-semibold ${
-                    passwordStrength.strength === 'weak'
-                      ? 'text-mv-danger'
-                      : passwordStrength.strength === 'medium'
-                        ? 'text-mv-warning'
-                        : 'text-mv-success'
-                  }`}
-                >
-                  {passwordStrength.strength === 'weak'
-                    ? 'Weak'
-                    : passwordStrength.strength === 'medium'
-                      ? 'Good'
-                      : 'Strong'}
-                </span>
+          <div>
+            <label htmlFor="email" className="sr-only">Email Address</label>
+            <div className="relative">
+              <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                <svg className="w-5 h-5 text-gray-500" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                  <path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z" />
+                  <path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z" />
+                </svg>
               </div>
-              <div className="w-full h-2 rounded-full bg-gradient-to-r from-mv-border via-mv-border to-mv-border relative overflow-hidden">
-                <div
-                  className={`absolute inset-y-0 left-0 rounded-full transition-all duration-500 ease-out ${
-                    passwordStrength.strength === 'weak'
-                      ? 'w-1/3 bg-mv-danger'
-                      : passwordStrength.strength === 'medium'
-                        ? 'w-2/3 bg-mv-warning'
-                        : 'w-full bg-mv-success'
-                  }`}
-                />
+              <input 
+                type="email" 
+                id="email" 
+                placeholder="Email Address" 
+                className="form-input pl-10"
+                {...register('email')}
+              />
+            </div>
+            {errors.email && (
+              <p className="text-red-400 text-sm mt-2">{errors.email.message}</p>
+            )}
+          </div>
+
+          <div>
+            <label htmlFor="password" className="sr-only">Password</label>
+            <div className="relative">
+              <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                <svg className="w-5 h-5 text-gray-500" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                  <path fillRule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clipRule="evenodd" />
+                </svg>
               </div>
-              <ul className="grid grid-cols-2 gap-2 text-[11px] text-mv-text-subtle tracking-wide">
-                <li
-                  className={
-                    passwordStrength.checks.length ? 'text-mv-success' : ''
-                  }
-                >
-                  8+ characters
-                </li>
-                <li
-                  className={
-                    passwordStrength.checks.uppercase ? 'text-mv-success' : ''
-                  }
-                >
-                  Uppercase
-                </li>
-                <li
-                  className={
-                    passwordStrength.checks.lowercase ? 'text-mv-success' : ''
-                  }
-                >
-                  Lowercase
-                </li>
-                <li
-                  className={
-                    passwordStrength.checks.number ? 'text-mv-success' : ''
-                  }
-                >
-                  Number
-                </li>
-                <li
-                  className={
-                    passwordStrength.checks.special ? 'text-mv-success' : ''
-                  }
-                >
-                  Symbol
-                </li>
-              </ul>
+              <input 
+                type="password" 
+                id="password" 
+                placeholder="Password (8+ characters)" 
+                className="form-input pl-10"
+                {...register('password')}
+              />
+            </div>
+            {errors.password && (
+              <p className="text-red-400 text-sm mt-2">{errors.password.message}</p>
+            )}
+          </div>
+
+          <div>
+            <label htmlFor="confirm-password" className="sr-only">Confirm Password</label>
+            <div className="relative">
+              <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                <svg className="w-5 h-5 text-gray-500" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                  <path fillRule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clipRule="evenodd" />
+                </svg>
+              </div>
+              <input 
+                type="password" 
+                id="confirm-password" 
+                placeholder="Confirm Password" 
+                className="form-input pl-10"
+                {...register('confirmPassword')}
+              />
+            </div>
+            {errors.confirmPassword && (
+              <p className="text-red-400 text-sm mt-2">{errors.confirmPassword.message}</p>
+            )}
+          </div>
+
+          <div>
+            <label htmlFor="timezone" className="sr-only">Timezone</label>
+            <div className="relative">
+              <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                <svg className="w-5 h-5 text-gray-500" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                  <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM4.332 8.027a6.012 6.012 0 011.912-2.706C6.512 5.73 6.974 6 7.5 6A1.5 1.5 0 019 7.5V8a2 2 0 004 0 2 2 0 011.523-1.943A5.977 5.977 0 0116 10c0 .34-.028.675-.083 1H15a2 2 0 00-2 2v1.5a1.5 1.5 0 01-3 0V12a2 2 0 00-2-2 2 2 0 01-2-2V8.707a5.969 5.969 0 01-1.668-.68z" clipRule="evenodd" />
+                </svg>
+              </div>
+              <select id="timezone" className="form-input appearance-none pl-10" {...register('timezone')}>
+                <option value="America/New_York">Timezone: America/New_York</option>
+                <option value="Europe/London">Timezone: Europe/London</option>
+                <option value="Asia/Tokyo">Timezone: Asia/Tokyo</option>
+                <option value="America/Los_Angeles">Timezone: America/Los_Angeles</option>
+                <option value="America/Chicago">Timezone: America/Chicago</option>
+                <option value="Australia/Sydney">Timezone: Australia/Sydney</option>
+              </select>
+            </div>
+            {errors.timezone && (
+              <p className="text-red-400 text-sm mt-2">{errors.timezone.message}</p>
+            )}
+          </div>
+
+          <div className="space-y-4 pt-2">
+            <div className="flex items-start">
+              <input 
+                id="terms" 
+                type="checkbox" 
+                className="form-checkbox mt-1"
+                {...register('termsAccepted')}
+              />
+              <label htmlFor="terms" className="ml-3 text-sm text-gray-400">
+                I agree to the{' '}
+                <Link href="/terms" className="font-medium text-blue-400 hover:underline">
+                  Terms of Service
+                </Link>
+                {' '}and{' '}
+                <Link href="/privacy" className="font-medium text-blue-400 hover:underline">
+                  Privacy Policy
+                </Link>
+                .
+              </label>
+            </div>
+            {errors.termsAccepted && (
+              <p className="text-red-400 text-sm">{errors.termsAccepted.message}</p>
+            )}
+
+            <div className="flex items-center">
+              <input 
+                id="updates" 
+                type="checkbox" 
+                className="form-checkbox"
+                {...register('updatesOptIn')}
+              />
+              <label htmlFor="updates" className="ml-3 text-sm text-gray-400">
+                Send me occasional product updates (optional).
+              </label>
+            </div>
+          </div>
+
+          {error && (
+            <div className="bg-red-500/10 border border-red-500/20 rounded-lg p-4">
+              <p className="text-sm text-red-400">{error}</p>
             </div>
           )}
 
-          {state?.fieldErrors?.password && (
-            <p className="text-small text-mv-danger font-medium flex items-center gap-2">
-              <AlertCircle className="w-4 h-4" />
-              {state.fieldErrors.password[0]}
-            </p>
-          )}
-        </div>
-
-        {/* Confirm Password Field */}
-        <div className="space-y-s12">
-          <label
-            htmlFor="confirmPassword"
-            className="block text-small font-semibold text-mv-text"
+          <button 
+            type="submit" 
+            disabled={loading}
+            className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-4 rounded-lg transition-all duration-300 transform hover:scale-105 !mt-8 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
           >
-            Confirm password
-          </label>
-          <div className="relative">
-            <input
-              id="confirmPassword"
-              name="confirmPassword"
-              type={showConfirmPassword ? 'text' : 'password'}
-              autoComplete="new-password"
-              required
-              placeholder="Confirm your password"
-              className={`
-                w-full h-mv-input px-mv-input-x pr-12
-                bg-mv-form-input-bg border border-mv-form-input-border rounded-mv-input
-                text-mv-form-input-text placeholder:text-mv-form-input-placeholder
-                transition-all duration-200 ease-out
-                focus:outline-none focus:border-mv-cta focus:shadow-focus-ring
-                hover:border-mv-text-subtle/40
-                ${state?.fieldErrors?.confirmPassword ? 'border-mv-danger focus:border-mv-danger focus:shadow-[0_0_0_4px_rgba(239,68,68,0.15)]' : ''}
-              `}
-              aria-invalid={
-                state?.fieldErrors?.confirmPassword ? 'true' : 'false'
-              }
-            />
-            <button
-              type="button"
-              className="absolute inset-y-0 right-3 flex items-center"
-              onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-              aria-label={
-                showConfirmPassword ? 'Hide password' : 'Show password'
-              }
-            >
-              {showConfirmPassword ? (
-                <EyeOff className="w-5 h-5 text-mv-text-subtle" />
-              ) : (
-                <Eye className="w-5 h-5 text-mv-text-subtle" />
-              )}
-            </button>
-          </div>
-          {state?.fieldErrors?.confirmPassword && (
-            <p className="text-small text-mv-danger font-medium flex items-center gap-2">
-              <AlertCircle className="w-4 h-4" />
-              {state.fieldErrors.confirmPassword[0]}
-            </p>
-          )}
-        </div>
+            {loading ? 'Creating Account...' : 'Create Account'}
+          </button>
+        </form>
 
-        {/* Timezone Field */}
-        <FormField
-          label="Timezone"
-          id="timezone"
-          name="timezone"
-          type="text"
-          value={userTimezone}
-          readOnly
-          placeholder="Detecting timezone..."
-          error={state?.fieldErrors?.timezone}
-          helperText="We'll use this to send you timely habit reminders"
-        />
-
-        {/* Terms and Marketing Checkboxes */}
-        <div className="space-y-s20 pt-s8 border-t border-dashed border-mv-border/60">
-          <div className="flex items-start gap-3">
-            <input
-              id="terms"
-              name="terms"
-              type="checkbox"
-              required
-              className="mt-1 w-5 h-5 text-mv-cta bg-mv-form-input-bg border-mv-form-input-border rounded focus:ring-mv-cta/25 focus:ring-2"
-            />
-            <label
-              htmlFor="terms"
-              className="text-small text-mv-text-subtle leading-relaxed"
-            >
-              I agree to the{' '}
-              <Link
-                href="/terms"
-                className="text-mv-cta hover:underline font-medium"
-              >
-                Terms of Service
-              </Link>{' '}
-              and{' '}
-              <Link
-                href="/privacy"
-                className="text-mv-cta hover:underline font-medium"
-              >
-                Privacy Policy
-              </Link>
-            </label>
-          </div>
-          <div className="flex items-start gap-3">
-            <input
-              id="marketing"
-              name="marketing"
-              type="checkbox"
-              className="mt-1 w-5 h-5 text-mv-cta bg-mv-form-input-bg border-mv-form-input-border rounded focus:ring-mv-cta/25 focus:ring-2"
-            />
-            <label
-              htmlFor="marketing"
-              className="text-small text-mv-text-subtle leading-relaxed"
-            >
-              Send me helpful tips and updates about building better habits
-            </label>
-          </div>
-        </div>
-        {/* Submit Button + Login Link */}
-        <div className="space-y-s16 pt-s8">
-          <FormSubmitButton
-            pending={pending}
-            className="w-full btn btn-primary text-center justify-center"
-          >
-            Create Account
-          </FormSubmitButton>
-          <p className="text-small text-mv-text-subtle text-center">
-            Already have an account?{' '}
-            <Link
-              href="/login"
-              className="text-mv-cta hover:underline font-medium"
-            >
-              Sign in
-            </Link>
-          </p>
-        </div>
-      </form>
+        <p className="text-center text-sm text-gray-400 mt-8">
+          Already have an account?{' '}
+          <Link href="/login" className="font-medium text-blue-400 hover:underline">
+            Sign in here
+          </Link>
+          .
+        </p>
+      </div>
     </div>
   )
 }
+

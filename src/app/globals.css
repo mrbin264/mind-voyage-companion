@@ -149,9 +149,9 @@
   }
 
   body {
-    font-family: var(--mv-font-family-ui);
-    background-color: var(--mv-color-bg);
-    color: var(--mv-color-text);
+    font-family: 'Inter', sans-serif;
+    background-color: #0A0A0A; /* A slightly darker background - matching HTML */
+    color: #ffffff;
   }
 }
 
@@ -249,6 +249,39 @@
   .pulse-slow {
     animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
   }
+
+  /* Auth UI Feature Card Styles */
+  .feature-card {
+    background-color: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+  }
+
+  .glow-effect {
+    position: absolute;
+    width: 500px;
+    height: 500px;
+    background: radial-gradient(circle, rgba(129, 140, 248, 0.15) 0%, rgba(129, 140, 248, 0) 60%);
+    z-index: -1;
+    pointer-events: none;
+  }
+
+  .form-input {
+    @apply w-full bg-gray-800/50 border border-gray-600 text-gray-200 rounded-xl px-4 py-3 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:bg-gray-800 transition-all duration-200;
+  }
+
+  .form-checkbox {
+    @apply w-5 h-5 bg-gray-700 border-gray-600 rounded text-blue-500 focus:ring-blue-600;
+  }
+
+  /* Gradient text effect */
+  .gradient-text {
+    background: linear-gradient(to right, #a78bfa, #818cf8);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+
   /* Map gradient utilities to CSS vars to avoid unresolved from-primary-* warnings */
   .text-gradient-primary {
     background: linear-gradient(

@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Check Your Email - Mind Voyage Companion</title>
+    
+    <!-- Tailwind CSS for styling -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Google Fonts: Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <style>
+        /* Use the Inter font family */
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #0A0A0A; /* A slightly darker background */
+        }
+        .feature-card {
+            background-color: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+        }
+        .glow-effect {
+            position: absolute;
+            width: 500px;
+            height: 500px;
+            background: radial-gradient(circle, rgba(129, 140, 248, 0.15) 0%, rgba(129, 140, 248, 0) 60%);
+            z-index: -1;
+            pointer-events: none;
+        }
+    </style>
+</head>
+<body class="bg-gray-900 text-white antialiased">
+
+    <div class="relative min-h-screen flex flex-col">
+        <!-- Decorative Glow -->
+        <div class="glow-effect -top-40 -left-60"></div>
+        <div class="glow-effect bottom-0 -right-40"></div>
+        
+        <div class="container mx-auto px-4 sm:px-6 lg:px-8 max-w-7xl relative z-10">
+        
+            <!-- Header Section -->
+            <header class="flex justify-between items-center py-6">
+                <div class="flex items-center gap-3">
+                    <span class="text-3xl">🧠</span>
+                    <h1 class="text-xl font-bold text-gray-200">Mind Voyage Companion</h1>
+                </div>
+                <div class="flex items-center gap-4">
+                    <button class="text-gray-300 hover:text-white transition-colors px-4 py-2">Sign In</button>
+                    <button class="text-gray-300 hover:text-white transition-colors px-4 py-2">Create Account</button>
+                </div>
+            </header>
+
+            <!-- Main Content Grid -->
+            <main class="flex-grow grid grid-cols-1 lg:grid-cols-5 gap-16 items-center py-12 md:py-16">
+
+                <!-- Left Column: Confirmation Message -->
+                <div class="lg:col-span-3 bg-gray-900/50 feature-card p-8 sm:p-12 rounded-2xl">
+                    <div class="max-w-md mx-auto text-center">
+                        <h2 class="text-4xl font-bold text-gray-100">✉️ Check Your Email</h2>
+                        <p class="text-gray-400 mt-4">We've sent a password reset link to:</p>
+                        <p class="text-lg font-semibold text-blue-300 bg-gray-800/50 py-3 px-4 rounded-lg my-4">user@example.com</p>
+                        <p class="text-gray-400 text-sm mb-8">The link will expire in 1 hour for your security.</p>
+                        
+                        <button type="button" class="w-full bg-gray-700/80 hover:bg-gray-700 text-white font-bold py-3 px-4 rounded-lg transition-colors duration-200">
+                            Resend Email
+                        </button>
+                        
+                        <div class="mt-8 text-sm text-gray-400 space-y-2">
+                             <p><a href="#" class="font-medium text-blue-400 hover:underline">Back to Sign In</a></p>
+                             <p>Need immediate help? <a href="#" class="font-medium text-blue-400 hover:underline">Contact Support</a></p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Right Column: Next Steps -->
+                <div class="lg:col-span-2 flex flex-col gap-6">
+                    <div class="feature-card p-6 rounded-xl">
+                        <h3 class="text-xl font-bold text-gray-200 mb-4">What Happens Next?</h3>
+                        <ol class="space-y-4 text-gray-300">
+                             <li class="flex items-start gap-3"><span class="font-bold text-blue-400">1️⃣</span> <span class="text-gray-400">Check your email inbox (and spam folder).</span></li>
+                             <li class="flex items-start gap-3"><span class="font-bold text-blue-400">2️⃣</span> <span class="text-gray-400">Click the "Reset Password" button in the email.</span></li>
+                             <li class="flex items-start gap-3"><span class="font-bold text-blue-400">3️⃣</span> <span class="text-gray-400">Create your new password on the secure form.</span></li>
+                             <li class="flex items-start gap-3"><span class="font-bold text-blue-400">4️⃣</span> <span class="text-gray-400">Sign in with your new password.</span></li>
+                        </ol>
+                    </div>
+                    <div class="bg-gray-800/50 p-6 rounded-xl">
+                         <h4 class="font-semibold text-gray-200 mb-3">⏰ Didn't receive the email?</h4>
+                         <ul class="space-y-2 text-sm text-gray-400 list-disc list-inside">
+                            <li>Check your spam/junk folder</li>
+                            <li>Wait 2-3 minutes for delivery</li>
+                            <li>Make sure the email address is correct</li>
+                            <li>Try resending the email</li>
+                         </ul>
+                    </div>
+                     <div class="text-center text-gray-400 text-sm">
+                        <p class="font-semibold text-gray-300">🆘 Still having trouble?</p>
+                        <p>Our support team can help.</p>
+                        <div class="mt-2">
+                             <a href="#" class="font-medium text-blue-400 hover:underline">Live Chat</a> or <a href="#" class="font-medium text-blue-400 hover:underline">Email Support</a>
+                        </div>
+                    </div>
+                </div>
+            </main>
+        </div>
+        
+        <!-- Footer -->
+        <footer class="text-center py-6">
+            <p class="text-sm text-gray-500">🔒 Secure password reset process • Email link expires in 1 hour</p>
+        </footer>
+    </div>
+</body>
+</html>
