@@ -66,7 +66,7 @@ const UserSchema = new Schema<IUser>(
   {
     name: String,
     email: { type: String, required: true, unique: true },
-    password: { type: String }, // bcrypt hash, optional for OAuth
+    password: { type: String, select: false }, // bcrypt hash, optional for OAuth, excluded by default
     emailVerified: Date,
     verified: { type: Boolean, default: false },
     image: String,

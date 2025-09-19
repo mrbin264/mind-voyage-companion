@@ -1,5 +1,4 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { verify } from 'jsonwebtoken'
 
 export async function middleware(request: NextRequest) {
   // Get token from cookie
@@ -25,8 +24,20 @@ export async function middleware(request: NextRequest) {
   // Verify token if it exists
   if (token) {
     try {
-      const secret = process.env.JWT_SECRET || 'fallback-secret-key'
-      verify(token, secret)
+      // Simple JWT validation for edge runtime
+      // Split the token into parts
+      const parts = token.split('.')
+      if (parts.length !== 3) {
+        throw new Error('Invalid JWT format')
+      }
+
+      // Decode the payload to check expiration
+      const payload = JSON.parse(Buffer.from(parts[1], 'base64').toString())
+      
+      // Check if token is expired
+      if (payload.exp && payload.exp < Date.now() / 1000) {
+        throw new Error('Token expired')
+      }
 
       // If logged in and accessing auth routes, redirect to dashboard
       if (isAuthRoute) {

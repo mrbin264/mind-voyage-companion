@@ -28,10 +28,14 @@ export async function POST(req: NextRequest) {
     }
 
     const { email, password } = parsed.data
+    console.log('🔍 Login attempt for email:', email)
 
     // Find user by email
     const user = await User.findOne({ email }).select('+password')
+    console.log('👤 User found:', !!user, user ? 'with password:' + !!user.password : 'none')
+    
     if (!user || !user.password) {
+      console.log('❌ User not found or no password')
       return NextResponse.json(
         {
           success: false,
@@ -44,7 +48,10 @@ export async function POST(req: NextRequest) {
 
     // Verify password
     const isValidPassword = await compare(password, user.password)
+    console.log('🔐 Password validation:', isValidPassword)
+    
     if (!isValidPassword) {
+      console.log('❌ Invalid password')
       return NextResponse.json(
         {
           success: false,
@@ -56,7 +63,7 @@ export async function POST(req: NextRequest) {
     }
 
     // Create JWT token
-    const secret = process.env.NEXTAUTH_SECRET || 'fallback-secret-key'
+    const secret = process.env.JWT_SECRET || 'fallback-secret-key'
     const token = sign(
       {
         userId: user._id.toString(),
