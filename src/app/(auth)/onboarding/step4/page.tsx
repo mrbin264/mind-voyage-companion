@@ -35,12 +35,12 @@ export default function OnboardingStep4() {
       const result = await response.json()
       console.log('Onboarding completed successfully:', result)
 
-      // Redirect to dashboard
-      window.location.href = '/dashboard'
+      // Redirect to habits page
+      window.location.href = '/dashboard/habits'
     } catch (error) {
       console.error('Network error:', error)
       // Redirect anyway for now
-      window.location.href = '/dashboard'
+      window.location.href = '/dashboard/habits'
     }
   }
 

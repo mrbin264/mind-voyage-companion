@@ -53,7 +53,7 @@ export default function LoginForm() {
             onboardingData.success &&
             onboardingData.data.onboardingCompleted
           ) {
-            router.replace('/dashboard')
+            router.replace('/dashboard/habits')
           } else {
             router.replace('/onboarding')
           }
