@@ -15,10 +15,10 @@ export async function POST(req: NextRequest) {
 
     if (!parsed.success) {
       return NextResponse.json(
-        { 
+        {
           success: false,
           message: 'Validation failed',
-          errors: parsed.error.flatten().fieldErrors 
+          errors: parsed.error.flatten().fieldErrors,
         },
         { status: 400 }
       )
@@ -30,22 +30,25 @@ export async function POST(req: NextRequest) {
     const userProfile = await User.findById(user.userId).select('+password')
     if (!userProfile || !userProfile.password) {
       return NextResponse.json(
-        { 
+        {
           success: false,
-          message: 'User not found or account has no password set'
+          message: 'User not found or account has no password set',
         },
         { status: 404 }
       )
     }
 
     // Verify current password
-    const isCurrentPasswordValid = await compare(currentPassword, userProfile.password)
+    const isCurrentPasswordValid = await compare(
+      currentPassword,
+      userProfile.password
+    )
     if (!isCurrentPasswordValid) {
       return NextResponse.json(
-        { 
+        {
           success: false,
           message: 'Current password is incorrect',
-          errors: { currentPassword: ['Current password is incorrect'] }
+          errors: { currentPassword: ['Current password is incorrect'] },
         },
         { status: 400 }
       )
@@ -55,10 +58,14 @@ export async function POST(req: NextRequest) {
     const isSamePassword = await compare(newPassword, userProfile.password)
     if (isSamePassword) {
       return NextResponse.json(
-        { 
+        {
           success: false,
           message: 'New password must be different from current password',
-          errors: { newPassword: ['New password must be different from current password'] }
+          errors: {
+            newPassword: [
+              'New password must be different from current password',
+            ],
+          },
         },
         { status: 400 }
       )
@@ -76,13 +83,12 @@ export async function POST(req: NextRequest) {
       success: true,
       message: 'Password changed successfully',
     })
-
   } catch (error) {
     if (error instanceof Error && error.message === 'Authentication required') {
       return NextResponse.json(
-        { 
+        {
           success: false,
-          message: 'Authentication required'
+          message: 'Authentication required',
         },
         { status: 401 }
       )
@@ -90,9 +96,9 @@ export async function POST(req: NextRequest) {
 
     console.error('Change password error:', error)
     return NextResponse.json(
-      { 
+      {
         success: false,
-        message: 'Internal server error'
+        message: 'Internal server error',
       },
       { status: 500 }
     )

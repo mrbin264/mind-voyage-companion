@@ -173,7 +173,9 @@
     font-family: 'Inter', sans-serif;
     background-color: var(--mv-color-bg);
     color: var(--mv-color-text);
-    transition: background-color 0.2s ease-in-out, color 0.2s ease-in-out;
+    transition:
+      background-color 0.2s ease-in-out,
+      color 0.2s ease-in-out;
   }
 }
 

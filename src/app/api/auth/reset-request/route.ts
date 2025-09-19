@@ -16,10 +16,10 @@ export async function POST(req: NextRequest) {
 
     if (!parsed.success) {
       return NextResponse.json(
-        { 
+        {
           success: false,
           message: 'Validation failed',
-          errors: parsed.error.flatten().fieldErrors 
+          errors: parsed.error.flatten().fieldErrors,
         },
         { status: 400 }
       )
@@ -33,7 +33,8 @@ export async function POST(req: NextRequest) {
       // Don't reveal if email exists for security
       return NextResponse.json({
         success: true,
-        message: 'If your email is registered, you will receive a password reset link.',
+        message:
+          'If your email is registered, you will receive a password reset link.',
       })
     }
 
@@ -59,18 +60,18 @@ export async function POST(req: NextRequest) {
 
     return NextResponse.json({
       success: true,
-      message: 'If your email is registered, you will receive a password reset link.',
+      message:
+        'If your email is registered, you will receive a password reset link.',
       // Remove in production - only for testing
       ...(process.env.NODE_ENV === 'development' && { resetToken }),
     })
-
   } catch (error) {
     console.error('Reset request error:', error)
     return NextResponse.json(
-      { 
+      {
         success: false,
         message: 'Internal server error',
-        errors: { server: ['Something went wrong. Please try again.'] }
+        errors: { server: ['Something went wrong. Please try again.'] },
       },
       { status: 500 }
     )

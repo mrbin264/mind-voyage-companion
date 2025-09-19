@@ -6,14 +6,14 @@ import connectDB from '@/lib/db'
 export async function GET(req: NextRequest) {
   try {
     await connectDB()
-    
+
     const user = getCurrentUser(req)
     if (!user) {
       return NextResponse.json(
-        { 
+        {
           success: false,
           message: 'Not authenticated',
-          user: null
+          user: null,
         },
         { status: 401 }
       )
@@ -27,14 +27,13 @@ export async function GET(req: NextRequest) {
         name: user.name,
       },
     })
-
   } catch (error) {
     console.error('Get current user error:', error)
     return NextResponse.json(
-      { 
+      {
         success: false,
         message: 'Internal server error',
-        user: null
+        user: null,
       },
       { status: 500 }
     )

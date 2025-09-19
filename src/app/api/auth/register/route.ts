@@ -13,10 +13,10 @@ export async function POST(req: NextRequest) {
 
     if (!parsed.success) {
       return NextResponse.json(
-        { 
+        {
           success: false,
           message: 'Validation failed',
-          errors: parsed.error.flatten().fieldErrors 
+          errors: parsed.error.flatten().fieldErrors,
         },
         { status: 400 }
       )
@@ -28,10 +28,10 @@ export async function POST(req: NextRequest) {
     const existingUser = await User.findOne({ email })
     if (existingUser) {
       return NextResponse.json(
-        { 
+        {
           success: false,
           message: 'User already exists',
-          errors: { email: ['Email already in use'] } 
+          errors: { email: ['Email already in use'] },
         },
         { status: 400 }
       )
@@ -55,8 +55,8 @@ export async function POST(req: NextRequest) {
         },
         privacy: {
           publicProfile: false,
-        }
-      }
+        },
+      },
     })
 
     // Create JWT token
@@ -75,13 +75,13 @@ export async function POST(req: NextRequest) {
     const response = NextResponse.json({
       success: true,
       message: 'Account created successfully',
-      user: { 
-        id: user._id.toString(), 
-        email: user.email, 
+      user: {
+        id: user._id.toString(),
+        email: user.email,
         name: user.name,
         verified: user.verified,
         timezone: user.timezone,
-        createdAt: user.createdAt
+        createdAt: user.createdAt,
       },
     })
 
@@ -94,14 +94,13 @@ export async function POST(req: NextRequest) {
     })
 
     return response
-
   } catch (error) {
     console.error('Signup error:', error)
     return NextResponse.json(
-      { 
+      {
         success: false,
         message: 'Internal server error',
-        errors: { server: ['Something went wrong. Please try again.'] }
+        errors: { server: ['Something went wrong. Please try again.'] },
       },
       { status: 500 }
     )

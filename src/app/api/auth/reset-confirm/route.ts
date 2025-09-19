@@ -12,10 +12,10 @@ export async function POST(req: NextRequest) {
 
     if (!parsed.success) {
       return NextResponse.json(
-        { 
+        {
           success: false,
           message: 'Validation failed',
-          errors: parsed.error.flatten().fieldErrors 
+          errors: parsed.error.flatten().fieldErrors,
         },
         { status: 400 }
       )
@@ -31,10 +31,10 @@ export async function POST(req: NextRequest) {
 
     if (!verificationToken) {
       return NextResponse.json(
-        { 
+        {
           success: false,
           message: 'Invalid or expired reset token',
-          errors: { token: ['The reset token is invalid or has expired'] }
+          errors: { token: ['The reset token is invalid or has expired'] },
         },
         { status: 400 }
       )
@@ -44,10 +44,10 @@ export async function POST(req: NextRequest) {
     const user = await User.findOne({ email: verificationToken.identifier })
     if (!user) {
       return NextResponse.json(
-        { 
+        {
           success: false,
           message: 'User not found',
-          errors: { token: ['User associated with this token not found'] }
+          errors: { token: ['User associated with this token not found'] },
         },
         { status: 404 }
       )
@@ -67,16 +67,16 @@ export async function POST(req: NextRequest) {
 
     return NextResponse.json({
       success: true,
-      message: 'Password has been reset successfully. You can now log in with your new password.',
+      message:
+        'Password has been reset successfully. You can now log in with your new password.',
     })
-
   } catch (error) {
     console.error('Reset confirm error:', error)
     return NextResponse.json(
-      { 
+      {
         success: false,
         message: 'Internal server error',
-        errors: { server: ['Something went wrong. Please try again.'] }
+        errors: { server: ['Something went wrong. Please try again.'] },
       },
       { status: 500 }
     )

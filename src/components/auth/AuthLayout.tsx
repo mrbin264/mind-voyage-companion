@@ -236,7 +236,7 @@ export function AuthLayout({
   const content = authContent[type]
 
   return (
-    <div 
+    <div
       className="relative min-h-screen flex flex-col antialiased"
       style={{
         backgroundColor: 'var(--mv-color-bg)',
@@ -274,7 +274,7 @@ export function AuthLayout({
         <header className="flex justify-between items-center py-6">
           <Link href="/" className="flex items-center gap-3">
             <span className="text-3xl">🧠</span>
-            <h1 
+            <h1
               className="text-xl font-bold"
               style={{ color: 'var(--mv-color-text)' }}
             >

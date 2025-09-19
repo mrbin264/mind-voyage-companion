@@ -7,7 +7,7 @@ import { requireAuth } from '@/lib/auth-utils'
 export async function POST(req: NextRequest) {
   try {
     await connectDB()
-    
+
     // Get the current user
     const currentUser = await requireAuth(req)
 
@@ -16,10 +16,10 @@ export async function POST(req: NextRequest) {
 
     if (!parsed.success) {
       return NextResponse.json(
-        { 
+        {
           success: false,
           message: 'Validation failed',
-          errors: parsed.error.flatten().fieldErrors 
+          errors: parsed.error.flatten().fieldErrors,
         },
         { status: 400 }
       )
@@ -28,19 +28,19 @@ export async function POST(req: NextRequest) {
     const { profile, habit } = parsed.data
 
     // Create habit data structure
-    const habitData = habit.habitId 
-      ? { 
+    const habitData = habit.habitId
+      ? {
           id: habit.habitId,
           type: 'predefined',
           reminderTime: habit.reminderTime,
-          frequency: habit.frequency
+          frequency: habit.frequency,
         }
       : {
           name: habit.customName,
           emoji: habit.customEmoji,
           type: 'custom',
           reminderTime: habit.reminderTime,
-          frequency: habit.frequency
+          frequency: habit.frequency,
         }
 
     // Update user with complete onboarding data
@@ -55,8 +55,8 @@ export async function POST(req: NextRequest) {
           sleepTime: profile.sleepTime,
           onboardingCompleted: true,
           onboardingCompletedAt: new Date(),
-          firstHabit: habitData
-        }
+          firstHabit: habitData,
+        },
       },
       { new: true, runValidators: true }
     )
@@ -75,10 +75,9 @@ export async function POST(req: NextRequest) {
         name: updatedUser.name,
         timezone: updatedUser.timezone,
         preferences: updatedUser.preferences,
-        onboardingCompleted: true
-      }
+        onboardingCompleted: true,
+      },
     })
-
   } catch (error) {
     if (error instanceof Error && error.message === 'Authentication required') {
       return NextResponse.json(
@@ -99,11 +98,13 @@ export async function POST(req: NextRequest) {
 export async function GET(req: NextRequest) {
   try {
     await connectDB()
-    
+
     // Get the current user
     const currentUser = await requireAuth(req)
 
-    const user = await User.findById(currentUser.userId).select('preferences timezone name')
+    const user = await User.findById(currentUser.userId).select(
+      'preferences timezone name'
+    )
 
     if (!user) {
       return NextResponse.json(
@@ -123,11 +124,10 @@ export async function GET(req: NextRequest) {
         profile: {
           name: user.name,
           timezone: user.timezone,
-          preferences: user.preferences
-        }
-      }
+          preferences: user.preferences,
+        },
+      },
     })
-
   } catch (error) {
     if (error instanceof Error && error.message === 'Authentication required') {
       return NextResponse.json(

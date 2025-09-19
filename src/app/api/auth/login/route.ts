@@ -18,10 +18,10 @@ export async function POST(req: NextRequest) {
 
     if (!parsed.success) {
       return NextResponse.json(
-        { 
+        {
           success: false,
           message: 'Validation failed',
-          errors: parsed.error.flatten().fieldErrors 
+          errors: parsed.error.flatten().fieldErrors,
         },
         { status: 400 }
       )
@@ -33,10 +33,10 @@ export async function POST(req: NextRequest) {
     const user = await User.findOne({ email }).select('+password')
     if (!user || !user.password) {
       return NextResponse.json(
-        { 
+        {
           success: false,
           message: 'Invalid credentials',
-          errors: { email: ['Invalid email or password'] } 
+          errors: { email: ['Invalid email or password'] },
         },
         { status: 401 }
       )
@@ -46,10 +46,10 @@ export async function POST(req: NextRequest) {
     const isValidPassword = await compare(password, user.password)
     if (!isValidPassword) {
       return NextResponse.json(
-        { 
+        {
           success: false,
           message: 'Invalid credentials',
-          errors: { password: ['Invalid email or password'] } 
+          errors: { password: ['Invalid email or password'] },
         },
         { status: 401 }
       )
@@ -71,14 +71,14 @@ export async function POST(req: NextRequest) {
     const response = NextResponse.json({
       success: true,
       message: 'Login successful',
-      user: { 
-        id: user._id.toString(), 
-        email: user.email, 
+      user: {
+        id: user._id.toString(),
+        email: user.email,
         name: user.name,
         verified: user.verified,
         timezone: user.timezone,
         createdAt: user.createdAt,
-        preferences: user.preferences
+        preferences: user.preferences,
       },
     })
 
@@ -91,14 +91,13 @@ export async function POST(req: NextRequest) {
     })
 
     return response
-
   } catch (error) {
     console.error('Login error:', error)
     return NextResponse.json(
-      { 
+      {
         success: false,
         message: 'Internal server error',
-        errors: { server: ['Something went wrong. Please try again.'] }
+        errors: { server: ['Something went wrong. Please try again.'] },
       },
       { status: 500 }
     )

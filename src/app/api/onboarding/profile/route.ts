@@ -7,7 +7,7 @@ import { requireAuth } from '@/lib/auth-utils'
 export async function POST(req: NextRequest) {
   try {
     await connectDB()
-    
+
     // Get the current user
     const currentUser = await requireAuth(req)
 
@@ -16,16 +16,17 @@ export async function POST(req: NextRequest) {
 
     if (!parsed.success) {
       return NextResponse.json(
-        { 
+        {
           success: false,
           message: 'Validation failed',
-          errors: parsed.error.flatten().fieldErrors 
+          errors: parsed.error.flatten().fieldErrors,
         },
         { status: 400 }
       )
     }
 
-    const { displayName, timezone, language, wakeUpTime, sleepTime } = parsed.data
+    const { displayName, timezone, language, wakeUpTime, sleepTime } =
+      parsed.data
 
     // Update user with profile information
     const updatedUser = await User.findByIdAndUpdate(
@@ -37,8 +38,8 @@ export async function POST(req: NextRequest) {
           language,
           wakeUpTime,
           sleepTime,
-          onboardingStep: 2 // Track onboarding progress
-        }
+          onboardingStep: 2, // Track onboarding progress
+        },
       },
       { new: true, runValidators: true }
     )
@@ -56,10 +57,9 @@ export async function POST(req: NextRequest) {
       data: {
         name: updatedUser.name,
         timezone: updatedUser.timezone,
-        preferences: updatedUser.preferences
-      }
+        preferences: updatedUser.preferences,
+      },
     })
-
   } catch (error) {
     if (error instanceof Error && error.message === 'Authentication required') {
       return NextResponse.json(

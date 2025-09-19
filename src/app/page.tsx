@@ -3,7 +3,7 @@ import { ThemeToggle } from '@/components/ui/ThemeToggle'
 
 export default function Home() {
   return (
-    <div 
+    <div
       className="relative min-h-screen antialiased overflow-x-hidden"
       style={{
         backgroundColor: 'var(--mv-color-bg)',
@@ -41,7 +41,7 @@ export default function Home() {
         <header className="flex justify-between items-center py-6">
           <div className="flex items-center gap-3">
             <span className="text-3xl">🧠</span>
-            <h1 
+            <h1
               className="text-xl font-bold"
               style={{ color: 'var(--mv-color-text)' }}
             >
@@ -77,14 +77,14 @@ export default function Home() {
         <main className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center py-16 md:py-24">
           {/* Left Column: Marketing Copy */}
           <div className="flex flex-col gap-8">
-            <h2 
+            <h2
               className="text-5xl md:text-6xl font-extrabold leading-tight"
               style={{ color: 'var(--mv-color-text)' }}
             >
               Build Better Habits Through{' '}
               <span className="gradient-text">Mindful Reflection</span>
             </h2>
-            <p 
+            <p
               className="text-lg"
               style={{ color: 'var(--mv-color-text-subtle)' }}
             >

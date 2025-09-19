@@ -27,7 +27,7 @@ export default function LoginForm() {
     resolver: zodResolver(loginSchema),
   })
 
-    const onSubmit = async (data: LoginFormValues) => {
+  const onSubmit = async (data: LoginFormValues) => {
     setLoading(true)
     setError(null)
 
@@ -49,7 +49,10 @@ export default function LoginForm() {
         const onboardingRes = await fetch('/api/onboarding/complete')
         if (onboardingRes.ok) {
           const onboardingData = await onboardingRes.json()
-          if (onboardingData.success && onboardingData.data.onboardingCompleted) {
+          if (
+            onboardingData.success &&
+            onboardingData.data.onboardingCompleted
+          ) {
             router.replace('/dashboard')
           } else {
             router.replace('/onboarding')

@@ -5,15 +5,15 @@ export async function POST(req: NextRequest) {
   try {
     // Get current user (optional - for logging purposes)
     const user = getCurrentUser(req)
-    
+
     if (user) {
       console.log(`User ${user.email} logged out successfully`)
     }
 
     // Create response
-    const response = NextResponse.json({ 
+    const response = NextResponse.json({
       success: true,
-      message: 'Logged out successfully'
+      message: 'Logged out successfully',
     })
 
     // Clear the auth token cookie
@@ -26,14 +26,13 @@ export async function POST(req: NextRequest) {
     })
 
     return response
-
   } catch (error) {
     console.error('Logout error:', error)
-    
+
     // Even if there's an error, we should still clear the cookie
-    const response = NextResponse.json({ 
+    const response = NextResponse.json({
       success: true,
-      message: 'Logged out successfully'
+      message: 'Logged out successfully',
     })
 
     response.cookies.set('auth-token', '', {

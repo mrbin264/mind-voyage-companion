@@ -14,9 +14,9 @@ export async function GET(req: NextRequest) {
     const userProfile = await User.findById(user.userId).select('-password')
     if (!userProfile) {
       return NextResponse.json(
-        { 
+        {
           success: false,
-          message: 'User not found'
+          message: 'User not found',
         },
         { status: 404 }
       )
@@ -35,13 +35,12 @@ export async function GET(req: NextRequest) {
         updatedAt: userProfile.updatedAt,
       },
     })
-
   } catch (error) {
     if (error instanceof Error && error.message === 'Authentication required') {
       return NextResponse.json(
-        { 
+        {
           success: false,
-          message: 'Authentication required'
+          message: 'Authentication required',
         },
         { status: 401 }
       )
@@ -49,9 +48,9 @@ export async function GET(req: NextRequest) {
 
     console.error('Get profile error:', error)
     return NextResponse.json(
-      { 
+      {
         success: false,
-        message: 'Internal server error'
+        message: 'Internal server error',
       },
       { status: 500 }
     )
@@ -68,10 +67,10 @@ export async function PATCH(req: NextRequest) {
 
     if (!parsed.success) {
       return NextResponse.json(
-        { 
+        {
           success: false,
           message: 'Validation failed',
-          errors: parsed.error.flatten().fieldErrors 
+          errors: parsed.error.flatten().fieldErrors,
         },
         { status: 400 }
       )
@@ -87,30 +86,32 @@ export async function PATCH(req: NextRequest) {
       }
       if (parsed.data.preferences.notifications) {
         if (parsed.data.preferences.notifications.email !== undefined) {
-          updateData.$set['preferences.notifications.email'] = parsed.data.preferences.notifications.email
+          updateData.$set['preferences.notifications.email'] =
+            parsed.data.preferences.notifications.email
         }
         if (parsed.data.preferences.notifications.push !== undefined) {
-          updateData.$set['preferences.notifications.push'] = parsed.data.preferences.notifications.push
+          updateData.$set['preferences.notifications.push'] =
+            parsed.data.preferences.notifications.push
         }
       }
       if (parsed.data.preferences.privacy) {
         if (parsed.data.preferences.privacy.publicProfile !== undefined) {
-          updateData.$set['preferences.privacy.publicProfile'] = parsed.data.preferences.privacy.publicProfile
+          updateData.$set['preferences.privacy.publicProfile'] =
+            parsed.data.preferences.privacy.publicProfile
         }
       }
     }
 
-    const updatedUser = await User.findByIdAndUpdate(
-      user.userId,
-      updateData,
-      { new: true, select: '-password' }
-    )
+    const updatedUser = await User.findByIdAndUpdate(user.userId, updateData, {
+      new: true,
+      select: '-password',
+    })
 
     if (!updatedUser) {
       return NextResponse.json(
-        { 
+        {
           success: false,
-          message: 'User not found'
+          message: 'User not found',
         },
         { status: 404 }
       )
@@ -130,13 +131,12 @@ export async function PATCH(req: NextRequest) {
         updatedAt: updatedUser.updatedAt,
       },
     })
-
   } catch (error) {
     if (error instanceof Error && error.message === 'Authentication required') {
       return NextResponse.json(
-        { 
+        {
           success: false,
-          message: 'Authentication required'
+          message: 'Authentication required',
         },
         { status: 401 }
       )
@@ -144,9 +144,9 @@ export async function PATCH(req: NextRequest) {
 
     console.error('Update profile error:', error)
     return NextResponse.json(
-      { 
+      {
         success: false,
-        message: 'Internal server error'
+        message: 'Internal server error',
       },
       { status: 500 }
     )
@@ -177,13 +177,12 @@ export async function DELETE(req: NextRequest) {
     })
 
     return response
-
   } catch (error) {
     if (error instanceof Error && error.message === 'Authentication required') {
       return NextResponse.json(
-        { 
+        {
           success: false,
-          message: 'Authentication required'
+          message: 'Authentication required',
         },
         { status: 401 }
       )
@@ -191,9 +190,9 @@ export async function DELETE(req: NextRequest) {
 
     console.error('Delete account error:', error)
     return NextResponse.json(
-      { 
+      {
         success: false,
-        message: 'Internal server error'
+        message: 'Internal server error',
       },
       { status: 500 }
     )

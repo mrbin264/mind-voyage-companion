@@ -18,22 +18,28 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
   // Initialize theme from localStorage or system preference
   useEffect(() => {
     const savedTheme = localStorage.getItem('theme') as Theme | null
-    const systemTheme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'
+    const systemTheme = window.matchMedia('(prefers-color-scheme: dark)')
+      .matches
+      ? 'dark'
+      : 'light'
     const htmlElement = document.documentElement
-    
+
     // Check what theme is already applied by the script
-    const currentThemeFromDOM = htmlElement.classList.contains('light') ? 'light' : 
-                               htmlElement.classList.contains('dark') ? 'dark' : null
-    
+    const currentThemeFromDOM = htmlElement.classList.contains('light')
+      ? 'light'
+      : htmlElement.classList.contains('dark')
+        ? 'dark'
+        : null
+
     const initialTheme = savedTheme || currentThemeFromDOM || systemTheme
-    
+
     console.log('Theme initialization:')
     console.log('- savedTheme:', savedTheme)
     console.log('- systemTheme:', systemTheme)
     console.log('- currentThemeFromDOM:', currentThemeFromDOM)
     console.log('- initialTheme:', initialTheme)
     console.log('- HTML classes:', htmlElement.classList.toString())
-    
+
     setTheme(initialTheme)
     setMounted(true)
   }, [])

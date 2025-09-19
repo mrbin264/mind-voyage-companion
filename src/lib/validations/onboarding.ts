@@ -1,7 +1,10 @@
 import { z } from 'zod'
 
 export const onboardingProfileSchema = z.object({
-  displayName: z.string().min(1, 'Display name is required').max(50, 'Display name must be 50 characters or less'),
+  displayName: z
+    .string()
+    .min(1, 'Display name is required')
+    .max(50, 'Display name must be 50 characters or less'),
   timezone: z.string().min(1, 'Timezone is required'),
   language: z.enum(['english', 'vietnamese']),
   wakeUpTime: z.string().min(1, 'Wake up time is required'),
