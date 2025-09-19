@@ -1,6 +1,7 @@
 import React from 'react'
 import Link from 'next/link'
 import type { Route } from 'next'
+import { ThemeToggle } from '@/components/ui/ThemeToggle'
 
 interface AuthLayoutProps {
   children: React.ReactNode
@@ -235,7 +236,13 @@ export function AuthLayout({
   const content = authContent[type]
 
   return (
-    <div className="relative min-h-screen flex flex-col bg-gray-900 text-white antialiased">
+    <div 
+      className="relative min-h-screen flex flex-col antialiased"
+      style={{
+        backgroundColor: 'var(--mv-color-bg)',
+        color: 'var(--mv-color-text)',
+      }}
+    >
       {/* Decorative Glow Effects */}
       <div
         className="glow-effect -top-40 -left-60"
@@ -267,23 +274,29 @@ export function AuthLayout({
         <header className="flex justify-between items-center py-6">
           <Link href="/" className="flex items-center gap-3">
             <span className="text-3xl">🧠</span>
-            <h1 className="text-xl font-bold text-gray-200">
+            <h1 
+              className="text-xl font-bold"
+              style={{ color: 'var(--mv-color-text)' }}
+            >
               Mind Voyage Companion
             </h1>
           </Link>
           <div className="flex items-center gap-4">
             <Link
               href={(content?.nav.primary.href || '/') as Route}
-              className="text-gray-300 hover:text-white transition-colors px-4 py-2"
+              className="transition-colors px-4 py-2 hover:opacity-80"
+              style={{ color: 'var(--mv-color-text-subtle)' }}
             >
               {content?.nav.primary.text}
             </Link>
             <Link
               href={(content?.nav.secondary.href || '/help') as Route}
-              className="text-gray-300 hover:text-white transition-colors px-4 py-2"
+              className="transition-colors px-4 py-2 hover:opacity-80"
+              style={{ color: 'var(--mv-color-text-subtle)' }}
             >
               {content?.nav.secondary.text}
             </Link>
+            <ThemeToggle />
           </div>
         </header>
 
