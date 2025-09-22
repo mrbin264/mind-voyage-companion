@@ -72,18 +72,18 @@ export interface DailyPrompts {
 // Mood mapping for UI display
 export const MOOD_EMOJIS = {
   1: '😔',
-  2: '😐', 
+  2: '😐',
   3: '😊',
   4: '😄',
-  5: '🤗'
+  5: '🤗',
 } as const
 
 export const MOOD_LABELS = {
   1: 'Very Low',
   2: 'Low',
-  3: 'Good', 
+  3: 'Good',
   4: 'Great',
-  5: 'Excellent'
+  5: 'Excellent',
 } as const
 
 export type MoodValue = keyof typeof MOOD_EMOJIS

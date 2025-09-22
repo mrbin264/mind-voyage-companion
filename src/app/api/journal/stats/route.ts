@@ -39,7 +39,9 @@ export async function GET(request: NextRequest) {
     await connectDB()
 
     // Get all user entries
-    const entries = await JournalEntryModel.find({ userId: user.userId }).sort({ date: 1 })
+    const entries = await JournalEntryModel.find({ userId: user.userId }).sort({
+      date: 1,
+    })
 
     if (entries.length === 0) {
       const emptyStats: JournalStats = {
@@ -51,26 +53,37 @@ export async function GET(request: NextRequest) {
         totalWords: 0,
         totalMinutesWritten: 0,
         moodDistribution: {},
-        tagFrequency: {}
+        tagFrequency: {},
       }
-      
+
       return NextResponse.json({
         success: true,
-        data: emptyStats
+        data: emptyStats,
       })
     }
 
     // Calculate basic stats
     const totalEntries = entries.length
-    const totalWords = entries.reduce((sum, entry) => sum + (entry.wordCount || 0), 0)
-    const totalMinutesWritten = entries.reduce((sum, entry) => sum + (entry.readingTime || 0), 0)
+    const totalWords = entries.reduce(
+      (sum, entry) => sum + (entry.wordCount || 0),
+      0
+    )
+    const totalMinutesWritten = entries.reduce(
+      (sum, entry) => sum + (entry.readingTime || 0),
+      0
+    )
     const averageWordCount = Math.round(totalWords / totalEntries)
-    
+
     // Calculate mood stats
     const moodEntries = entries.filter(entry => entry.mood !== undefined)
-    const averageMood = moodEntries.length > 0 
-      ? Math.round((moodEntries.reduce((sum, entry) => sum + (entry.mood || 0), 0) / moodEntries.length) * 10) / 10
-      : 0
+    const averageMood =
+      moodEntries.length > 0
+        ? Math.round(
+            (moodEntries.reduce((sum, entry) => sum + (entry.mood || 0), 0) /
+              moodEntries.length) *
+              10
+          ) / 10
+        : 0
 
     // Mood distribution
     const moodDistribution: { [mood: number]: number } = {}
@@ -98,12 +111,13 @@ export async function GET(request: NextRequest) {
     const today = new Date()
     const yesterday = new Date(today)
     yesterday.setDate(yesterday.getDate() - 1)
-    
+
     const todayStr = today.toISOString().split('T')[0]
     const yesterdayStr = yesterday.toISOString().split('T')[0]
 
     // Check if there's an entry for today or yesterday to start current streak
-    const hasRecentEntry = sortedDates.includes(todayStr) || sortedDates.includes(yesterdayStr)
+    const hasRecentEntry =
+      sortedDates.includes(todayStr) || sortedDates.includes(yesterdayStr)
 
     if (hasRecentEntry) {
       // Calculate current streak working backwards from today
@@ -124,7 +138,11 @@ export async function GET(request: NextRequest) {
       const currentDate = new Date(sortedDates[i])
       const prevDate = i > 0 ? new Date(sortedDates[i - 1]) : null
 
-      if (!prevDate || (currentDate.getTime() - prevDate.getTime()) / (1000 * 60 * 60 * 24) === 1) {
+      if (
+        !prevDate ||
+        (currentDate.getTime() - prevDate.getTime()) / (1000 * 60 * 60 * 24) ===
+          1
+      ) {
         tempStreak++
         longestStreak = Math.max(longestStreak, tempStreak)
       } else {
@@ -142,8 +160,11 @@ export async function GET(request: NextRequest) {
       else timeSlots.night++
     })
 
-    const mostActiveTime = Object.entries(timeSlots).reduce((a, b) => 
-      timeSlots[a[0] as keyof typeof timeSlots] > timeSlots[b[0] as keyof typeof timeSlots] ? a : b
+    const mostActiveTime = Object.entries(timeSlots).reduce((a, b) =>
+      timeSlots[a[0] as keyof typeof timeSlots] >
+      timeSlots[b[0] as keyof typeof timeSlots]
+        ? a
+        : b
     )[0] as 'morning' | 'afternoon' | 'evening' | 'night'
 
     const stats: JournalStats = {
@@ -156,12 +177,12 @@ export async function GET(request: NextRequest) {
       totalWords,
       totalMinutesWritten,
       moodDistribution,
-      tagFrequency
+      tagFrequency,
     }
 
     return NextResponse.json({
       success: true,
-      data: stats
+      data: stats,
     })
   } catch (error) {
     console.error('GET /api/journal/stats error:', error)

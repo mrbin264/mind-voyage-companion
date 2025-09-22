@@ -22,18 +22,18 @@ export default function NewJournalEntryPage() {
     {
       category: 'Reflection',
       emoji: '💭',
-      text: 'What small action today moved you closer to your goals?'
+      text: 'What small action today moved you closer to your goals?',
     },
     {
-      category: 'Gratitude', 
+      category: 'Gratitude',
       emoji: '🙏',
-      text: 'What are you grateful for today?'
+      text: 'What are you grateful for today?',
     },
     {
       category: 'Tomorrow',
-      emoji: '🎯', 
-      text: "What&apos;s your intention for tomorrow?"
-    }
+      emoji: '🎯',
+      text: 'What&apos;s your intention for tomorrow?',
+    },
   ])
 
   // Mock user for now - in real app this would come from auth context
@@ -42,12 +42,14 @@ export default function NewJournalEntryPage() {
   useEffect(() => {
     // Set current date
     const today = new Date()
-    setCurrentDate(today.toLocaleDateString('en-US', { 
-      weekday: 'long',
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric'
-    }))
+    setCurrentDate(
+      today.toLocaleDateString('en-US', {
+        weekday: 'long',
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric',
+      })
+    )
 
     // Fetch stats
     fetchStats()
@@ -57,7 +59,7 @@ export default function NewJournalEntryPage() {
     try {
       const response = await fetch('/api/journal/stats')
       if (!response.ok) return
-      
+
       const result = await response.json()
       setStats(result.data)
     } catch (error) {
@@ -70,9 +72,9 @@ export default function NewJournalEntryPage() {
       const response = await fetch('/api/journal', {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/json'
+          'Content-Type': 'application/json',
         },
-        body: JSON.stringify(entryData)
+        body: JSON.stringify(entryData),
       })
 
       if (!response.ok) {
@@ -81,13 +83,15 @@ export default function NewJournalEntryPage() {
       }
 
       const result = await response.json()
-      
+
       // Success! Redirect to journal list or show success message
       router.push('/journal' as any)
     } catch (error) {
       console.error('Error saving journal entry:', error)
       // TODO: Show error message to user
-      alert(`Failed to save entry: ${error instanceof Error ? error.message : 'Unknown error'}`)
+      alert(
+        `Failed to save entry: ${error instanceof Error ? error.message : 'Unknown error'}`
+      )
     }
   }
 
@@ -110,7 +114,9 @@ export default function NewJournalEntryPage() {
         {/* Header */}
         <header className="flex flex-wrap justify-between items-center gap-4 mb-8">
           <div>
-            <h1 className="text-3xl font-bold text-gray-100">📝 Today&apos;s Journal Entry</h1>
+            <h1 className="text-3xl font-bold text-gray-100">
+              📝 Today&apos;s Journal Entry
+            </h1>
             <p className="text-gray-400">{currentDate}</p>
           </div>
         </header>
@@ -120,18 +126,18 @@ export default function NewJournalEntryPage() {
           {/* Left Column: Writing Area */}
           <div className="xl:col-span-2 space-y-6">
             <div className="bg-zinc-900 border border-gray-700 rounded-xl p-6">
-              <JournalEntryForm
-                onSave={handleSave}
-                onCancel={handleCancel}
-              />
+              <JournalEntryForm onSave={handleSave} onCancel={handleCancel} />
             </div>
 
             {/* AI Enhancement Promo (Pro Feature) */}
             <div className="bg-zinc-900 border border-gray-700 rounded-xl p-6 flex flex-wrap justify-between items-center gap-4">
               <div>
-                <h3 className="font-bold text-lg text-yellow-300">✨ AI Enhancement (Pro)</h3>
+                <h3 className="font-bold text-lg text-yellow-300">
+                  ✨ AI Enhancement (Pro)
+                </h3>
                 <p className="text-sm text-gray-400 max-w-md mt-1">
-                  Enhance your writing with AI-powered suggestions for grammar, style, and emotional expression.
+                  Enhance your writing with AI-powered suggestions for grammar,
+                  style, and emotional expression.
                 </p>
               </div>
               <div className="flex gap-2">
@@ -148,7 +154,7 @@ export default function NewJournalEntryPage() {
           {/* Right Column: Prompts & Stats */}
           <div className="space-y-6">
             {/* Prompts Widget */}
-            <JournalPromptsWidget 
+            <JournalPromptsWidget
               prompts={prompts}
               onUsePrompt={handleUsePrompt}
             />
@@ -176,7 +182,7 @@ export default function NewJournalEntryPage() {
                   </button>
                 </div>
               </div>
-              <button 
+              <button
                 onClick={() => router.push('/journal' as any)}
                 className="text-sm font-semibold text-blue-400 hover:text-blue-300 mt-3 block transition-colors"
               >

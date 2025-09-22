@@ -2,7 +2,9 @@ import mongoose, { Schema, Document, Model } from 'mongoose'
 import type { JournalEntry, JournalPrompt } from '@/types/journal'
 
 // Interface extending Document for Mongoose
-export interface IJournalEntry extends Omit<JournalEntry, '_id' | 'userId'>, Document {
+export interface IJournalEntry
+  extends Omit<JournalEntry, '_id' | 'userId'>,
+    Document {
   _id: mongoose.Types.ObjectId
   userId: mongoose.Types.ObjectId
   toSafeObject(): any
@@ -14,27 +16,37 @@ export interface IJournalPrompt extends Omit<JournalPrompt, '_id'>, Document {
 
 // Interface for static methods
 interface IJournalEntryModel extends Model<IJournalEntry> {
-  findByUserId(userId: string, options?: {
-    page?: number
-    limit?: number
-    sortBy?: string
-    sortOrder?: 'asc' | 'desc'
-  }): Promise<IJournalEntry[]>
-  
-  findByUserIdAndDateRange(userId: string, startDate: string, endDate: string): Promise<IJournalEntry[]>
-  
-  searchEntries(userId: string, searchParams: {
-    query?: string
-    mood?: number[]
-    tags?: string[]
-    dateFrom?: string
-    dateTo?: string
-    favorite?: boolean
-    page?: number
-    limit?: number
-    sortBy?: string
-    sortOrder?: 'asc' | 'desc'
-  }): Promise<{
+  findByUserId(
+    userId: string,
+    options?: {
+      page?: number
+      limit?: number
+      sortBy?: string
+      sortOrder?: 'asc' | 'desc'
+    }
+  ): Promise<IJournalEntry[]>
+
+  findByUserIdAndDateRange(
+    userId: string,
+    startDate: string,
+    endDate: string
+  ): Promise<IJournalEntry[]>
+
+  searchEntries(
+    userId: string,
+    searchParams: {
+      query?: string
+      mood?: number[]
+      tags?: string[]
+      dateFrom?: string
+      dateTo?: string
+      favorite?: boolean
+      page?: number
+      limit?: number
+      sortBy?: string
+      sortOrder?: 'asc' | 'desc'
+    }
+  ): Promise<{
     entries: IJournalEntry[]
     pagination: {
       page: number
@@ -70,32 +82,32 @@ const JournalEntrySchema = new Schema<IJournalEntry>(
       min: 1,
       max: 5,
       validate: {
-        validator: function(v: number) {
+        validator: function (v: number) {
           return v >= 1 && v <= 5
         },
-        message: 'Mood must be between 1 and 5'
-      }
+        message: 'Mood must be between 1 and 5',
+      },
     },
     tags: {
       type: [String],
       default: [],
       validate: {
-        validator: function(v: string[]) {
+        validator: function (v: string[]) {
           return v.length <= 20 // Max 20 tags per entry
         },
-        message: 'Maximum 20 tags allowed per entry'
-      }
+        message: 'Maximum 20 tags allowed per entry',
+      },
     },
     date: {
       type: String,
       required: true,
       index: true,
       validate: {
-        validator: function(v: string) {
+        validator: function (v: string) {
           return /^\d{4}-\d{2}-\d{2}$/.test(v)
         },
-        message: 'Date must be in YYYY-MM-DD format'
-      }
+        message: 'Date must be in YYYY-MM-DD format',
+      },
     },
     wordCount: {
       type: Number,
@@ -157,12 +169,15 @@ const JournalPromptSchema = new Schema<IJournalPrompt>(
 )
 
 // Pre-save middleware to calculate word count and reading time
-JournalEntrySchema.pre('save', function(this: IJournalEntry, next) {
+JournalEntrySchema.pre('save', function (this: IJournalEntry, next) {
   if (this.isModified('content')) {
     // Calculate word count (simple word splitting)
-    const words = this.content.trim().split(/\s+/).filter((word: string) => word.length > 0)
+    const words = this.content
+      .trim()
+      .split(/\s+/)
+      .filter((word: string) => word.length > 0)
     this.wordCount = words.length
-    
+
     // Calculate reading time (average 200 words per minute)
     this.readingTime = Math.max(1, Math.ceil(this.wordCount / 200))
   }
@@ -170,7 +185,7 @@ JournalEntrySchema.pre('save', function(this: IJournalEntry, next) {
 })
 
 // Instance methods
-JournalEntrySchema.methods.toSafeObject = function() {
+JournalEntrySchema.methods.toSafeObject = function () {
   const obj = this.toObject()
   return {
     ...obj,
@@ -180,38 +195,37 @@ JournalEntrySchema.methods.toSafeObject = function() {
 }
 
 // Static methods for common queries
-JournalEntrySchema.statics.findByUserId = function(userId: string, options: {
-  page?: number
-  limit?: number
-  sortBy?: string
-  sortOrder?: 'asc' | 'desc'
-} = {}) {
+JournalEntrySchema.statics.findByUserId = function (
+  userId: string,
+  options: {
+    page?: number
+    limit?: number
+    sortBy?: string
+    sortOrder?: 'asc' | 'desc'
+  } = {}
+) {
   const { page = 1, limit = 10, sortBy = 'date', sortOrder = 'desc' } = options
   const skip = (page - 1) * limit
   const sort: any = {}
   sort[sortBy] = sortOrder === 'asc' ? 1 : -1
-  
-  return this.find({ userId })
-    .sort(sort)
-    .skip(skip)
-    .limit(limit)
-    .exec()
+
+  return this.find({ userId }).sort(sort).skip(skip).limit(limit).exec()
 }
 
-JournalEntrySchema.statics.findByUserIdAndDateRange = function(
-  userId: string, 
-  startDate: string, 
+JournalEntrySchema.statics.findByUserIdAndDateRange = function (
+  userId: string,
+  startDate: string,
   endDate: string
 ) {
   return this.find({
     userId,
-    date: { $gte: startDate, $lte: endDate }
+    date: { $gte: startDate, $lte: endDate },
   })
-  .sort({ date: -1 })
-  .exec()
+    .sort({ date: -1 })
+    .exec()
 }
 
-JournalEntrySchema.statics.searchEntries = function(
+JournalEntrySchema.statics.searchEntries = function (
   userId: string,
   searchParams: {
     query?: string
@@ -236,58 +250,62 @@ JournalEntrySchema.statics.searchEntries = function(
     page = 1,
     limit = 10,
     sortBy = 'date',
-    sortOrder = 'desc'
+    sortOrder = 'desc',
   } = searchParams
-  
+
   // Build query conditions
   const conditions: any = { userId }
-  
+
   if (query) {
     conditions.$or = [
       { title: { $regex: query, $options: 'i' } },
-      { content: { $regex: query, $options: 'i' } }
+      { content: { $regex: query, $options: 'i' } },
     ]
   }
-  
+
   if (mood && mood.length > 0) {
     conditions.mood = { $in: mood }
   }
-  
+
   if (tags && tags.length > 0) {
     conditions.tags = { $in: tags }
   }
-  
+
   if (dateFrom || dateTo) {
     conditions.date = {}
     if (dateFrom) conditions.date.$gte = dateFrom
     if (dateTo) conditions.date.$lte = dateTo
   }
-  
+
   if (favorite !== undefined) {
     conditions.favorite = favorite
   }
-  
+
   const skip = (page - 1) * limit
   const sort: any = {}
   sort[sortBy] = sortOrder === 'asc' ? 1 : -1
-  
+
   return Promise.all([
     this.find(conditions).sort(sort).skip(skip).limit(limit).exec(),
-    this.countDocuments(conditions).exec()
+    this.countDocuments(conditions).exec(),
   ]).then(([entries, total]) => ({
     entries,
     pagination: {
       page,
       limit,
       total,
-      totalPages: Math.ceil(total / limit)
-    }
+      totalPages: Math.ceil(total / limit),
+    },
   }))
 }
 
 // Ensure models are only compiled once
-export const JournalEntryModel = (mongoose.models.JournalEntry || 
-  mongoose.model<IJournalEntry, IJournalEntryModel>('JournalEntry', JournalEntrySchema)) as IJournalEntryModel
+export const JournalEntryModel = (mongoose.models.JournalEntry ||
+  mongoose.model<IJournalEntry, IJournalEntryModel>(
+    'JournalEntry',
+    JournalEntrySchema
+  )) as IJournalEntryModel
 
-export const JournalPromptModel = mongoose.models.JournalPrompt || 
+export const JournalPromptModel =
+  mongoose.models.JournalPrompt ||
   mongoose.model<IJournalPrompt>('JournalPrompt', JournalPromptSchema)

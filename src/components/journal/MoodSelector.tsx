@@ -12,7 +12,7 @@ interface MoodSelectorProps {
 export default function MoodSelector({
   selectedMood,
   onMoodChange,
-  className = ''
+  className = '',
 }: MoodSelectorProps) {
   const moods = [1, 2, 3, 4, 5] as const
 
@@ -20,11 +20,13 @@ export default function MoodSelector({
     <div className={`flex items-center gap-2 ${className}`}>
       <span className="text-sm font-medium text-gray-300">Mood:</span>
       <div className="flex items-center mood-selector">
-        {moods.map((mood) => (
+        {moods.map(mood => (
           <button
             key={mood}
             type="button"
-            onClick={() => onMoodChange(selectedMood === mood ? undefined : mood)}
+            onClick={() =>
+              onMoodChange(selectedMood === mood ? undefined : mood)
+            }
             className={`text-2xl p-2 transition-transform hover:scale-110 rounded-full ${
               selectedMood === mood
                 ? 'selected scale-125 bg-blue-500/30 ring-2 ring-blue-400'

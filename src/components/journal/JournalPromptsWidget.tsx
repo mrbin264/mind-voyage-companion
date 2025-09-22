@@ -20,30 +20,32 @@ export default function JournalPromptsWidget({
   prompts,
   onUsePrompt,
   onRefreshPrompts,
-  className = ''
+  className = '',
 }: JournalPromptsWidgetProps) {
   const defaultPrompts: JournalPrompt[] = [
     {
       category: 'Reflection',
       emoji: '💭',
-      text: 'What small action today moved you closer to your goals?'
+      text: 'What small action today moved you closer to your goals?',
     },
     {
-      category: 'Gratitude', 
+      category: 'Gratitude',
       emoji: '🙏',
-      text: 'What are you grateful for today?'
+      text: 'What are you grateful for today?',
     },
     {
       category: 'Tomorrow',
-      emoji: '🎯', 
-      text: "What&apos;s your intention for tomorrow?"
-    }
+      emoji: '🎯',
+      text: 'What&apos;s your intention for tomorrow?',
+    },
   ]
 
   const displayPrompts = prompts.length > 0 ? prompts : defaultPrompts
 
   return (
-    <div className={`bg-zinc-900 border border-gray-700 rounded-xl p-6 ${className}`}>
+    <div
+      className={`bg-zinc-900 border border-gray-700 rounded-xl p-6 ${className}`}
+    >
       <div className="flex justify-between items-center mb-4">
         <h3 className="font-bold text-lg">Today&apos;s Prompts</h3>
         {onRefreshPrompts && (
@@ -56,7 +58,7 @@ export default function JournalPromptsWidget({
           </button>
         )}
       </div>
-      
+
       <div className="space-y-4 text-sm">
         {displayPrompts.map((prompt, index) => (
           <div key={index} className="space-y-2">
@@ -79,7 +81,7 @@ export default function JournalPromptsWidget({
           </div>
         ))}
       </div>
-      
+
       <div className="flex gap-2 mt-6 pt-4 border-t border-gray-700">
         <button className="text-xs font-semibold text-gray-400 hover:text-gray-300 transition-colors">
           Get New Prompt

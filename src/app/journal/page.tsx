@@ -4,16 +4,16 @@ import React, { useState, useEffect } from 'react'
 import { Plus, Search, Upload, Settings } from 'lucide-react'
 import { DashboardLayout } from '@/components/layout/DashboardLayout'
 import JournalEntryList from '@/components/journal/JournalEntryList'
-import type { JournalEntry, JournalSearchResult, JournalStats } from '@/types/journal'
+import type {
+  JournalEntry,
+  JournalSearchResult,
+  JournalStats,
+} from '@/types/journal'
 
 // Filter types
 type FilterType = 'all' | 'month' | 'favorites' | 'tags'
 
-interface JournalHistoryPageProps {
-  className?: string
-}
-
-export default function JournalHistoryPage({ className = '' }: JournalHistoryPageProps) {
+export default function JournalHistoryPage() {
   const [entries, setEntries] = useState<JournalEntry[]>([])
   const [stats, setStats] = useState<JournalStats | null>(null)
   const [activeFilter, setActiveFilter] = useState<FilterType>('all')
@@ -40,7 +40,7 @@ export default function JournalHistoryPage({ className = '' }: JournalHistoryPag
     try {
       const response = await fetch('/api/journal/stats')
       if (!response.ok) throw new Error('Failed to fetch stats')
-      
+
       const result = await response.json()
       setStats(result.data)
     } catch (error) {
@@ -58,7 +58,7 @@ export default function JournalHistoryPage({ className = '' }: JournalHistoryPag
         page: page.toString(),
         limit: '10',
         sortBy: 'date',
-        sortOrder: 'desc'
+        sortOrder: 'desc',
       })
 
       // Apply filters
@@ -68,8 +68,12 @@ export default function JournalHistoryPage({ className = '' }: JournalHistoryPag
 
       if (activeFilter === 'month') {
         const now = new Date()
-        const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1).toISOString().split('T')[0]
-        const endOfMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0).toISOString().split('T')[0]
+        const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1)
+          .toISOString()
+          .split('T')[0]
+        const endOfMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0)
+          .toISOString()
+          .split('T')[0]
         params.set('dateFrom', startOfMonth)
         params.set('dateTo', endOfMonth)
       } else if (activeFilter === 'favorites') {
@@ -79,8 +83,9 @@ export default function JournalHistoryPage({ className = '' }: JournalHistoryPag
       const response = await fetch(`/api/journal?${params}`)
       if (!response.ok) throw new Error('Failed to fetch entries')
 
-      const result: { success: boolean; data: JournalSearchResult } = await response.json()
-      
+      const result: { success: boolean; data: JournalSearchResult } =
+        await response.json()
+
       if (reset) {
         setEntries(result.data.entries)
         setCurrentPage(1)
@@ -88,7 +93,9 @@ export default function JournalHistoryPage({ className = '' }: JournalHistoryPag
         setEntries(prev => [...prev, ...result.data.entries])
       }
 
-      setHasMore(result.data.pagination.page < result.data.pagination.totalPages)
+      setHasMore(
+        result.data.pagination.page < result.data.pagination.totalPages
+      )
       setCurrentPage(result.data.pagination.page)
     } catch (error) {
       console.error('Error fetching entries:', error)
@@ -110,14 +117,14 @@ export default function JournalHistoryPage({ className = '' }: JournalHistoryPag
       const response = await fetch(`/api/journal/${entry._id}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ favorite: !entry.favorite })
+        body: JSON.stringify({ favorite: !entry.favorite }),
       })
 
       if (!response.ok) throw new Error('Failed to update favorite')
 
       // Update local state
-      setEntries(prev => 
-        prev.map(e => 
+      setEntries(prev =>
+        prev.map(e =>
           e._id === entry._id ? { ...e, favorite: !e.favorite } : e
         )
       )
@@ -152,16 +159,18 @@ export default function JournalHistoryPage({ className = '' }: JournalHistoryPag
     { key: 'all', label: 'All Entries' },
     { key: 'month', label: 'This Month' },
     { key: 'favorites', label: 'Favorites' },
-    { key: 'tags', label: 'Tags' }
+    { key: 'tags', label: 'Tags' },
   ]
 
   return (
     <DashboardLayout user={user} showDefaultHeader={false}>
-      <div className={`max-w-6xl mx-auto ${className}`}>
+      <div className="max-w-6xl mx-auto">
         {/* Header */}
         <header className="flex flex-wrap justify-between items-center gap-4 mb-8">
           <div>
-            <h1 className="text-3xl font-bold text-gray-100">📖 Journal History</h1>
+            <h1 className="text-3xl font-bold text-gray-100">
+              📖 Journal History
+            </h1>
           </div>
           <div className="flex items-center gap-2">
             <button
@@ -192,17 +201,29 @@ export default function JournalHistoryPage({ className = '' }: JournalHistoryPag
             <h2 className="font-bold text-lg mb-2">📊 Journal Overview</h2>
             <div className="flex flex-wrap gap-x-6 gap-y-2 text-gray-400 text-sm">
               <span>
-                Total entries: <span className="font-semibold text-gray-200">{stats.totalEntries}</span>
+                Total entries:{' '}
+                <span className="font-semibold text-gray-200">
+                  {stats.totalEntries}
+                </span>
               </span>
               <span>
-                Current streak: <span className="font-semibold text-gray-200">🔥 {stats.currentStreak} days</span>
+                Current streak:{' '}
+                <span className="font-semibold text-gray-200">
+                  🔥 {stats.currentStreak} days
+                </span>
               </span>
               <span>
-                Average words: <span className="font-semibold text-gray-200">{stats.averageWordCount}</span>
+                Average words:{' '}
+                <span className="font-semibold text-gray-200">
+                  {stats.averageWordCount}
+                </span>
               </span>
               {stats.mostActiveTime && (
                 <span>
-                  Most active: <span className="font-semibold text-gray-200 capitalize">{stats.mostActiveTime}s</span>
+                  Most active:{' '}
+                  <span className="font-semibold text-gray-200 capitalize">
+                    {stats.mostActiveTime}s
+                  </span>
                 </span>
               )}
             </div>
@@ -216,7 +237,7 @@ export default function JournalHistoryPage({ className = '' }: JournalHistoryPag
             <input
               type="text"
               value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
+              onChange={e => setSearchQuery(e.target.value)}
               placeholder="Search your journal entries..."
               className="w-full pl-10 pr-4 py-3 bg-zinc-900 border border-gray-700 rounded-lg text-gray-300 placeholder-gray-500 focus:border-blue-500 focus:outline-none transition-colors"
             />
@@ -225,7 +246,7 @@ export default function JournalHistoryPage({ className = '' }: JournalHistoryPag
 
         {/* Filters */}
         <div className="flex gap-2 mb-6">
-          {filters.map((filter) => (
+          {filters.map(filter => (
             <button
               key={filter.key}
               onClick={() => setActiveFilter(filter.key)}
@@ -243,7 +264,9 @@ export default function JournalHistoryPage({ className = '' }: JournalHistoryPag
         {/* Entry List */}
         {error ? (
           <div className="text-center py-12">
-            <div className="text-red-500 text-lg mb-4">Error loading entries</div>
+            <div className="text-red-500 text-lg mb-4">
+              Error loading entries
+            </div>
             <p className="text-gray-500 mb-6">{error}</p>
             <button
               onClick={() => fetchEntries(true)}

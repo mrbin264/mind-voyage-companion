@@ -46,16 +46,31 @@ export async function GET(request: NextRequest) {
     // Parse query parameters
     const { searchParams } = new URL(request.url)
     const query = searchParams.get('query') || undefined
-    const mood = searchParams.get('mood')?.split(',').map(m => parseInt(m)).filter(m => !isNaN(m)) || undefined
-    const tags = searchParams.get('tags')?.split(',').filter(tag => tag.trim()) || undefined
+    const mood =
+      searchParams
+        .get('mood')
+        ?.split(',')
+        .map(m => parseInt(m))
+        .filter(m => !isNaN(m)) || undefined
+    const tags =
+      searchParams
+        .get('tags')
+        ?.split(',')
+        .filter(tag => tag.trim()) || undefined
     const dateFrom = searchParams.get('dateFrom') || undefined
     const dateTo = searchParams.get('dateTo') || undefined
-    const favorite = searchParams.get('favorite') === 'true' ? true : 
-                    searchParams.get('favorite') === 'false' ? false : undefined
+    const favorite =
+      searchParams.get('favorite') === 'true'
+        ? true
+        : searchParams.get('favorite') === 'false'
+          ? false
+          : undefined
     const page = parseInt(searchParams.get('page') || '1')
     const limit = Math.min(parseInt(searchParams.get('limit') || '10'), 50) // Max 50 per page
-    const sortBy = (searchParams.get('sortBy') as 'date' | 'wordCount' | 'mood') || 'date'
-    const sortOrder = searchParams.get('sortOrder') as 'asc' | 'desc' || 'desc'
+    const sortBy =
+      (searchParams.get('sortBy') as 'date' | 'wordCount' | 'mood') || 'date'
+    const sortOrder =
+      (searchParams.get('sortOrder') as 'asc' | 'desc') || 'desc'
 
     const searchParameters: JournalSearchParams = {
       query,
@@ -67,14 +82,17 @@ export async function GET(request: NextRequest) {
       page,
       limit,
       sortBy,
-      sortOrder
+      sortOrder,
     }
 
-    const result = await JournalEntryModel.searchEntries(user.userId, searchParameters)
+    const result = await JournalEntryModel.searchEntries(
+      user.userId,
+      searchParameters
+    )
 
     return NextResponse.json({
       success: true,
-      data: result
+      data: result,
     })
   } catch (error) {
     console.error('GET /api/journal error:', error)
@@ -133,7 +151,7 @@ export async function POST(request: NextRequest) {
     // Check if entry already exists for this date
     const existingEntry = await JournalEntryModel.findOne({
       userId: user.userId,
-      date: entryDate
+      date: entryDate,
     })
 
     if (existingEntry) {
@@ -149,17 +167,23 @@ export async function POST(request: NextRequest) {
       title: title?.trim(),
       content: content.trim(),
       mood,
-      tags: tags?.map((tag: string) => tag.trim()).filter((tag: string) => tag.length > 0) || [],
+      tags:
+        tags
+          ?.map((tag: string) => tag.trim())
+          .filter((tag: string) => tag.length > 0) || [],
       date: entryDate,
       favorite: false,
     })
 
     await journalEntry.save()
 
-    return NextResponse.json({
-      success: true,
-      data: journalEntry.toSafeObject()
-    }, { status: 201 })
+    return NextResponse.json(
+      {
+        success: true,
+        data: journalEntry.toSafeObject(),
+      },
+      { status: 201 }
+    )
   } catch (error) {
     console.error('POST /api/journal error:', error)
     return NextResponse.json(

@@ -10,8 +10,14 @@ interface JournalStatsProps {
   className?: string
 }
 
-export default function JournalStatsWidget({ stats, className = '' }: JournalStatsProps) {
-  const getMostUsedTags = (tagFrequency: { [tag: string]: number }, limit = 3) => {
+export default function JournalStatsWidget({
+  stats,
+  className = '',
+}: JournalStatsProps) {
+  const getMostUsedTags = (
+    tagFrequency: { [tag: string]: number },
+    limit = 3
+  ) => {
     return Object.entries(tagFrequency)
       .sort(([, a], [, b]) => b - a)
       .slice(0, limit)
@@ -19,25 +25,34 @@ export default function JournalStatsWidget({ stats, className = '' }: JournalSta
   }
 
   const mostUsedTags = getMostUsedTags(stats.tagFrequency)
-  const topMood = Object.entries(stats.moodDistribution)
-    .sort(([, a], [, b]) => b - a)[0]
+  const topMood = Object.entries(stats.moodDistribution).sort(
+    ([, a], [, b]) => b - a
+  )[0]
 
   return (
-    <div className={`bg-zinc-900 border border-gray-700 rounded-xl p-6 ${className}`}>
+    <div
+      className={`bg-zinc-900 border border-gray-700 rounded-xl p-6 ${className}`}
+    >
       <h3 className="font-bold text-lg mb-4">Writing Statistics</h3>
-      
+
       {/* Main stats grid */}
       <div className="grid grid-cols-3 gap-4 text-center mb-6">
         <div>
-          <p className="text-2xl font-semibold text-gray-200">{stats.totalEntries}</p>
+          <p className="text-2xl font-semibold text-gray-200">
+            {stats.totalEntries}
+          </p>
           <p className="text-xs text-gray-400">Entries</p>
         </div>
         <div>
-          <p className="text-2xl font-semibold text-gray-200">{stats.totalWords.toLocaleString()}</p>
+          <p className="text-2xl font-semibold text-gray-200">
+            {stats.totalWords.toLocaleString()}
+          </p>
           <p className="text-xs text-gray-400">Words</p>
         </div>
         <div>
-          <p className="text-2xl font-semibold text-gray-200">~{stats.totalMinutesWritten}m</p>
+          <p className="text-2xl font-semibold text-gray-200">
+            ~{stats.totalMinutesWritten}m
+          </p>
           <p className="text-xs text-gray-400">Written</p>
         </div>
       </div>
@@ -75,7 +90,11 @@ export default function JournalStatsWidget({ stats, className = '' }: JournalSta
               Average mood
             </span>
             <span className="text-sm font-medium text-gray-200 flex items-center gap-1">
-              {MOOD_EMOJIS[Math.round(stats.averageMood) as keyof typeof MOOD_EMOJIS]} 
+              {
+                MOOD_EMOJIS[
+                  Math.round(stats.averageMood) as keyof typeof MOOD_EMOJIS
+                ]
+              }
               {stats.averageMood.toFixed(1)}
             </span>
           </div>
@@ -110,9 +129,11 @@ export default function JournalStatsWidget({ stats, className = '' }: JournalSta
         {/* Popular tags */}
         {mostUsedTags.length > 0 && (
           <div>
-            <span className="text-sm text-gray-400 block mb-2">Popular tags:</span>
+            <span className="text-sm text-gray-400 block mb-2">
+              Popular tags:
+            </span>
             <div className="flex flex-wrap gap-1">
-              {mostUsedTags.map((tag) => (
+              {mostUsedTags.map(tag => (
                 <span
                   key={tag}
                   className="text-xs bg-blue-500/20 text-blue-300 px-2 py-1 rounded-full"
@@ -132,8 +153,8 @@ export default function JournalStatsWidget({ stats, className = '' }: JournalSta
           {stats.currentStreak === 0
             ? 'Start your journal streak today!'
             : stats.currentStreak < 7
-            ? 'Keep going to build a strong habit!'
-            : 'Amazing streak! Consistency is key to growth.'}
+              ? 'Keep going to build a strong habit!'
+              : 'Amazing streak! Consistency is key to growth.'}
         </p>
       </div>
     </div>

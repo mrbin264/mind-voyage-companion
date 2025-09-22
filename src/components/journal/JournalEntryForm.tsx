@@ -18,7 +18,7 @@ export default function JournalEntryForm({
   onSave,
   onCancel,
   isEditing = false,
-  className = ''
+  className = '',
 }: JournalEntryFormProps) {
   const [title, setTitle] = useState(entry?.title || '')
   const [content, setContent] = useState(entry?.content || '')
@@ -41,7 +41,10 @@ export default function JournalEntryForm({
 
   // Update word count and reading time
   useEffect(() => {
-    const words = content.trim().split(/\s+/).filter(word => word.length > 0)
+    const words = content
+      .trim()
+      .split(/\s+/)
+      .filter(word => word.length > 0)
     setWordCount(words.length)
     setReadingTime(Math.max(1, Math.ceil(words.length / 200)))
   }, [content])
@@ -53,7 +56,7 @@ export default function JournalEntryForm({
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    
+
     if (!content.trim()) {
       return
     }
@@ -85,7 +88,7 @@ export default function JournalEntryForm({
       {/* Header with mood selector and actions */}
       <div className="flex flex-col sm:flex-row gap-4 justify-between items-start">
         <MoodSelector selectedMood={mood} onMoodChange={setMood} />
-        
+
         <div className="flex items-center gap-2">
           <button
             type="button"
@@ -94,7 +97,7 @@ export default function JournalEntryForm({
             <Lock className="w-4 h-4" />
             Privacy
           </button>
-          
+
           {onCancel && (
             <button
               type="button"
@@ -104,7 +107,7 @@ export default function JournalEntryForm({
               Cancel
             </button>
           )}
-          
+
           <button
             type="submit"
             form="journal-form"
@@ -124,7 +127,7 @@ export default function JournalEntryForm({
           <input
             type="text"
             value={title}
-            onChange={(e) => setTitle(e.target.value)}
+            onChange={e => setTitle(e.target.value)}
             placeholder="Entry title (optional)"
             className="w-full bg-transparent border-0 border-b border-gray-700 text-lg font-medium text-gray-200 placeholder-gray-500 focus:border-blue-500 focus:outline-none transition-colors px-0 py-2"
             maxLength={200}
@@ -136,12 +139,12 @@ export default function JournalEntryForm({
           <textarea
             ref={textareaRef}
             value={content}
-            onChange={(e) => setContent(e.target.value)}
+            onChange={e => setContent(e.target.value)}
             placeholder="Start writing here..."
             className="w-full h-96 min-h-96 p-6 bg-transparent border-0 text-gray-300 leading-relaxed placeholder-gray-500 focus:outline-none resize-none"
             maxLength={50000}
           />
-          
+
           {/* Stats bar */}
           <div className="border-t border-gray-700 px-6 py-3 flex justify-between items-center text-sm text-gray-500">
             <div className="flex gap-4">
@@ -149,22 +152,23 @@ export default function JournalEntryForm({
               <span>{readingTime} min read</span>
               <span>{content.length}/50,000 chars</span>
             </div>
-            <div className="text-xs">
-              Auto-saved • Private
-            </div>
+            <div className="text-xs">Auto-saved • Private</div>
           </div>
         </div>
 
         {/* Tags */}
         <div>
-          <label htmlFor="tags" className="block text-sm font-medium text-gray-300 mb-2">
+          <label
+            htmlFor="tags"
+            className="block text-sm font-medium text-gray-300 mb-2"
+          >
             Tags (optional)
           </label>
           <input
             id="tags"
             type="text"
             value={tags}
-            onChange={(e) => setTags(e.target.value)}
+            onChange={e => setTags(e.target.value)}
             placeholder="gratitude, habits, reflection..."
             className="w-full bg-zinc-900 border border-gray-700 rounded-lg px-4 py-2 text-gray-300 placeholder-gray-500 focus:border-blue-500 focus:outline-none transition-colors"
           />

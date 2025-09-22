@@ -20,26 +20,26 @@ function JournalEntryCard({
   onToggleFavorite,
   onView,
   onShare,
-  className = ''
+  className = '',
 }: JournalEntryCardProps) {
   const formatDate = (dateString: string) => {
     const date = new Date(dateString)
     const today = new Date()
     const yesterday = new Date(today)
     yesterday.setDate(yesterday.getDate() - 1)
-    
+
     const dateStr = date.toISOString().split('T')[0]
     const todayStr = today.toISOString().split('T')[0]
     const yesterdayStr = yesterday.toISOString().split('T')[0]
-    
+
     if (dateStr === todayStr) return 'Today'
     if (dateStr === yesterdayStr) return 'Yesterday'
-    
-    return date.toLocaleDateString('en-US', { 
+
+    return date.toLocaleDateString('en-US', {
       weekday: 'short',
-      month: 'short', 
+      month: 'short',
       day: 'numeric',
-      year: date.getFullYear() !== today.getFullYear() ? 'numeric' : undefined
+      year: date.getFullYear() !== today.getFullYear() ? 'numeric' : undefined,
     })
   }
 
@@ -49,7 +49,9 @@ function JournalEntryCard({
   }
 
   return (
-    <div className={`bg-zinc-900 border border-gray-700 rounded-xl p-6 hover:border-gray-600 transition-colors ${className}`}>
+    <div
+      className={`bg-zinc-900 border border-gray-700 rounded-xl p-6 hover:border-gray-600 transition-colors ${className}`}
+    >
       {/* Header */}
       <div className="flex justify-between items-start mb-3">
         <div className="flex-1">
@@ -61,11 +63,13 @@ function JournalEntryCard({
                 <span className="text-base font-medium">{entry.title}</span>
               </>
             ) : (
-              `${formatDate(entry.date)} • ${new Date(entry.createdAt).toLocaleDateString('en-US', { 
+              `${formatDate(entry.date)} • ${new Date(
+                entry.createdAt
+              ).toLocaleDateString('en-US', {
                 weekday: 'long',
                 month: 'long',
                 day: 'numeric',
-                year: 'numeric'
+                year: 'numeric',
               })}`
             )}
           </h4>
@@ -99,7 +103,9 @@ function JournalEntryCard({
                   </span>
                 ))}
                 {entry.tags.length > 3 && (
-                  <span className="text-gray-500">+{entry.tags.length - 3}</span>
+                  <span className="text-gray-500">
+                    +{entry.tags.length - 3}
+                  </span>
                 )}
               </div>
             </>
@@ -117,7 +123,7 @@ function JournalEntryCard({
               Read Full Entry
             </button>
           )}
-          
+
           {onEdit && (
             <button
               onClick={() => onEdit(entry)}
@@ -127,21 +133,23 @@ function JournalEntryCard({
               Edit
             </button>
           )}
-          
+
           {onToggleFavorite && (
             <button
               onClick={() => onToggleFavorite(entry)}
               className={`text-xs font-semibold transition-colors flex items-center gap-1 ${
-                entry.favorite 
-                  ? 'text-pink-400 hover:text-pink-300' 
+                entry.favorite
+                  ? 'text-pink-400 hover:text-pink-300'
                   : 'text-gray-400 hover:text-pink-400'
               }`}
             >
-              <Heart className={`w-3 h-3 ${entry.favorite ? 'fill-current' : ''}`} />
+              <Heart
+                className={`w-3 h-3 ${entry.favorite ? 'fill-current' : ''}`}
+              />
               {entry.favorite ? 'Favorited' : 'Favorite'}
             </button>
           )}
-          
+
           {onShare && (
             <button
               onClick={() => onShare(entry)}
@@ -178,7 +186,7 @@ export default function JournalEntryList({
   onLoadMore,
   hasMore = false,
   isLoading = false,
-  className = ''
+  className = '',
 }: JournalEntryListProps) {
   if (entries.length === 0) {
     return (
@@ -199,7 +207,7 @@ export default function JournalEntryList({
 
   return (
     <div className={`space-y-4 ${className}`}>
-      {entries.map((entry) => (
+      {entries.map(entry => (
         <JournalEntryCard
           key={entry._id}
           entry={entry}
@@ -209,7 +217,7 @@ export default function JournalEntryList({
           onShare={onShare}
         />
       ))}
-      
+
       {/* Load more button */}
       {hasMore && (
         <div className="text-center pt-4">

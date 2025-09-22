@@ -31,9 +31,10 @@ async function getAuthUser(request: NextRequest): Promise<AuthUser | null> {
 // GET /api/journal/[id] - Get specific journal entry
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await params
     const user = await getAuthUser(request)
     if (!user) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
@@ -41,24 +42,25 @@ export async function GET(
 
     await connectDB()
 
-    const { id } = params
-
     if (!mongoose.Types.ObjectId.isValid(id)) {
       return NextResponse.json({ error: 'Invalid entry ID' }, { status: 400 })
     }
 
     const entry = await JournalEntryModel.findOne({
       _id: id,
-      userId: user.userId
+      userId: user.userId,
     })
 
     if (!entry) {
-      return NextResponse.json({ error: 'Journal entry not found' }, { status: 404 })
+      return NextResponse.json(
+        { error: 'Journal entry not found' },
+        { status: 404 }
+      )
     }
 
     return NextResponse.json({
       success: true,
-      data: entry.toSafeObject()
+      data: entry.toSafeObject(),
     })
   } catch (error) {
     console.error('GET /api/journal/[id] error:', error)
@@ -72,9 +74,10 @@ export async function GET(
 // PUT /api/journal/[id] - Update journal entry
 export async function PUT(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await params
     const user = await getAuthUser(request)
     if (!user) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
@@ -82,7 +85,6 @@ export async function PUT(
 
     await connectDB()
 
-    const { id } = params
     const body = await request.json()
     const { title, content, mood, tags, favorite } = body
 
@@ -127,7 +129,9 @@ export async function PUT(
     if (content !== undefined) updateData.content = content.trim()
     if (mood !== undefined) updateData.mood = mood
     if (tags !== undefined) {
-      updateData.tags = tags.map((tag: string) => tag.trim()).filter((tag: string) => tag.length > 0)
+      updateData.tags = tags
+        .map((tag: string) => tag.trim())
+        .filter((tag: string) => tag.length > 0)
     }
     if (favorite !== undefined) updateData.favorite = favorite
 
@@ -138,12 +142,15 @@ export async function PUT(
     )
 
     if (!entry) {
-      return NextResponse.json({ error: 'Journal entry not found' }, { status: 404 })
+      return NextResponse.json(
+        { error: 'Journal entry not found' },
+        { status: 404 }
+      )
     }
 
     return NextResponse.json({
       success: true,
-      data: entry.toSafeObject()
+      data: entry.toSafeObject(),
     })
   } catch (error) {
     console.error('PUT /api/journal/[id] error:', error)
@@ -157,9 +164,10 @@ export async function PUT(
 // DELETE /api/journal/[id] - Delete journal entry
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await params
     const user = await getAuthUser(request)
     if (!user) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
@@ -167,24 +175,25 @@ export async function DELETE(
 
     await connectDB()
 
-    const { id } = params
-
     if (!mongoose.Types.ObjectId.isValid(id)) {
       return NextResponse.json({ error: 'Invalid entry ID' }, { status: 400 })
     }
 
     const entry = await JournalEntryModel.findOneAndDelete({
       _id: id,
-      userId: user.userId
+      userId: user.userId,
     })
 
     if (!entry) {
-      return NextResponse.json({ error: 'Journal entry not found' }, { status: 404 })
+      return NextResponse.json(
+        { error: 'Journal entry not found' },
+        { status: 404 }
+      )
     }
 
     return NextResponse.json({
       success: true,
-      message: 'Journal entry deleted successfully'
+      message: 'Journal entry deleted successfully',
     })
   } catch (error) {
     console.error('DELETE /api/journal/[id] error:', error)
