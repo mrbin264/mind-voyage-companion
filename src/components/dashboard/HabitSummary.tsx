@@ -3,13 +3,13 @@ import { Card } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Progress } from '@/components/ui/progress'
 import type { HabitSummary } from '@/types/habit'
-import { 
-  Target, 
-  Calendar, 
-  Flame, 
+import {
+  Target,
+  Calendar,
+  Flame,
   TrendingUp,
   CheckCircle,
-  Clock
+  Clock,
 } from 'lucide-react'
 
 interface HabitSummaryCardsProps {
@@ -17,7 +17,10 @@ interface HabitSummaryCardsProps {
   loading?: boolean
 }
 
-export function HabitSummaryCards({ summary, loading = false }: HabitSummaryCardsProps) {
+export function HabitSummaryCards({
+  summary,
+  loading = false,
+}: HabitSummaryCardsProps) {
   if (loading) {
     return (
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
@@ -37,13 +40,15 @@ export function HabitSummaryCards({ summary, loading = false }: HabitSummaryCard
     )
   }
 
-  const todayProgress = summary.totalCompletedToday > 0 
-    ? (summary.completedToday / summary.totalCompletedToday) * 100 
-    : 0
+  const todayProgress =
+    summary.totalCompletedToday > 0
+      ? (summary.completedToday / summary.totalCompletedToday) * 100
+      : 0
 
-  const weeklyProgress = summary.weeklyTotal > 0 
-    ? (summary.weeklyCompletions / summary.weeklyTotal) * 100 
-    : 0
+  const weeklyProgress =
+    summary.weeklyTotal > 0
+      ? (summary.weeklyCompletions / summary.weeklyTotal) * 100
+      : 0
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
@@ -54,7 +59,9 @@ export function HabitSummaryCards({ summary, loading = false }: HabitSummaryCard
             <CheckCircle className="h-5 w-5 text-primary" />
           </div>
           <div className="flex-1">
-            <h3 className="font-semibold text-slate-900">Today's Progress</h3>
+            <h3 className="font-semibold text-slate-900">
+              Today&apos;s Progress
+            </h3>
             <p className="text-2xl font-bold text-primary">
               {summary.completedToday}/{summary.totalCompletedToday}
             </p>
@@ -64,7 +71,7 @@ export function HabitSummaryCards({ summary, loading = false }: HabitSummaryCard
         <div className="mt-4">
           <Progress value={todayProgress} className="h-2" />
           <p className="text-xs text-muted-foreground mt-1">
-            {Math.round(todayProgress)}% of today's habits
+            {Math.round(todayProgress)}% of today&apos;s habits
           </p>
         </div>
       </Card>
@@ -119,7 +126,9 @@ export function HabitSummaryCards({ summary, loading = false }: HabitSummaryCard
             <p className="text-2xl font-bold text-secondary-600">
               {summary.weeklyCompletions}/{summary.weeklyTotal}
             </p>
-            <p className="text-sm text-muted-foreground">completions this week</p>
+            <p className="text-sm text-muted-foreground">
+              completions this week
+            </p>
           </div>
         </div>
         <div className="mt-4">
@@ -138,7 +147,10 @@ interface TodaysFocusCardProps {
   loading?: boolean
 }
 
-export function TodaysFocusCard({ summary, loading = false }: TodaysFocusCardProps) {
+export function TodaysFocusCard({
+  summary,
+  loading = false,
+}: TodaysFocusCardProps) {
   if (loading) {
     return (
       <Card className="p-6 animate-pulse">
@@ -152,24 +164,24 @@ export function TodaysFocusCard({ summary, loading = false }: TodaysFocusCardPro
     )
   }
 
-  const todayProgress = summary.totalCompletedToday > 0 
-    ? (summary.completedToday / summary.totalCompletedToday) * 100 
-    : 0
+  const todayProgress =
+    summary.totalCompletedToday > 0
+      ? (summary.completedToday / summary.totalCompletedToday) * 100
+      : 0
 
   const remainingHabits = summary.totalCompletedToday - summary.completedToday
 
   return (
     <Card className="p-6">
       <h3 className="font-bold text-lg flex items-center gap-2 mb-4">
-        🎯 Today's Focus
+        🎯 Today&apos;s Focus
       </h3>
       <p className="text-muted-foreground mb-4">
-        {remainingHabits > 0 
+        {remainingHabits > 0
           ? `Complete ${remainingHabits} more ${remainingHabits === 1 ? 'habit' : 'habits'} to maintain your momentum.`
-          : summary.totalCompletedToday > 0 
-            ? "All habits completed for today! Great job! 🎉"
-            : "No habits scheduled for today."
-        }
+          : summary.totalCompletedToday > 0
+            ? 'All habits completed for today! Great job! 🎉'
+            : 'No habits scheduled for today.'}
       </p>
       {summary.totalCompletedToday > 0 && (
         <>

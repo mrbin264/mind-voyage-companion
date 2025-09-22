@@ -15,7 +15,7 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
   const [theme, setTheme] = useState<Theme>('dark')
   const [mounted, setMounted] = useState(false)
 
-  // Initialize theme from localStorage or system preference
+  // Initialize theme from localStorage or detect current theme
   useEffect(() => {
     const savedTheme = localStorage.getItem('theme') as Theme | null
     const systemTheme = window.matchMedia('(prefers-color-scheme: dark)')
@@ -24,21 +24,14 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
       : 'light'
     const htmlElement = document.documentElement
 
-    // Check what theme is already applied by the script
-    const currentThemeFromDOM = htmlElement.classList.contains('light')
-      ? 'light'
-      : htmlElement.classList.contains('dark')
-        ? 'dark'
-        : null
+    // Check what theme is currently applied (by the script in layout)
+    const currentThemeFromDOM = htmlElement.classList.contains('dark')
+      ? 'dark'
+      : htmlElement.classList.contains('light')
+        ? 'light'
+        : 'dark' // fallback to dark
 
-    const initialTheme = savedTheme || currentThemeFromDOM || systemTheme
-
-    console.log('Theme initialization:')
-    console.log('- savedTheme:', savedTheme)
-    console.log('- systemTheme:', systemTheme)
-    console.log('- currentThemeFromDOM:', currentThemeFromDOM)
-    console.log('- initialTheme:', initialTheme)
-    console.log('- HTML classes:', htmlElement.classList.toString())
+    const initialTheme = savedTheme || currentThemeFromDOM
 
     setTheme(initialTheme)
     setMounted(true)
@@ -49,22 +42,13 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
     if (!mounted) return
 
     const root = document.documentElement
-    console.log('Applying theme:', theme)
-    console.log('Classes before:', root.classList.toString())
     root.classList.remove('light', 'dark')
     root.classList.add(theme)
-    console.log('Classes after:', root.classList.toString())
     localStorage.setItem('theme', theme)
-    console.log('localStorage theme:', localStorage.getItem('theme'))
   }, [theme, mounted])
 
   const toggleTheme = () => {
-    console.log('Theme toggle clicked, current theme:', theme)
-    setTheme(prev => {
-      const newTheme = prev === 'light' ? 'dark' : 'light'
-      console.log('Switching to theme:', newTheme)
-      return newTheme
-    })
+    setTheme(prev => (prev === 'light' ? 'dark' : 'light'))
   }
 
   return (

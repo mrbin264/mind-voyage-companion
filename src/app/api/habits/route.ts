@@ -4,7 +4,10 @@ import { HabitModel, HabitLogModel } from '@/lib/models/habit'
 import { verify } from 'jsonwebtoken'
 import mongoose from 'mongoose'
 import type { CreateHabitRequest, HabitFilters } from '@/types/habit'
-import { calculateHabitProgress, calculateHabitSummary } from '@/lib/habit-utils'
+import {
+  calculateHabitProgress,
+  calculateHabitSummary,
+} from '@/lib/habit-utils'
 
 interface AuthUser {
   userId: string
@@ -83,11 +86,14 @@ export async function GET(request: NextRequest) {
       query.$or = [
         { title: { $regex: filters.search, $options: 'i' } },
         { description: { $regex: filters.search, $options: 'i' } },
-        { category: { $regex: filters.search, $options: 'i' } }
+        { category: { $regex: filters.search, $options: 'i' } },
       ]
     }
 
-    const habits = await HabitModel.find(query).sort({ priority: -1, createdAt: -1 })
+    const habits = await HabitModel.find(query).sort({
+      priority: -1,
+      createdAt: -1,
+    })
 
     // Get logs for progress calculation if requested
     const includeProgress = searchParams.get('include_progress') === 'true'
@@ -95,11 +101,13 @@ export async function GET(request: NextRequest) {
       const habitIds = habits.map(h => h._id)
       const logs = await HabitLogModel.find({
         habitId: { $in: habitIds },
-        userId: user.userId
+        userId: user.userId,
       })
 
       const habitsWithProgress = habits.map(habit => {
-        const habitLogs = logs.filter(log => log.habitId.toString() === habit._id.toString())
+        const habitLogs = logs.filter(
+          log => log.habitId.toString() === habit._id.toString()
+        )
         return calculateHabitProgress(habit, habitLogs)
       })
 
@@ -107,7 +115,6 @@ export async function GET(request: NextRequest) {
     }
 
     return NextResponse.json({ habits })
-
   } catch (error) {
     console.error('Error fetching habits:', error)
     return NextResponse.json(
@@ -137,13 +144,16 @@ export async function POST(request: NextRequest) {
 
     // Validate frequency
     if (body.frequency.type === 'weekly' || body.frequency.type === 'custom') {
-      if (!body.frequency.daysOfWeek || body.frequency.daysOfWeek.length === 0) {
+      if (
+        !body.frequency.daysOfWeek ||
+        body.frequency.daysOfWeek.length === 0
+      ) {
         return NextResponse.json(
           { error: 'Weekly and custom habits must specify days of week' },
           { status: 400 }
         )
       }
-      
+
       // Validate days of week
       if (!body.frequency.daysOfWeek.every(day => day >= 0 && day <= 6)) {
         return NextResponse.json(
@@ -154,7 +164,10 @@ export async function POST(request: NextRequest) {
     }
 
     // Validate target
-    if (['count', 'duration', 'amount'].includes(body.target.type) && !body.target.value) {
+    if (
+      ['count', 'duration', 'amount'].includes(body.target.type) &&
+      !body.target.value
+    ) {
       return NextResponse.json(
         { error: `${body.target.type} habits must have a target value` },
         { status: 400 }
@@ -168,17 +181,16 @@ export async function POST(request: NextRequest) {
       userId: user.userId,
       status: {
         active: true,
-        archived: false
-      }
+        archived: false,
+      },
     })
 
     await habit.save()
 
     return NextResponse.json({ habit }, { status: 201 })
-
   } catch (error) {
     console.error('Error creating habit:', error)
-    
+
     if (error instanceof mongoose.Error.ValidationError) {
       return NextResponse.json(
         { error: 'Validation error', details: error.message },

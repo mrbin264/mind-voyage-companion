@@ -32,8 +32,12 @@ export async function POST(req: NextRequest) {
 
     // Find user by email
     const user = await User.findOne({ email }).select('+password')
-    console.log('👤 User found:', !!user, user ? 'with password:' + !!user.password : 'none')
-    
+    console.log(
+      '👤 User found:',
+      !!user,
+      user ? 'with password:' + !!user.password : 'none'
+    )
+
     if (!user || !user.password) {
       console.log('❌ User not found or no password')
       return NextResponse.json(
@@ -49,7 +53,7 @@ export async function POST(req: NextRequest) {
     // Verify password
     const isValidPassword = await compare(password, user.password)
     console.log('🔐 Password validation:', isValidPassword)
-    
+
     if (!isValidPassword) {
       console.log('❌ Invalid password')
       return NextResponse.json(

@@ -55,7 +55,7 @@ export async function GET(
     // Verify habit belongs to user
     const habit = await HabitModel.findOne({
       _id: id,
-      userId: user.userId
+      userId: user.userId,
     })
 
     if (!habit) {
@@ -65,19 +65,16 @@ export async function GET(
     // Build query
     const query: any = {
       habitId: id,
-      userId: user.userId
+      userId: user.userId,
     }
 
     if (startDate && endDate) {
       query.date = { $gte: startDate, $lte: endDate }
     }
 
-    const logs = await HabitLogModel.find(query)
-      .sort({ date: -1 })
-      .limit(limit)
+    const logs = await HabitLogModel.find(query).sort({ date: -1 }).limit(limit)
 
     return NextResponse.json({ logs })
-
   } catch (error) {
     console.error('Error fetching habit logs:', error)
     return NextResponse.json(
@@ -119,7 +116,7 @@ export async function POST(
     // Verify habit belongs to user
     const habit = await HabitModel.findOne({
       _id: id,
-      userId: user.userId
+      userId: user.userId,
     })
 
     if (!habit) {
@@ -138,7 +135,9 @@ export async function POST(
     // Validate value for non-boolean habits
     if (habit.target.type !== 'boolean' && body.completed && !body.value) {
       return NextResponse.json(
-        { error: `${habit.target.type} habits require a value when marking as completed` },
+        {
+          error: `${habit.target.type} habits require a value when marking as completed`,
+        },
         { status: 400 }
       )
     }
@@ -147,7 +146,7 @@ export async function POST(
     const existingLog = await HabitLogModel.findOne({
       habitId: id,
       userId: user.userId,
-      date: logDate
+      date: logDate,
     })
 
     if (existingLog) {
@@ -173,16 +172,15 @@ export async function POST(
         notes: body.notes,
         skipped: body.skipped || false,
         skipReason: body.skipReason,
-        completedAt: body.completed ? new Date() : undefined
+        completedAt: body.completed ? new Date() : undefined,
       })
 
       await newLog.save()
       return NextResponse.json({ log: newLog }, { status: 201 })
     }
-
   } catch (error) {
     console.error('Error logging habit:', error)
-    
+
     if (error instanceof mongoose.Error.ValidationError) {
       return NextResponse.json(
         { error: 'Validation error', details: error.message },

@@ -47,13 +47,12 @@ export async function GET(request: NextRequest) {
 
     const logs = await HabitLogModel.find({
       userId: user.userId,
-      date: { $gte: startDate }
+      date: { $gte: startDate },
     })
 
     const summary = calculateHabitSummary(habits, logs)
 
     return NextResponse.json({ summary })
-
   } catch (error) {
     console.error('Error fetching habit summary:', error)
     return NextResponse.json(
