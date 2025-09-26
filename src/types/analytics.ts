@@ -93,7 +93,12 @@ export interface JournalAnalytics {
 
 export interface AIInsight {
   id: string
-  type: 'performance_booster' | 'challenge_day' | 'optimal_timing' | 'opportunity' | 'correlation'
+  type:
+    | 'performance_booster'
+    | 'challenge_day'
+    | 'optimal_timing'
+    | 'opportunity'
+    | 'correlation'
   title: string
   description: string
   recommendation?: string
@@ -119,7 +124,7 @@ export interface Achievement {
 
 export interface AnalyticsOverview {
   timeframe: AnalyticsTimeframe
-  
+
   // High-level metrics
   currentStreak: number
   longestStreak: number
@@ -129,25 +134,25 @@ export interface AnalyticsOverview {
   }
   totalHabitsCompleted: number
   totalJournalEntries: number
-  
+
   // Habit trends
   weeklyTrends: WeeklyHabitTrends[]
   overallCompletionRate: number
   bestPerformingDay: string
   challengingDay: string
-  
+
   // Streaks
   activeStreaks: HabitStreak[]
-  
+
   // Correlations
   moodCorrelations: MoodCorrelation[]
-  
+
   // Journal insights
   journalAnalytics: JournalAnalytics
-  
+
   // AI insights (Pro feature)
   aiInsights?: AIInsight[]
-  
+
   // Achievements
   recentAchievements: Achievement[]
   nextAchievement?: Achievement

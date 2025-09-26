@@ -33,142 +33,185 @@ interface UseAnalyticsReturn {
 
 const defaultFilters: AnalyticsFilters = {
   timeframe: {
-    type: 'month'
+    type: 'month',
   },
   includeArchived: false,
-  includeJournal: true
+  includeJournal: true,
 }
 
 export function useAnalytics(
   initialFilters: AnalyticsFilters = defaultFilters
 ): UseAnalyticsReturn {
   const [overview, setOverview] = useState<AnalyticsOverview | null>(null)
-  const [habitAnalytics, setHabitAnalytics] = useState<HabitAnalytics | null>(null)
+  const [habitAnalytics, setHabitAnalytics] = useState<HabitAnalytics | null>(
+    null
+  )
   const [loading, setLoading] = useState(false)
   const [habitLoading, setHabitLoading] = useState(false)
   const [exportLoading, setExportLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [filters, setFilters] = useState<AnalyticsFilters>(initialFilters)
 
-  const fetchOverview = useCallback(async (customFilters?: AnalyticsFilters) => {
-    setLoading(true)
-    setError(null)
+  const fetchOverview = useCallback(
+    async (customFilters?: AnalyticsFilters) => {
+      setLoading(true)
+      setError(null)
 
-    try {
-      const activeFilters = customFilters || filters
-      const searchParams = new URLSearchParams({
-        timeframe: activeFilters.timeframe.type,
-        ...(activeFilters.timeframe.startDate && { startDate: activeFilters.timeframe.startDate }),
-        ...(activeFilters.timeframe.endDate && { endDate: activeFilters.timeframe.endDate }),
-        ...(activeFilters.habitIds && { habitIds: activeFilters.habitIds.join(',') }),
-        ...(activeFilters.includeArchived !== undefined && { includeArchived: String(activeFilters.includeArchived) }),
-        ...(activeFilters.includeJournal !== undefined && { includeJournal: String(activeFilters.includeJournal) })
-      })
+      try {
+        const activeFilters = customFilters || filters
+        const searchParams = new URLSearchParams({
+          timeframe: activeFilters.timeframe.type,
+          ...(activeFilters.timeframe.startDate && {
+            startDate: activeFilters.timeframe.startDate,
+          }),
+          ...(activeFilters.timeframe.endDate && {
+            endDate: activeFilters.timeframe.endDate,
+          }),
+          ...(activeFilters.habitIds && {
+            habitIds: activeFilters.habitIds.join(','),
+          }),
+          ...(activeFilters.includeArchived !== undefined && {
+            includeArchived: String(activeFilters.includeArchived),
+          }),
+          ...(activeFilters.includeJournal !== undefined && {
+            includeJournal: String(activeFilters.includeJournal),
+          }),
+        })
 
-      const response = await fetch(`/api/analytics?${searchParams.toString()}`)
-      
-      if (!response.ok) {
-        const errorData = await response.json().catch(() => ({}))
-        throw new Error(errorData.error || `HTTP ${response.status}: ${response.statusText}`)
+        const response = await fetch(
+          `/api/analytics?${searchParams.toString()}`
+        )
+
+        if (!response.ok) {
+          const errorData = await response.json().catch(() => ({}))
+          throw new Error(
+            errorData.error || `HTTP ${response.status}: ${response.statusText}`
+          )
+        }
+
+        const data = await response.json()
+
+        if (!data.success) {
+          throw new Error(data.error || 'Failed to fetch analytics')
+        }
+
+        setOverview(data.data)
+      } catch (err) {
+        const errorMessage =
+          err instanceof Error ? err.message : 'Unknown error occurred'
+        setError(errorMessage)
+        console.error('Analytics fetch error:', err)
+      } finally {
+        setLoading(false)
       }
+    },
+    [filters]
+  )
 
-      const data = await response.json()
-      
-      if (!data.success) {
-        throw new Error(data.error || 'Failed to fetch analytics')
+  const fetchHabitAnalytics = useCallback(
+    async (habitId: string) => {
+      setHabitLoading(true)
+      setError(null)
+
+      try {
+        const searchParams = new URLSearchParams({
+          timeframe: filters.timeframe.type,
+          ...(filters.timeframe.startDate && {
+            startDate: filters.timeframe.startDate,
+          }),
+          ...(filters.timeframe.endDate && {
+            endDate: filters.timeframe.endDate,
+          }),
+        })
+
+        const response = await fetch(
+          `/api/analytics/habits/${habitId}?${searchParams.toString()}`
+        )
+
+        if (!response.ok) {
+          const errorData = await response.json().catch(() => ({}))
+          throw new Error(
+            errorData.error || `HTTP ${response.status}: ${response.statusText}`
+          )
+        }
+
+        const data = await response.json()
+
+        if (!data.success) {
+          throw new Error(data.error || 'Failed to fetch habit analytics')
+        }
+
+        setHabitAnalytics(data.data)
+      } catch (err) {
+        const errorMessage =
+          err instanceof Error ? err.message : 'Unknown error occurred'
+        setError(errorMessage)
+        console.error('Habit analytics fetch error:', err)
+      } finally {
+        setHabitLoading(false)
       }
+    },
+    [filters]
+  )
 
-      setOverview(data.data)
-    } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : 'Unknown error occurred'
-      setError(errorMessage)
-      console.error('Analytics fetch error:', err)
-    } finally {
-      setLoading(false)
-    }
-  }, [filters])
+  const exportAnalytics = useCallback(
+    async (format: 'json' | 'csv' | 'pdf') => {
+      setExportLoading(true)
+      setError(null)
 
-  const fetchHabitAnalytics = useCallback(async (habitId: string) => {
-    setHabitLoading(true)
-    setError(null)
+      try {
+        const exportData = {
+          timeframe: filters.timeframe,
+          format,
+          includeCharts: format === 'pdf',
+          sections: [
+            'habits',
+            'journal',
+            'mood',
+            'streaks',
+            'achievements',
+          ] as const,
+        }
 
-    try {
-      const searchParams = new URLSearchParams({
-        timeframe: filters.timeframe.type,
-        ...(filters.timeframe.startDate && { startDate: filters.timeframe.startDate }),
-        ...(filters.timeframe.endDate && { endDate: filters.timeframe.endDate })
-      })
+        const response = await fetch('/api/analytics/export', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(exportData),
+        })
 
-      const response = await fetch(`/api/analytics/habits/${habitId}?${searchParams.toString()}`)
-      
-      if (!response.ok) {
-        const errorData = await response.json().catch(() => ({}))
-        throw new Error(errorData.error || `HTTP ${response.status}: ${response.statusText}`)
+        if (!response.ok) {
+          const errorData = await response.json().catch(() => ({}))
+          throw new Error(
+            errorData.error || `HTTP ${response.status}: ${response.statusText}`
+          )
+        }
+
+        // Handle file download
+        const blob = await response.blob()
+        const url = window.URL.createObjectURL(blob)
+        const link = document.createElement('a')
+        link.href = url
+
+        const filename = `analytics-${filters.timeframe.type}-${new Date().toISOString().split('T')[0]}.${format}`
+        link.download = filename
+
+        document.body.appendChild(link)
+        link.click()
+        document.body.removeChild(link)
+        window.URL.revokeObjectURL(url)
+      } catch (err) {
+        const errorMessage =
+          err instanceof Error ? err.message : 'Export failed'
+        setError(errorMessage)
+        console.error('Analytics export error:', err)
+      } finally {
+        setExportLoading(false)
       }
-
-      const data = await response.json()
-      
-      if (!data.success) {
-        throw new Error(data.error || 'Failed to fetch habit analytics')
-      }
-
-      setHabitAnalytics(data.data)
-    } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : 'Unknown error occurred'
-      setError(errorMessage)
-      console.error('Habit analytics fetch error:', err)
-    } finally {
-      setHabitLoading(false)
-    }
-  }, [filters])
-
-  const exportAnalytics = useCallback(async (format: 'json' | 'csv' | 'pdf') => {
-    setExportLoading(true)
-    setError(null)
-
-    try {
-      const exportData = {
-        timeframe: filters.timeframe,
-        format,
-        includeCharts: format === 'pdf',
-        sections: ['habits', 'journal', 'mood', 'streaks', 'achievements'] as const
-      }
-
-      const response = await fetch('/api/analytics/export', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(exportData)
-      })
-      
-      if (!response.ok) {
-        const errorData = await response.json().catch(() => ({}))
-        throw new Error(errorData.error || `HTTP ${response.status}: ${response.statusText}`)
-      }
-
-      // Handle file download
-      const blob = await response.blob()
-      const url = window.URL.createObjectURL(blob)
-      const link = document.createElement('a')
-      link.href = url
-      
-      const filename = `analytics-${filters.timeframe.type}-${new Date().toISOString().split('T')[0]}.${format}`
-      link.download = filename
-      
-      document.body.appendChild(link)
-      link.click()
-      document.body.removeChild(link)
-      window.URL.revokeObjectURL(url)
-      
-    } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : 'Export failed'
-      setError(errorMessage)
-      console.error('Analytics export error:', err)
-    } finally {
-      setExportLoading(false)
-    }
-  }, [filters])
+    },
+    [filters]
+  )
 
   const refreshData = useCallback(async () => {
     await fetchOverview()
@@ -177,7 +220,7 @@ export function useAnalytics(
   const setTimeframe = useCallback((timeframe: AnalyticsTimeframe) => {
     setFilters(prev => ({
       ...prev,
-      timeframe
+      timeframe,
     }))
   }, [])
 
@@ -217,68 +260,68 @@ export function useAnalytics(
     // Filters
     filters,
     setFilters: updateFilters,
-    setTimeframe
+    setTimeframe,
   }
 }
 
 // Helper hooks for specific analytics data
 export function useHabitStreaks() {
   const { overview, loading, error } = useAnalytics()
-  
+
   return {
     streaks: overview?.activeStreaks || [],
     loading,
-    error
+    error,
   }
 }
 
 export function useWeeklyTrends() {
   const { overview, loading, error } = useAnalytics()
-  
+
   return {
     trends: overview?.weeklyTrends || [],
     loading,
-    error
+    error,
   }
 }
 
 export function useMoodCorrelations() {
   const { overview, loading, error } = useAnalytics()
-  
+
   return {
     correlations: overview?.moodCorrelations || [],
     loading,
-    error
+    error,
   }
 }
 
 export function useJournalAnalytics() {
   const { overview, loading, error } = useAnalytics()
-  
+
   return {
     analytics: overview?.journalAnalytics || null,
     loading,
-    error
+    error,
   }
 }
 
 export function useAIInsights() {
   const { overview, loading, error } = useAnalytics()
-  
+
   return {
     insights: overview?.aiInsights || [],
     loading,
-    error
+    error,
   }
 }
 
 export function useAchievements() {
   const { overview, loading, error } = useAnalytics()
-  
+
   return {
     recentAchievements: overview?.recentAchievements || [],
     nextAchievement: overview?.nextAchievement || null,
     loading,
-    error
+    error,
   }
 }

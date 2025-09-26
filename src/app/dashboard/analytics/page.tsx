@@ -3,12 +3,12 @@
 import React, { useState } from 'react'
 import { BarChart3, Download, Calendar, Filter, RefreshCw } from 'lucide-react'
 import { DashboardLayout } from '@/components/layout/DashboardLayout'
-import { 
-  OverviewWidget, 
-  StreakWidget, 
-  MoodCorrelationWidget, 
-  AIInsightsWidget, 
-  WeeklyTrendsWidget 
+import {
+  OverviewWidget,
+  StreakWidget,
+  MoodCorrelationWidget,
+  AIInsightsWidget,
+  WeeklyTrendsWidget,
 } from '@/components/dashboard/analytics/AnalyticsWidgets'
 import { WeeklyTrendsChart } from '@/components/dashboard/analytics/Charts'
 import { useAnalytics } from '@/hooks/useAnalytics'
@@ -19,28 +19,23 @@ const timeframeOptions = [
   { value: 'month', label: 'This Month' },
   { value: 'quarter', label: 'This Quarter' },
   { value: 'year', label: 'This Year' },
-  { value: 'all', label: 'All Time' }
+  { value: 'all', label: 'All Time' },
 ] as const
 
 export default function AnalyticsPage() {
-  const [filters, setFilters] = useState<AnalyticsFilters>({ 
+  const [filters, setFilters] = useState<AnalyticsFilters>({
     timeframe: { type: 'month' },
     includeArchived: false,
-    includeJournal: true
+    includeJournal: true,
   })
-  
-  const { 
-    overview, 
-    loading, 
-    error, 
-    refreshData, 
-    exportAnalytics 
-  } = useAnalytics(filters)
+
+  const { overview, loading, error, refreshData, exportAnalytics } =
+    useAnalytics(filters)
 
   // TODO: Get user from auth context
   const user = {
     name: 'User',
-    email: 'user@example.com'
+    email: 'user@example.com',
   }
 
   const handleExport = async () => {
@@ -52,9 +47,9 @@ export default function AnalyticsPage() {
   }
 
   const handleTimeframeChange = (newTimeframe: AnalyticsTimeframe['type']) => {
-    setFilters({ 
-      ...filters, 
-      timeframe: { type: newTimeframe } 
+    setFilters({
+      ...filters,
+      timeframe: { type: newTimeframe },
     })
   }
 
@@ -141,13 +136,17 @@ export default function AnalyticsPage() {
                 Track your progress and discover insights about your habits
               </p>
             </div>
-            
+
             <div className="flex items-center gap-3">
               {/* Timeframe Filter */}
               <div className="relative">
                 <select
                   value={filters.timeframe.type}
-                  onChange={(e) => handleTimeframeChange(e.target.value as AnalyticsTimeframe['type'])}
+                  onChange={e =>
+                    handleTimeframeChange(
+                      e.target.value as AnalyticsTimeframe['type']
+                    )
+                  }
                   className="bg-gray-800 border border-gray-700 text-white rounded-lg px-4 py-2 pr-10 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 appearance-none"
                 >
                   {timeframeOptions.map(option => (
@@ -158,7 +157,7 @@ export default function AnalyticsPage() {
                 </select>
                 <Filter className="w-4 h-4 text-gray-400 absolute right-3 top-1/2 transform -translate-y-1/2 pointer-events-none" />
               </div>
-              
+
               {/* Export Button */}
               <button
                 onClick={handleExport}
@@ -168,14 +167,16 @@ export default function AnalyticsPage() {
                 <Download className="w-4 h-4" />
                 Export
               </button>
-              
+
               {/* Refresh Button */}
               <button
                 onClick={refreshData}
                 disabled={loading}
                 className="bg-gray-700 hover:bg-gray-600 disabled:cursor-not-allowed text-white px-4 py-2 rounded-lg flex items-center gap-2 transition-colors"
               >
-                <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} />
+                <RefreshCw
+                  className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`}
+                />
                 Refresh
               </button>
             </div>
@@ -188,7 +189,9 @@ export default function AnalyticsPage() {
           <div className="bg-gray-800 rounded-lg p-6 border border-gray-700">
             <div className="flex items-center gap-2 mb-6">
               <Calendar className="w-5 h-5 text-blue-400" />
-              <h3 className="text-lg font-semibold text-white">Weekly Progress Trends</h3>
+              <h3 className="text-lg font-semibold text-white">
+                Weekly Progress Trends
+              </h3>
             </div>
             <WeeklyTrendsChart trends={overview.weeklyTrends} />
           </div>
@@ -197,10 +200,10 @@ export default function AnalyticsPage() {
           <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6">
             {/* Streaks Widget */}
             <StreakWidget streaks={overview.activeStreaks} />
-            
+
             {/* Weekly Trends Summary */}
             <WeeklyTrendsWidget trends={overview.weeklyTrends} />
-            
+
             {/* Mood Correlations */}
             <MoodCorrelationWidget correlations={overview.moodCorrelations} />
           </div>
@@ -214,44 +217,57 @@ export default function AnalyticsPage() {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {/* Best Performance */}
             <div className="bg-gray-800 rounded-lg p-6 border border-gray-700">
-              <h3 className="text-lg font-semibold text-white mb-4">Best Performance</h3>
+              <h3 className="text-lg font-semibold text-white mb-4">
+                Best Performance
+              </h3>
               <div className="space-y-3">
                 <div className="flex justify-between items-center">
                   <span className="text-gray-300">Best Day</span>
-                  <span className="text-green-400 font-semibold">{overview.bestPerformingDay}</span>
+                  <span className="text-green-400 font-semibold">
+                    {overview.bestPerformingDay}
+                  </span>
                 </div>
                 <div className="flex justify-between items-center">
                   <span className="text-gray-300">Best Month</span>
                   <span className="text-green-400 font-semibold">
-                    {overview.bestMonth.month} ({overview.bestMonth.completionRate}%)
+                    {overview.bestMonth.month} (
+                    {overview.bestMonth.completionRate}%)
                   </span>
                 </div>
                 <div className="flex justify-between items-center">
                   <span className="text-gray-300">Longest Streak</span>
-                  <span className="text-yellow-400 font-semibold">{overview.longestStreak} days</span>
+                  <span className="text-yellow-400 font-semibold">
+                    {overview.longestStreak} days
+                  </span>
                 </div>
               </div>
             </div>
 
             {/* Areas for Improvement */}
             <div className="bg-gray-800 rounded-lg p-6 border border-gray-700">
-              <h3 className="text-lg font-semibold text-white mb-4">Areas for Improvement</h3>
+              <h3 className="text-lg font-semibold text-white mb-4">
+                Areas for Improvement
+              </h3>
               <div className="space-y-3">
                 <div className="flex justify-between items-center">
                   <span className="text-gray-300">Challenging Day</span>
-                  <span className="text-orange-400 font-semibold">{overview.challengingDay}</span>
+                  <span className="text-orange-400 font-semibold">
+                    {overview.challengingDay}
+                  </span>
                 </div>
                 {overview.overallCompletionRate < 80 && (
                   <div className="p-3 bg-yellow-900/20 border border-yellow-800 rounded">
                     <p className="text-yellow-400 text-sm">
-                      Consider reducing your habit load or adjusting difficulty to maintain consistency
+                      Consider reducing your habit load or adjusting difficulty
+                      to maintain consistency
                     </p>
                   </div>
                 )}
                 {overview.activeStreaks.length === 0 && (
                   <div className="p-3 bg-blue-900/20 border border-blue-800 rounded">
                     <p className="text-blue-400 text-sm">
-                      Focus on building streaks by completing habits consistently for 3+ days
+                      Focus on building streaks by completing habits
+                      consistently for 3+ days
                     </p>
                   </div>
                 )}
