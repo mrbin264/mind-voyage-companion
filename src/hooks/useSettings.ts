@@ -10,7 +10,7 @@ import type {
   SettingsSection,
   ProfileFormData,
   SettingsFormState,
-  PasswordChangeData
+  PasswordChangeData,
 } from '@/types/settings'
 
 interface UseSettingsReturn {
@@ -18,14 +18,14 @@ interface UseSettingsReturn {
   settings: UserSettings | null
   profile: UserProfile | null
   statistics: AccountStatistics | null
-  
+
   // Loading states
   loading: boolean
   saving: boolean
-  
+
   // Error state
   error: string | null
-  
+
   // Actions
   fetchSettings: (section?: SettingsSection) => Promise<void>
   updateProfile: (data: Partial<ProfileFormData>) => Promise<void>
@@ -49,18 +49,16 @@ export function useSettings(): UseSettingsReturn {
     try {
       setLoading(true)
       setError(null)
-      
-      const url = section 
-        ? `/api/settings?section=${section}`
-        : '/api/settings'
-      
+
+      const url = section ? `/api/settings?section=${section}` : '/api/settings'
+
       const response = await fetch(url)
       const result = await response.json()
-      
+
       if (!result.success) {
         throw new Error(result.error || 'Failed to fetch settings')
       }
-      
+
       if (section === 'profile') {
         setProfile(result.data)
       } else if (section === 'statistics') {
@@ -70,9 +68,9 @@ export function useSettings(): UseSettingsReturn {
         setProfile(result.data.profile)
         setStatistics(result.data.statistics)
       }
-      
     } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : 'Unknown error occurred'
+      const errorMessage =
+        err instanceof Error ? err.message : 'Unknown error occurred'
       setError(errorMessage)
       console.error('Settings fetch error:', err)
     } finally {
@@ -80,214 +78,231 @@ export function useSettings(): UseSettingsReturn {
     }
   }, [])
 
-  const updateProfile = useCallback(async (data: Partial<ProfileFormData>) => {
-    try {
-      setSaving(true)
-      setError(null)
-      
-      const response = await fetch('/api/settings', {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          section: 'profile',
-          data
-        }),
-      })
-      
-      const result = await response.json()
-      
-      if (!result.success) {
-        throw new Error(result.error || 'Failed to update profile')
-      }
-      
-      setProfile(result.data)
-      
-      // Update settings if available
-      if (settings) {
-        setSettings({
-          ...settings,
-          profile: result.data
-        })
-      }
-      
-    } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : 'Failed to update profile'
-      setError(errorMessage)
-      throw err
-    } finally {
-      setSaving(false)
-    }
-  }, [settings])
+  const updateProfile = useCallback(
+    async (data: Partial<ProfileFormData>) => {
+      try {
+        setSaving(true)
+        setError(null)
 
-  const updateNotifications = useCallback(async (data: Partial<NotificationSettings>) => {
-    try {
-      setSaving(true)
-      setError(null)
-      
-      const response = await fetch('/api/settings', {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          section: 'notifications',
-          data
-        }),
-      })
-      
-      const result = await response.json()
-      
-      if (!result.success) {
-        throw new Error(result.error || 'Failed to update notifications')
-      }
-      
-      // Update settings if available
-      if (settings) {
-        setSettings({
-          ...settings,
-          notifications: result.data
+        const response = await fetch('/api/settings', {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            section: 'profile',
+            data,
+          }),
         })
-      }
-      
-    } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : 'Failed to update notifications'
-      setError(errorMessage)
-      throw err
-    } finally {
-      setSaving(false)
-    }
-  }, [settings])
 
-  const updatePrivacy = useCallback(async (data: Partial<PrivacySettings>) => {
-    try {
-      setSaving(true)
-      setError(null)
-      
-      const response = await fetch('/api/settings', {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          section: 'privacy',
-          data
-        }),
-      })
-      
-      const result = await response.json()
-      
-      if (!result.success) {
-        throw new Error(result.error || 'Failed to update privacy settings')
-      }
-      
-      // Update settings if available
-      if (settings) {
-        setSettings({
-          ...settings,
-          privacy: result.data
-        })
-      }
-      
-    } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : 'Failed to update privacy settings'
-      setError(errorMessage)
-      throw err
-    } finally {
-      setSaving(false)
-    }
-  }, [settings])
+        const result = await response.json()
 
-  const updatePreferences = useCallback(async (data: Partial<UserPreferences>) => {
-    try {
-      setSaving(true)
-      setError(null)
-      
-      const response = await fetch('/api/settings', {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          section: 'preferences',
-          data
-        }),
-      })
-      
-      const result = await response.json()
-      
-      if (!result.success) {
-        throw new Error(result.error || 'Failed to update preferences')
-      }
-      
-      // Update settings if available
-      if (settings) {
-        setSettings({
-          ...settings,
-          preferences: result.data
-        })
-      }
-      
-    } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : 'Failed to update preferences'
-      setError(errorMessage)
-      throw err
-    } finally {
-      setSaving(false)
-    }
-  }, [settings])
-
-  const uploadProfilePhoto = useCallback(async (file: File) => {
-    try {
-      setSaving(true)
-      setError(null)
-      
-      // Create form data for file upload
-      const formData = new FormData()
-      formData.append('photo', file)
-      
-      const response = await fetch('/api/settings/profile-photo', {
-        method: 'POST',
-        body: formData,
-      })
-      
-      const result = await response.json()
-      
-      if (!result.success) {
-        throw new Error(result.error || 'Failed to upload photo')
-      }
-      
-      // Update profile with new photo URL
-      if (profile) {
-        const updatedProfile = {
-          ...profile,
-          profilePhoto: result.data.photoUrl
+        if (!result.success) {
+          throw new Error(result.error || 'Failed to update profile')
         }
-        setProfile(updatedProfile)
-        
+
+        setProfile(result.data)
+
+        // Update settings if available
         if (settings) {
           setSettings({
             ...settings,
-            profile: updatedProfile
+            profile: result.data,
           })
         }
+      } catch (err) {
+        const errorMessage =
+          err instanceof Error ? err.message : 'Failed to update profile'
+        setError(errorMessage)
+        throw err
+      } finally {
+        setSaving(false)
       }
-      
-    } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : 'Failed to upload photo'
-      setError(errorMessage)
-      throw err
-    } finally {
-      setSaving(false)
-    }
-  }, [profile, settings])
+    },
+    [settings]
+  )
+
+  const updateNotifications = useCallback(
+    async (data: Partial<NotificationSettings>) => {
+      try {
+        setSaving(true)
+        setError(null)
+
+        const response = await fetch('/api/settings', {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            section: 'notifications',
+            data,
+          }),
+        })
+
+        const result = await response.json()
+
+        if (!result.success) {
+          throw new Error(result.error || 'Failed to update notifications')
+        }
+
+        // Update settings if available
+        if (settings) {
+          setSettings({
+            ...settings,
+            notifications: result.data,
+          })
+        }
+      } catch (err) {
+        const errorMessage =
+          err instanceof Error ? err.message : 'Failed to update notifications'
+        setError(errorMessage)
+        throw err
+      } finally {
+        setSaving(false)
+      }
+    },
+    [settings]
+  )
+
+  const updatePrivacy = useCallback(
+    async (data: Partial<PrivacySettings>) => {
+      try {
+        setSaving(true)
+        setError(null)
+
+        const response = await fetch('/api/settings', {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            section: 'privacy',
+            data,
+          }),
+        })
+
+        const result = await response.json()
+
+        if (!result.success) {
+          throw new Error(result.error || 'Failed to update privacy settings')
+        }
+
+        // Update settings if available
+        if (settings) {
+          setSettings({
+            ...settings,
+            privacy: result.data,
+          })
+        }
+      } catch (err) {
+        const errorMessage =
+          err instanceof Error
+            ? err.message
+            : 'Failed to update privacy settings'
+        setError(errorMessage)
+        throw err
+      } finally {
+        setSaving(false)
+      }
+    },
+    [settings]
+  )
+
+  const updatePreferences = useCallback(
+    async (data: Partial<UserPreferences>) => {
+      try {
+        setSaving(true)
+        setError(null)
+
+        const response = await fetch('/api/settings', {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            section: 'preferences',
+            data,
+          }),
+        })
+
+        const result = await response.json()
+
+        if (!result.success) {
+          throw new Error(result.error || 'Failed to update preferences')
+        }
+
+        // Update settings if available
+        if (settings) {
+          setSettings({
+            ...settings,
+            preferences: result.data,
+          })
+        }
+      } catch (err) {
+        const errorMessage =
+          err instanceof Error ? err.message : 'Failed to update preferences'
+        setError(errorMessage)
+        throw err
+      } finally {
+        setSaving(false)
+      }
+    },
+    [settings]
+  )
+
+  const uploadProfilePhoto = useCallback(
+    async (file: File) => {
+      try {
+        setSaving(true)
+        setError(null)
+
+        // Create form data for file upload
+        const formData = new FormData()
+        formData.append('photo', file)
+
+        const response = await fetch('/api/settings/profile-photo', {
+          method: 'POST',
+          body: formData,
+        })
+
+        const result = await response.json()
+
+        if (!result.success) {
+          throw new Error(result.error || 'Failed to upload photo')
+        }
+
+        // Update profile with new photo URL
+        if (profile) {
+          const updatedProfile = {
+            ...profile,
+            profilePhoto: result.data.photoUrl,
+          }
+          setProfile(updatedProfile)
+
+          if (settings) {
+            setSettings({
+              ...settings,
+              profile: updatedProfile,
+            })
+          }
+        }
+      } catch (err) {
+        const errorMessage =
+          err instanceof Error ? err.message : 'Failed to upload photo'
+        setError(errorMessage)
+        throw err
+      } finally {
+        setSaving(false)
+      }
+    },
+    [profile, settings]
+  )
 
   const changePassword = useCallback(async (data: PasswordChangeData) => {
     try {
       setSaving(true)
       setError(null)
-      
+
       const response = await fetch('/api/settings/change-password', {
         method: 'POST',
         headers: {
@@ -295,15 +310,15 @@ export function useSettings(): UseSettingsReturn {
         },
         body: JSON.stringify(data),
       })
-      
+
       const result = await response.json()
-      
+
       if (!result.success) {
         throw new Error(result.error || 'Failed to change password')
       }
-      
     } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : 'Failed to change password'
+      const errorMessage =
+        err instanceof Error ? err.message : 'Failed to change password'
       setError(errorMessage)
       throw err
     } finally {
@@ -350,9 +365,11 @@ interface UseProfileFormReturn {
   error: string | null
 }
 
-export function useProfileForm(initialData?: UserProfile): UseProfileFormReturn {
+export function useProfileForm(
+  initialData?: UserProfile
+): UseProfileFormReturn {
   const { updateProfile, saving, error } = useSettings()
-  
+
   const [formData, setFormData] = useState<ProfileFormData>({
     firstName: initialData?.firstName || '',
     lastName: initialData?.lastName || '',
@@ -366,14 +383,17 @@ export function useProfileForm(initialData?: UserProfile): UseProfileFormReturn 
     website: initialData?.website || '',
     socialLinks: initialData?.socialLinks || {},
   })
-  
+
   const [initialFormData] = useState(formData)
   const [isDirty, setIsDirty] = useState(false)
 
-  const updateField = useCallback((field: keyof ProfileFormData, value: any) => {
-    setFormData(prev => ({ ...prev, [field]: value }))
-    setIsDirty(true)
-  }, [])
+  const updateField = useCallback(
+    (field: keyof ProfileFormData, value: any) => {
+      setFormData(prev => ({ ...prev, [field]: value }))
+      setIsDirty(true)
+    },
+    []
+  )
 
   const reset = useCallback(() => {
     setFormData(initialFormData)
@@ -382,7 +402,7 @@ export function useProfileForm(initialData?: UserProfile): UseProfileFormReturn 
 
   const submit = useCallback(async () => {
     if (!isDirty) return
-    
+
     await updateProfile(formData)
     setIsDirty(false)
   }, [formData, isDirty, updateProfile])
@@ -422,31 +442,115 @@ export function useProfileForm(initialData?: UserProfile): UseProfileFormReturn 
 
 // Timezone and Language options for form selects
 export const timezoneOptions = [
-  { value: '(GMT-12) International Date Line West', label: '(GMT-12) International Date Line West', offset: '-12:00' },
-  { value: '(GMT-11) Coordinated Universal Time-11', label: '(GMT-11) Coordinated Universal Time-11', offset: '-11:00' },
+  {
+    value: '(GMT-12) International Date Line West',
+    label: '(GMT-12) International Date Line West',
+    offset: '-12:00',
+  },
+  {
+    value: '(GMT-11) Coordinated Universal Time-11',
+    label: '(GMT-11) Coordinated Universal Time-11',
+    offset: '-11:00',
+  },
   { value: '(GMT-10) Hawaii', label: '(GMT-10) Hawaii', offset: '-10:00' },
   { value: '(GMT-9) Alaska', label: '(GMT-9) Alaska', offset: '-09:00' },
-  { value: '(GMT-8) Pacific Time', label: '(GMT-8) Pacific Time (US & Canada)', offset: '-08:00' },
-  { value: '(GMT-7) Mountain Time', label: '(GMT-7) Mountain Time (US & Canada)', offset: '-07:00' },
-  { value: '(GMT-6) Central Time', label: '(GMT-6) Central Time (US & Canada)', offset: '-06:00' },
-  { value: '(GMT-5) Eastern Time', label: '(GMT-5) Eastern Time (US & Canada)', offset: '-05:00' },
-  { value: '(GMT-4) Atlantic Time', label: '(GMT-4) Atlantic Time (Canada)', offset: '-04:00' },
+  {
+    value: '(GMT-8) Pacific Time',
+    label: '(GMT-8) Pacific Time (US & Canada)',
+    offset: '-08:00',
+  },
+  {
+    value: '(GMT-7) Mountain Time',
+    label: '(GMT-7) Mountain Time (US & Canada)',
+    offset: '-07:00',
+  },
+  {
+    value: '(GMT-6) Central Time',
+    label: '(GMT-6) Central Time (US & Canada)',
+    offset: '-06:00',
+  },
+  {
+    value: '(GMT-5) Eastern Time',
+    label: '(GMT-5) Eastern Time (US & Canada)',
+    offset: '-05:00',
+  },
+  {
+    value: '(GMT-4) Atlantic Time',
+    label: '(GMT-4) Atlantic Time (Canada)',
+    offset: '-04:00',
+  },
   { value: '(GMT-3) Brasilia', label: '(GMT-3) Brasilia', offset: '-03:00' },
-  { value: '(GMT-2) Coordinated Universal Time-02', label: '(GMT-2) Coordinated Universal Time-02', offset: '-02:00' },
+  {
+    value: '(GMT-2) Coordinated Universal Time-02',
+    label: '(GMT-2) Coordinated Universal Time-02',
+    offset: '-02:00',
+  },
   { value: '(GMT-1) Azores', label: '(GMT-1) Azores', offset: '-01:00' },
-  { value: '(GMT) Greenwich Mean Time', label: '(GMT) Greenwich Mean Time : Dublin, Edinburgh, Lisbon, London', offset: '+00:00' },
-  { value: '(GMT+1) Central European Time', label: '(GMT+1) Amsterdam, Berlin, Bern, Rome, Stockholm, Vienna', offset: '+01:00' },
-  { value: '(GMT+2) Eastern European Time', label: '(GMT+2) Athens, Bucharest, Cairo, Helsinki, Kiev', offset: '+02:00' },
-  { value: '(GMT+3) Moscow Time', label: '(GMT+3) Baghdad, Kuwait, Riyadh, Moscow, St. Petersburg', offset: '+03:00' },
-  { value: '(GMT+4) Gulf Standard Time', label: '(GMT+4) Abu Dhabi, Muscat, Baku, Tbilisi, Yerevan', offset: '+04:00' },
-  { value: '(GMT+5) Pakistan Standard Time', label: '(GMT+5) Islamabad, Karachi, Tashkent', offset: '+05:00' },
-  { value: '(GMT+6) Bangladesh Standard Time', label: '(GMT+6) Astana, Dhaka, Almaty, Novosibirsk', offset: '+06:00' },
-  { value: '(GMT+7) Indochina Time', label: '(GMT+7) Bangkok, Hanoi, Jakarta, Krasnoyarsk', offset: '+07:00' },
-  { value: '(GMT+8) China Standard Time', label: '(GMT+8) Beijing, Chongqing, Hong Kong, Urumqi', offset: '+08:00' },
-  { value: '(GMT+9) Japan Standard Time', label: '(GMT+9) Osaka, Sapporo, Tokyo, Seoul, Yakutsk', offset: '+09:00' },
-  { value: '(GMT+10) Australian Eastern Time', label: '(GMT+10) Canberra, Melbourne, Sydney, Brisbane', offset: '+10:00' },
-  { value: '(GMT+11) Solomon Islands Time', label: '(GMT+11) Magadan, Solomon Is., New Caledonia', offset: '+11:00' },
-  { value: '(GMT+12) New Zealand Time', label: '(GMT+12) Auckland, Wellington, Fiji, Kamchatka', offset: '+12:00' },
+  {
+    value: '(GMT) Greenwich Mean Time',
+    label: '(GMT) Greenwich Mean Time : Dublin, Edinburgh, Lisbon, London',
+    offset: '+00:00',
+  },
+  {
+    value: '(GMT+1) Central European Time',
+    label: '(GMT+1) Amsterdam, Berlin, Bern, Rome, Stockholm, Vienna',
+    offset: '+01:00',
+  },
+  {
+    value: '(GMT+2) Eastern European Time',
+    label: '(GMT+2) Athens, Bucharest, Cairo, Helsinki, Kiev',
+    offset: '+02:00',
+  },
+  {
+    value: '(GMT+3) Moscow Time',
+    label: '(GMT+3) Baghdad, Kuwait, Riyadh, Moscow, St. Petersburg',
+    offset: '+03:00',
+  },
+  {
+    value: '(GMT+4) Gulf Standard Time',
+    label: '(GMT+4) Abu Dhabi, Muscat, Baku, Tbilisi, Yerevan',
+    offset: '+04:00',
+  },
+  {
+    value: '(GMT+5) Pakistan Standard Time',
+    label: '(GMT+5) Islamabad, Karachi, Tashkent',
+    offset: '+05:00',
+  },
+  {
+    value: '(GMT+6) Bangladesh Standard Time',
+    label: '(GMT+6) Astana, Dhaka, Almaty, Novosibirsk',
+    offset: '+06:00',
+  },
+  {
+    value: '(GMT+7) Indochina Time',
+    label: '(GMT+7) Bangkok, Hanoi, Jakarta, Krasnoyarsk',
+    offset: '+07:00',
+  },
+  {
+    value: '(GMT+8) China Standard Time',
+    label: '(GMT+8) Beijing, Chongqing, Hong Kong, Urumqi',
+    offset: '+08:00',
+  },
+  {
+    value: '(GMT+9) Japan Standard Time',
+    label: '(GMT+9) Osaka, Sapporo, Tokyo, Seoul, Yakutsk',
+    offset: '+09:00',
+  },
+  {
+    value: '(GMT+10) Australian Eastern Time',
+    label: '(GMT+10) Canberra, Melbourne, Sydney, Brisbane',
+    offset: '+10:00',
+  },
+  {
+    value: '(GMT+11) Solomon Islands Time',
+    label: '(GMT+11) Magadan, Solomon Is., New Caledonia',
+    offset: '+11:00',
+  },
+  {
+    value: '(GMT+12) New Zealand Time',
+    label: '(GMT+12) Auckland, Wellington, Fiji, Kamchatka',
+    offset: '+12:00',
+  },
 ]
 
 export const languageOptions = [

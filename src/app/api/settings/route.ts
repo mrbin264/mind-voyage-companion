@@ -3,10 +3,10 @@ import connectDB from '@/lib/db'
 import { getCurrentUser } from '@/lib/auth-utils'
 import { User as UserModel } from '@/lib/models/user'
 import { HabitModel } from '@/lib/models/habit'
-import type { 
-  UserProfile, 
+import type {
+  UserProfile,
   AccountStatistics,
-  SettingsSection
+  SettingsSection,
 } from '@/types/settings'
 
 // GET /api/settings - Get user settings
@@ -21,7 +21,7 @@ export async function GET(request: NextRequest) {
     }
 
     await connectDB()
-    
+
     const { searchParams } = new URL(request.url)
     const section = searchParams.get('section') as SettingsSection | null
 
@@ -29,19 +29,19 @@ export async function GET(request: NextRequest) {
       const profileData = await getUserProfile(user.userId)
       return NextResponse.json({
         success: true,
-        data: profileData
+        data: profileData,
       })
     } else if (section === 'statistics') {
       const statsData = await generateAccountStatistics(user.userId)
       return NextResponse.json({
         success: true,
-        data: statsData
+        data: statsData,
       })
     } else {
       // For now, return basic profile data
       const profileData = await getUserProfile(user.userId)
       const statsData = await generateAccountStatistics(user.userId)
-      
+
       return NextResponse.json({
         success: true,
         data: {
@@ -52,8 +52,8 @@ export async function GET(request: NextRequest) {
           privacy: getDefaultPrivacySettings(user.userId),
           preferences: getDefaultUserPreferences(user.userId),
           security: getDefaultSecuritySettings(user.userId),
-          subscription: getDefaultSubscriptionInfo(user.userId)
-        }
+          subscription: getDefaultSubscriptionInfo(user.userId),
+        },
       })
     }
   } catch (error) {
@@ -77,7 +77,7 @@ export async function PUT(request: NextRequest) {
     }
 
     const { section, data } = await request.json()
-    
+
     if (!section || !data) {
       return NextResponse.json(
         { success: false, error: 'Section and data are required' },
@@ -86,20 +86,20 @@ export async function PUT(request: NextRequest) {
     }
 
     await connectDB()
-    
+
     if (section === 'profile') {
       const updatedProfile = await updateUserProfile(user.userId, data)
       return NextResponse.json({
         success: true,
         message: 'Profile updated successfully',
-        data: updatedProfile
+        data: updatedProfile,
       })
     } else {
       // For other sections, just return success for now
       return NextResponse.json({
         success: true,
         message: `${section} settings updated successfully`,
-        data: data
+        data: data,
       })
     }
   } catch (error) {
@@ -114,12 +114,12 @@ export async function PUT(request: NextRequest) {
 // Helper Functions
 async function getUserProfile(userId: string): Promise<UserProfile> {
   try {
-    let user = await UserModel.findById(userId)
-    
+    const user = await UserModel.findById(userId)
+
     // If user doesn't exist, try to create a basic profile
     if (!user) {
       console.log('User not found, creating basic profile for userId:', userId)
-      
+
       // For now, return a default profile structure
       // In production, this should not happen if authentication is working correctly
       return {
@@ -137,7 +137,7 @@ async function getUserProfile(userId: string): Promise<UserProfile> {
         socialLinks: undefined,
         emailVerified: false,
         createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString()
+        updatedAt: new Date().toISOString(),
       }
     }
 
@@ -156,15 +156,20 @@ async function getUserProfile(userId: string): Promise<UserProfile> {
       socialLinks: user.socialLinks,
       emailVerified: user.emailVerified || false,
       createdAt: user.createdAt?.toISOString() || new Date().toISOString(),
-      updatedAt: user.updatedAt?.toISOString() || new Date().toISOString()
+      updatedAt: user.updatedAt?.toISOString() || new Date().toISOString(),
     }
   } catch (error) {
     console.error('Error in getUserProfile:', error)
-    throw new Error(`Failed to get user profile: ${error instanceof Error ? error.message : 'Unknown error'}`)
+    throw new Error(
+      `Failed to get user profile: ${error instanceof Error ? error.message : 'Unknown error'}`
+    )
   }
 }
 
-async function updateUserProfile(userId: string, profileData: Partial<UserProfile>) {
+async function updateUserProfile(
+  userId: string,
+  profileData: Partial<UserProfile>
+) {
   const updateData = {
     firstName: profileData.firstName,
     lastName: profileData.lastName,
@@ -176,38 +181,38 @@ async function updateUserProfile(userId: string, profileData: Partial<UserProfil
     language: profileData.language,
     website: profileData.website,
     socialLinks: profileData.socialLinks,
-    updatedAt: new Date()
+    updatedAt: new Date(),
   }
-  
+
   // Remove undefined fields
   Object.keys(updateData).forEach(key => {
     if (updateData[key as keyof typeof updateData] === undefined) {
       delete updateData[key as keyof typeof updateData]
     }
   })
-  
-  const updatedUser = await UserModel.findByIdAndUpdate(
-    userId,
-    updateData,
-    { new: true }
-  )
-  
+
+  const updatedUser = await UserModel.findByIdAndUpdate(userId, updateData, {
+    new: true,
+  })
+
   if (!updatedUser) {
     throw new Error('Failed to update user profile')
   }
-  
+
   return await getUserProfile(userId)
 }
 
-async function generateAccountStatistics(userId: string): Promise<AccountStatistics> {
+async function generateAccountStatistics(
+  userId: string
+): Promise<AccountStatistics> {
   try {
     const user = await UserModel.findById(userId)
-    
+
     // Get habits count (even if user doesn't exist in users collection)
     const habitsCount = await HabitModel.countDocuments({ userId })
-    const activeHabitsCount = await HabitModel.countDocuments({ 
-      userId, 
-      archivedAt: { $exists: false }
+    const activeHabitsCount = await HabitModel.countDocuments({
+      userId,
+      archivedAt: { $exists: false },
     })
 
     return {
@@ -222,7 +227,7 @@ async function generateAccountStatistics(userId: string): Promise<AccountStatist
       averageMoodRating: 3.8, // This would be calculated from journal entries
       streaksAchieved: 5, // This would be calculated from habit streaks
       lastActiveDate: new Date().toISOString(),
-      generatedAt: new Date().toISOString()
+      generatedAt: new Date().toISOString(),
     }
   } catch (error) {
     console.error('Error generating account statistics:', error)
@@ -239,7 +244,7 @@ async function generateAccountStatistics(userId: string): Promise<AccountStatist
       averageMoodRating: 0,
       streaksAchieved: 0,
       lastActiveDate: new Date().toISOString(),
-      generatedAt: new Date().toISOString()
+      generatedAt: new Date().toISOString(),
     }
   }
 }
@@ -254,24 +259,24 @@ function getDefaultNotificationSettings(userId: string) {
       weeklyReports: true,
       achievements: true,
       productUpdates: false,
-      marketingEmails: false
+      marketingEmails: false,
     },
     push: {
       habitReminders: true,
       journalReminders: true,
       achievements: true,
-      streakMilestones: true
+      streakMilestones: true,
     },
     inApp: {
       achievements: true,
       streakMilestones: true,
-      tips: true
+      tips: true,
     },
     reminderTimes: {
       morning: '08:00',
-      evening: '20:00'
+      evening: '20:00',
     },
-    updatedAt: new Date().toISOString()
+    updatedAt: new Date().toISOString(),
   }
 }
 
@@ -281,18 +286,18 @@ function getDefaultPrivacySettings(userId: string) {
     dataSharing: {
       analytics: false,
       improvements: false,
-      research: false
+      research: false,
     },
     visibility: {
       profile: 'private' as const,
       habits: 'private' as const,
-      achievements: 'private' as const
+      achievements: 'private' as const,
     },
     dataRetention: {
       deleteInactiveData: false,
-      retentionPeriodDays: 365
+      retentionPeriodDays: 365,
     },
-    updatedAt: new Date().toISOString()
+    updatedAt: new Date().toISOString(),
   }
 }
 
@@ -307,20 +312,20 @@ function getDefaultUserPreferences(userId: string) {
     habitDefaults: {
       reminderTime: '08:00',
       difficulty: 'medium' as const,
-      category: 'personal'
+      category: 'personal',
     },
     journalDefaults: {
       reminderTime: '21:00',
       defaultMood: 3,
-      enablePrompts: true
+      enablePrompts: true,
     },
     dashboard: {
       showWeather: true,
       showQuote: true,
       showStreak: true,
-      defaultView: 'grid' as const
+      defaultView: 'grid' as const,
     },
-    updatedAt: new Date().toISOString()
+    updatedAt: new Date().toISOString(),
   }
 }
 
@@ -329,19 +334,19 @@ function getDefaultSecuritySettings(userId: string) {
     userId,
     twoFactorAuth: {
       enabled: false,
-      method: null
+      method: null,
     },
     passwordSettings: {
       lastChanged: new Date().toISOString(),
-      requireChange: false
+      requireChange: false,
     },
     loginSecurity: {
       logoutAfterInactivity: true,
       inactivityMinutes: 60,
-      requirePasswordForSensitiveActions: true
+      requirePasswordForSensitiveActions: true,
     },
     activeSessions: [],
-    updatedAt: new Date().toISOString()
+    updatedAt: new Date().toISOString(),
   }
 }
 
@@ -351,18 +356,20 @@ function getDefaultSubscriptionInfo(userId: string) {
     plan: 'free' as const,
     status: 'active' as const,
     currentPeriodStart: new Date().toISOString(),
-    currentPeriodEnd: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(),
+    currentPeriodEnd: new Date(
+      Date.now() + 30 * 24 * 60 * 60 * 1000
+    ).toISOString(),
     features: {
       aiInsights: false,
       unlimitedHabits: false,
       advancedAnalytics: false,
       exportData: false,
       prioritySupport: false,
-      customThemes: false
+      customThemes: false,
     },
     billing: {
-      currency: 'USD'
+      currency: 'USD',
     },
-    updatedAt: new Date().toISOString()
+    updatedAt: new Date().toISOString(),
   }
 }

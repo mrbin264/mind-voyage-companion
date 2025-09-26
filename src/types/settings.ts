@@ -208,14 +208,14 @@ export interface UserSettings {
 }
 
 // Settings Navigation
-export type SettingsSection = 
-  | 'profile' 
-  | 'notifications' 
-  | 'privacy' 
-  | 'preferences' 
-  | 'data' 
-  | 'security' 
-  | 'subscription' 
+export type SettingsSection =
+  | 'profile'
+  | 'notifications'
+  | 'privacy'
+  | 'preferences'
+  | 'data'
+  | 'security'
+  | 'subscription'
   | 'support'
   | 'statistics'
 
