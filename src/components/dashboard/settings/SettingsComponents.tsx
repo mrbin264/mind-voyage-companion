@@ -1,15 +1,15 @@
 'use client'
 
 import React from 'react'
-import { 
-  User, 
-  Bell, 
-  Lock, 
-  PenTool, 
-  Database, 
-  Shield, 
-  CreditCard, 
-  HelpCircle 
+import {
+  User,
+  Bell,
+  Lock,
+  PenTool,
+  Database,
+  Shield,
+  CreditCard,
+  HelpCircle,
 } from 'lucide-react'
 import type { SettingsSection } from '@/types/settings'
 
@@ -20,68 +20,70 @@ interface SettingsNavigationProps {
 }
 
 const navigationItems = [
-  { 
-    id: 'profile' as const, 
-    label: 'Profile', 
+  {
+    id: 'profile' as const,
+    label: 'Profile',
     icon: User,
-    description: 'Personal information and account details'
+    description: 'Personal information and account details',
   },
-  { 
-    id: 'notifications' as const, 
-    label: 'Notifications', 
+  {
+    id: 'notifications' as const,
+    label: 'Notifications',
     icon: Bell,
-    description: 'Email, push, and in-app notification preferences'
+    description: 'Email, push, and in-app notification preferences',
   },
-  { 
-    id: 'privacy' as const, 
-    label: 'Privacy', 
+  {
+    id: 'privacy' as const,
+    label: 'Privacy',
     icon: Lock,
-    description: 'Data sharing and visibility settings'
+    description: 'Data sharing and visibility settings',
   },
-  { 
-    id: 'preferences' as const, 
-    label: 'Preferences', 
+  {
+    id: 'preferences' as const,
+    label: 'Preferences',
     icon: PenTool,
-    description: 'App behavior and personal customizations'
+    description: 'App behavior and personal customizations',
   },
-  { 
-    id: 'data' as const, 
-    label: 'Data', 
+  {
+    id: 'data' as const,
+    label: 'Data',
     icon: Database,
-    description: 'Export, backup, and data management'
+    description: 'Export, backup, and data management',
   },
-  { 
-    id: 'security' as const, 
-    label: 'Security', 
+  {
+    id: 'security' as const,
+    label: 'Security',
     icon: Shield,
-    description: 'Password, 2FA, and login security'
+    description: 'Password, 2FA, and login security',
   },
-  { 
-    id: 'subscription' as const, 
-    label: 'Subscription', 
+  {
+    id: 'subscription' as const,
+    label: 'Subscription',
     icon: CreditCard,
-    description: 'Billing, plans, and subscription management'
+    description: 'Billing, plans, and subscription management',
   },
-  { 
-    id: 'support' as const, 
-    label: 'Support', 
+  {
+    id: 'support' as const,
+    label: 'Support',
     icon: HelpCircle,
-    description: 'Help, contact, and troubleshooting'
+    description: 'Help, contact, and troubleshooting',
   },
 ]
 
-export function SettingsNavigation({ 
-  activeSection, 
-  onSectionChange, 
-  className = '' 
+export function SettingsNavigation({
+  activeSection,
+  onSectionChange,
+  className = '',
 }: SettingsNavigationProps) {
   return (
-    <div className={`bg-gray-800 rounded-xl p-4 border border-gray-700 ${className}`}>
+    <div
+      className={`bg-gray-800 rounded-xl p-4 border border-gray-700 ${className}`}
+    >
       <nav className="space-y-2">
-        {navigationItems.map((item) => {
+        {navigationItems.map(item => {
           const Icon = item.icon
           const isActive = activeSection === item.id
-          
+
           return (
             <button
               key={item.id}
@@ -111,63 +113,68 @@ interface SettingsHeaderProps {
   className?: string
 }
 
-const sectionTitles: Record<SettingsSection, { title: string; subtitle: string }> = {
+const sectionTitles: Record<
+  SettingsSection,
+  { title: string; subtitle: string }
+> = {
   profile: {
     title: 'Account & Profile',
-    subtitle: 'Manage your personal information and account settings'
+    subtitle: 'Manage your personal information and account settings',
   },
   notifications: {
     title: 'Notifications',
-    subtitle: 'Control how and when you receive notifications'
+    subtitle: 'Control how and when you receive notifications',
   },
   privacy: {
     title: 'Privacy & Data',
-    subtitle: 'Manage your privacy settings and data sharing preferences'
+    subtitle: 'Manage your privacy settings and data sharing preferences',
   },
   preferences: {
     title: 'App Preferences',
-    subtitle: 'Customize your app experience and default behaviors'
+    subtitle: 'Customize your app experience and default behaviors',
   },
   data: {
     title: 'Data Management',
-    subtitle: 'Export, backup, and manage your personal data'
+    subtitle: 'Export, backup, and manage your personal data',
   },
   security: {
     title: 'Security Settings',
-    subtitle: 'Protect your account with security features'
+    subtitle: 'Protect your account with security features',
   },
   subscription: {
     title: 'Subscription & Billing',
-    subtitle: 'Manage your plan, billing, and subscription features'
+    subtitle: 'Manage your plan, billing, and subscription features',
   },
   support: {
     title: 'Help & Support',
-    subtitle: 'Get help, report issues, and contact support'
+    subtitle: 'Get help, report issues, and contact support',
   },
   statistics: {
     title: 'Account Statistics',
-    subtitle: 'View your account usage and activity statistics'
-  }
+    subtitle: 'View your account usage and activity statistics',
+  },
 }
 
-export function SettingsHeader({ 
-  section, 
-  onSave, 
-  isDirty = false, 
+export function SettingsHeader({
+  section,
+  onSave,
+  isDirty = false,
   isSaving = false,
-  className = '' 
+  className = '',
 }: SettingsHeaderProps) {
   const { title, subtitle } = sectionTitles[section]
-  
+
   return (
-    <header className={`flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-8 ${className}`}>
+    <header
+      className={`flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-8 ${className}`}
+    >
       <div>
         <h2 className="text-3xl font-bold text-gray-100 flex items-center gap-3">
           ⚙️ {title}
         </h2>
         <p className="text-gray-400 mt-1">{subtitle}</p>
       </div>
-      
+
       {onSave && (
         <div className="flex items-center gap-3">
           {isDirty && (
@@ -176,7 +183,7 @@ export function SettingsHeader({
               Unsaved changes
             </span>
           )}
-          
+
           <button
             onClick={onSave}
             disabled={!isDirty || isSaving}
@@ -209,15 +216,17 @@ interface SettingsCardProps {
   headerAction?: React.ReactNode
 }
 
-export function SettingsCard({ 
-  title, 
-  description, 
-  children, 
+export function SettingsCard({
+  title,
+  description,
+  children,
   className = '',
-  headerAction 
+  headerAction,
 }: SettingsCardProps) {
   return (
-    <div className={`bg-gray-800 rounded-xl p-6 border border-gray-700 ${className}`}>
+    <div
+      className={`bg-gray-800 rounded-xl p-6 border border-gray-700 ${className}`}
+    >
       <div className="flex items-start justify-between mb-6">
         <div>
           <h3 className="text-xl font-bold text-white">{title}</h3>
@@ -225,11 +234,7 @@ export function SettingsCard({
             <p className="text-gray-400 text-sm mt-1">{description}</p>
           )}
         </div>
-        {headerAction && (
-          <div className="ml-4">
-            {headerAction}
-          </div>
-        )}
+        {headerAction && <div className="ml-4">{headerAction}</div>}
       </div>
       {children}
     </div>
@@ -245,13 +250,13 @@ interface SettingsFieldProps {
   className?: string
 }
 
-export function SettingsField({ 
-  label, 
-  description, 
-  required = false, 
-  error, 
-  children, 
-  className = '' 
+export function SettingsField({
+  label,
+  description,
+  required = false,
+  error,
+  children,
+  className = '',
 }: SettingsFieldProps) {
   return (
     <div className={`space-y-2 ${className}`}>
@@ -259,13 +264,11 @@ export function SettingsField({
         {label}
         {required && <span className="text-red-400 ml-1">*</span>}
       </label>
-      
-      {description && (
-        <p className="text-xs text-gray-500">{description}</p>
-      )}
-      
+
+      {description && <p className="text-xs text-gray-500">{description}</p>}
+
       {children}
-      
+
       {error && (
         <p className="text-sm text-red-400 flex items-center gap-1">
           <span className="w-1 h-1 bg-red-400 rounded-full"></span>
@@ -285,13 +288,13 @@ interface SettingsToggleProps {
   className?: string
 }
 
-export function SettingsToggle({ 
-  label, 
-  description, 
-  checked, 
-  onChange, 
+export function SettingsToggle({
+  label,
+  description,
+  checked,
+  onChange,
   disabled = false,
-  className = '' 
+  className = '',
 }: SettingsToggleProps) {
   return (
     <div className={`flex items-start justify-between gap-4 ${className}`}>
@@ -303,20 +306,14 @@ export function SettingsToggle({
           <p className="text-xs text-gray-500 mt-1">{description}</p>
         )}
       </div>
-      
+
       <button
         type="button"
         onClick={() => !disabled && onChange(!checked)}
         disabled={disabled}
         className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:ring-offset-gray-800 ${
-          checked 
-            ? 'bg-blue-600' 
-            : 'bg-gray-600'
-        } ${
-          disabled 
-            ? 'opacity-50 cursor-not-allowed' 
-            : 'cursor-pointer'
-        }`}
+          checked ? 'bg-blue-600' : 'bg-gray-600'
+        } ${disabled ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}`}
       >
         <span
           className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
@@ -328,16 +325,21 @@ export function SettingsToggle({
   )
 }
 
-interface SettingsInputProps extends React.InputHTMLAttributes<HTMLInputElement> {
+interface SettingsInputProps
+  extends React.InputHTMLAttributes<HTMLInputElement> {
   error?: boolean
 }
 
-export function SettingsInput({ error, className = '', ...props }: SettingsInputProps) {
+export function SettingsInput({
+  error,
+  className = '',
+  ...props
+}: SettingsInputProps) {
   return (
     <input
       className={`w-full bg-gray-700 border text-gray-100 rounded-lg px-4 py-2 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors ${
-        error 
-          ? 'border-red-500 focus:border-red-500' 
+        error
+          ? 'border-red-500 focus:border-red-500'
           : 'border-gray-600 focus:border-blue-500'
       } ${className}`}
       {...props}
@@ -345,22 +347,23 @@ export function SettingsInput({ error, className = '', ...props }: SettingsInput
   )
 }
 
-interface SettingsSelectProps extends React.SelectHTMLAttributes<HTMLSelectElement> {
+interface SettingsSelectProps
+  extends React.SelectHTMLAttributes<HTMLSelectElement> {
   error?: boolean
   options: { value: string; label: string }[]
 }
 
-export function SettingsSelect({ 
-  error, 
-  options, 
-  className = '', 
-  ...props 
+export function SettingsSelect({
+  error,
+  options,
+  className = '',
+  ...props
 }: SettingsSelectProps) {
   return (
     <select
       className={`w-full bg-gray-700 border text-gray-100 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors appearance-none cursor-pointer ${
-        error 
-          ? 'border-red-500 focus:border-red-500' 
+        error
+          ? 'border-red-500 focus:border-red-500'
           : 'border-gray-600 focus:border-blue-500'
       } ${className}`}
       {...props}
@@ -374,16 +377,21 @@ export function SettingsSelect({
   )
 }
 
-interface SettingsTextareaProps extends React.TextareaHTMLAttributes<HTMLTextAreaElement> {
+interface SettingsTextareaProps
+  extends React.TextareaHTMLAttributes<HTMLTextAreaElement> {
   error?: boolean
 }
 
-export function SettingsTextarea({ error, className = '', ...props }: SettingsTextareaProps) {
+export function SettingsTextarea({
+  error,
+  className = '',
+  ...props
+}: SettingsTextareaProps) {
   return (
     <textarea
       className={`w-full bg-gray-700 border text-gray-100 rounded-lg px-4 py-2 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors resize-none ${
-        error 
-          ? 'border-red-500 focus:border-red-500' 
+        error
+          ? 'border-red-500 focus:border-red-500'
           : 'border-gray-600 focus:border-blue-500'
       } ${className}`}
       {...props}
