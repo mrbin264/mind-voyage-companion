@@ -22,14 +22,28 @@ export interface ISession extends Document {
 
 export interface IUser extends Document {
   name?: string
+  firstName?: string
+  lastName?: string
   email: string
   password?: string // bcrypt hash, optional for OAuth
   emailVerified?: Date
   verified?: boolean
   image?: string
+  profilePhoto?: string
+  dateOfBirth?: string
+  aboutMe?: string
+  location?: string
+  timezone: string
+  language?: string
+  website?: string
+  socialLinks?: {
+    twitter?: string
+    linkedin?: string
+    github?: string
+    instagram?: string
+  }
   createdAt: Date
   updatedAt: Date
-  timezone: string
   preferences: Record<string, any>
 }
 
@@ -65,12 +79,26 @@ const SessionSchema = new Schema<ISession>({
 const UserSchema = new Schema<IUser>(
   {
     name: String,
+    firstName: String,
+    lastName: String,
     email: { type: String, required: true, unique: true },
     password: { type: String, select: false }, // bcrypt hash, optional for OAuth, excluded by default
     emailVerified: Date,
     verified: { type: Boolean, default: false },
     image: String,
+    profilePhoto: String,
+    dateOfBirth: String,
+    aboutMe: String,
+    location: String,
     timezone: { type: String, default: 'UTC' },
+    language: { type: String, default: 'en-US' },
+    website: String,
+    socialLinks: {
+      twitter: String,
+      linkedin: String,
+      github: String,
+      instagram: String,
+    },
     preferences: { type: Schema.Types.Mixed, default: {} },
   },
   {
