@@ -30,7 +30,7 @@ interface DashboardLayoutProps {
 const navigationItems = [
   { href: '/dashboard', icon: Home, label: 'Dashboard' },
   { href: '/dashboard/habits', icon: TrendingUp, label: 'Habits' },
-  { href: '/dashboard/journal', icon: Edit3, label: 'Journal' },
+  { href: '/journal', icon: Edit3, label: 'Journal' },
   { href: '/dashboard/analytics', icon: BarChart2, label: 'Analytics' },
   { href: '/dashboard/wisdom', icon: Shield, label: 'Wisdom' },
   { href: '/dashboard/settings', icon: Settings, label: 'Settings' },
