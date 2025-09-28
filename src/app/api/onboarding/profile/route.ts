@@ -2,14 +2,23 @@ import { NextRequest, NextResponse } from 'next/server'
 import { onboardingProfileSchema } from '@/lib/validations/onboarding'
 import { User } from '@/lib/models/user'
 import connectDB from '@/lib/db'
-import { requireAuth } from '@/lib/auth-utils'
+import { auth } from '@/lib/auth'
 
 export async function POST(req: NextRequest) {
   try {
     await connectDB()
 
     // Get the current user
-    const currentUser = await requireAuth(req)
+    const session = await auth()
+    console.log('Onboarding profile - session:', session ? 'exists' : 'null', session?.user?.id)
+    
+    if (!session?.user?.id) {
+      console.log('Onboarding profile - No session or user ID, returning 401')
+      return NextResponse.json(
+        { success: false, message: 'Unauthorized' },
+        { status: 401 }
+      )
+    }
 
     const data = await req.json()
     const parsed = onboardingProfileSchema.safeParse(data)
@@ -30,7 +39,7 @@ export async function POST(req: NextRequest) {
 
     // Update user with profile information
     const updatedUser = await User.findByIdAndUpdate(
-      currentUser.userId,
+      session.user.id,
       {
         name: displayName,
         timezone: timezone,

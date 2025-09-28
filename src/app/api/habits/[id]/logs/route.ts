@@ -1,33 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server'
 import connectDB from '@/lib/db'
 import { HabitModel, HabitLogModel } from '@/lib/models/habit'
-import { verify } from 'jsonwebtoken'
 import mongoose from 'mongoose'
 import type { LogHabitRequest } from '@/types/habit'
 import { getTodayString, isHabitScheduledForDate } from '@/lib/habit-utils'
-
-interface AuthUser {
-  userId: string
-  email: string
-  name: string
-}
-
-async function getAuthUser(request: NextRequest): Promise<AuthUser | null> {
-  try {
-    const token = request.cookies.get('auth-token')?.value
-
-    if (!token) {
-      return null
-    }
-
-    const secret = process.env.JWT_SECRET || 'fallback-secret-key'
-    const decoded = verify(token, secret) as AuthUser
-
-    return decoded
-  } catch (error) {
-    return null
-  }
-}
+import { auth } from '@/lib/auth'
 
 // GET /api/habits/[id]/logs - Get habit logs with date range
 export async function GET(
@@ -36,8 +13,8 @@ export async function GET(
 ) {
   try {
     const { id } = await params
-    const user = await getAuthUser(request)
-    if (!user) {
+    const session = await auth()
+    if (!session?.user?.id) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
@@ -55,7 +32,7 @@ export async function GET(
     // Verify habit belongs to user
     const habit = await HabitModel.findOne({
       _id: id,
-      userId: user.userId,
+      userId: session.user.id,
     })
 
     if (!habit) {
@@ -65,7 +42,7 @@ export async function GET(
     // Build query
     const query: any = {
       habitId: id,
-      userId: user.userId,
+      userId: session.user.id,
     }
 
     if (startDate && endDate) {
@@ -91,8 +68,8 @@ export async function POST(
 ) {
   try {
     const { id } = await params
-    const user = await getAuthUser(request)
-    if (!user) {
+    const session = await auth()
+    if (!session?.user?.id) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
@@ -116,7 +93,7 @@ export async function POST(
     // Verify habit belongs to user
     const habit = await HabitModel.findOne({
       _id: id,
-      userId: user.userId,
+      userId: session.user.id,
     })
 
     if (!habit) {
@@ -145,7 +122,7 @@ export async function POST(
     // Check for existing log
     const existingLog = await HabitLogModel.findOne({
       habitId: id,
-      userId: user.userId,
+      userId: session.user.id,
       date: logDate,
     })
 
@@ -165,7 +142,7 @@ export async function POST(
       // Create new log
       const newLog = new HabitLogModel({
         habitId: id,
-        userId: user.userId,
+        userId: session.user.id,
         date: logDate,
         completed: body.completed,
         value: body.value,

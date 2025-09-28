@@ -3,7 +3,6 @@ import { registerSchema } from '@/lib/validations/auth'
 import { hash } from 'bcryptjs'
 import { User } from '@/lib/models/user'
 import connectDB from '@/lib/db'
-import { sign } from 'jsonwebtoken'
 
 export async function POST(req: NextRequest) {
   try {
@@ -59,22 +58,10 @@ export async function POST(req: NextRequest) {
       },
     })
 
-    // Create JWT token
-    const secret = process.env.JWT_SECRET || 'fallback-secret-key'
-    const token = sign(
-      {
-        userId: user._id.toString(),
-        email: user.email,
-        name: user.name,
-      },
-      secret,
-      { expiresIn: '7d' }
-    )
-
-    // Set secure cookie
-    const response = NextResponse.json({
+    // Return success response (NextAuth will handle authentication)
+    return NextResponse.json({
       success: true,
-      message: 'Account created successfully',
+      message: 'Account created successfully. Please sign in to continue.',
       user: {
         id: user._id.toString(),
         email: user.email,
@@ -84,16 +71,6 @@ export async function POST(req: NextRequest) {
         createdAt: user.createdAt,
       },
     })
-
-    response.cookies.set('auth-token', token, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
-      sameSite: 'strict',
-      maxAge: 60 * 60 * 24 * 7, // 7 days
-      path: '/',
-    })
-
-    return response
   } catch (error) {
     console.error('Signup error:', error)
     return NextResponse.json(

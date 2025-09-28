@@ -1,32 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server'
 import connectDB from '@/lib/db'
 import { JournalEntryModel } from '@/lib/models/journal'
-import { verify } from 'jsonwebtoken'
 import type { JournalEntry, JournalSearchParams } from '@/types/journal'
-
-interface AuthUser {
-  userId: string
-  email: string
-  name: string
-}
-
-async function getAuthUser(request: NextRequest): Promise<AuthUser | null> {
-  try {
-    const token = request.cookies.get('auth-token')?.value
-
-    if (!token) {
-      return null
-    }
-
-    const secret = process.env.JWT_SECRET || 'fallback-secret-key'
-    const decoded = verify(token, secret) as AuthUser
-
-    return decoded
-  } catch (error) {
-    console.error('Auth verification error:', error)
-    return null
-  }
-}
+import { auth } from '@/lib/auth'
 
 // Helper to format date as YYYY-MM-DD in user's timezone
 function formatDateForEntry(date: Date): string {
@@ -36,8 +12,8 @@ function formatDateForEntry(date: Date): string {
 // GET /api/journal - Get journal entries with optional search/filter
 export async function GET(request: NextRequest) {
   try {
-    const user = await getAuthUser(request)
-    if (!user) {
+    const session = await auth()
+    if (!session?.user?.id) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
@@ -86,7 +62,7 @@ export async function GET(request: NextRequest) {
     }
 
     const result = await JournalEntryModel.searchEntries(
-      user.userId,
+      session.user.id,
       searchParameters
     )
 
@@ -106,8 +82,8 @@ export async function GET(request: NextRequest) {
 // POST /api/journal - Create new journal entry
 export async function POST(request: NextRequest) {
   try {
-    const user = await getAuthUser(request)
-    if (!user) {
+    const session = await auth()
+    if (!session?.user?.id) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
@@ -150,7 +126,7 @@ export async function POST(request: NextRequest) {
 
     // Check if entry already exists for this date
     const existingEntry = await JournalEntryModel.findOne({
-      userId: user.userId,
+      userId: session.user.id,
       date: entryDate,
     })
 
@@ -163,7 +139,7 @@ export async function POST(request: NextRequest) {
 
     // Create new journal entry
     const journalEntry = new JournalEntryModel({
-      userId: user.userId,
+      userId: session.user.id,
       title: title?.trim(),
       content: content.trim(),
       mood,

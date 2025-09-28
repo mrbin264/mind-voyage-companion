@@ -5,6 +5,7 @@ import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
+import { signIn } from 'next-auth/react'
 
 const loginSchema = z.object({
   email: z.string().email({ message: 'Invalid email address' }),
@@ -32,21 +33,26 @@ export default function LoginForm() {
     setError(null)
 
     try {
-      const res = await fetch('/api/auth/login', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(data),
+      console.log('LoginForm - attempting sign in with NextAuth')
+      const result = await signIn('credentials', {
+        email: data.email,
+        password: data.password,
+        redirect: false,
       })
-      if (!res.ok) {
-        const result = await res.json()
-        setError(result.message || 'Login failed')
+
+      console.log('LoginForm - sign in result:', result)
+
+      if (result?.error) {
+        setError('Invalid email or password')
         setLoading(false)
         return
       }
 
       // Check onboarding status
       try {
-        const onboardingRes = await fetch('/api/onboarding/complete')
+        const onboardingRes = await fetch('/api/onboarding/complete', {
+          credentials: 'include',
+        })
         if (onboardingRes.ok) {
           const onboardingData = await onboardingRes.json()
           if (
@@ -66,6 +72,7 @@ export default function LoginForm() {
         router.replace('/onboarding')
       }
     } catch (e) {
+      console.error('LoginForm - error:', e)
       setError('Network error')
       setLoading(false)
     }

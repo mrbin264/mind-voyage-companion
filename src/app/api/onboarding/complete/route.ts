@@ -2,14 +2,20 @@ import { NextRequest, NextResponse } from 'next/server'
 import { completeOnboardingSchema } from '@/lib/validations/onboarding'
 import { User } from '@/lib/models/user'
 import connectDB from '@/lib/db'
-import { requireAuth } from '@/lib/auth-utils'
+import { auth } from '@/lib/auth'
 
 export async function POST(req: NextRequest) {
   try {
     await connectDB()
 
     // Get the current user
-    const currentUser = await requireAuth(req)
+    const session = await auth()
+    if (!session?.user?.id) {
+      return NextResponse.json(
+        { success: false, message: 'Unauthorized' },
+        { status: 401 }
+      )
+    }
 
     const data = await req.json()
     const parsed = completeOnboardingSchema.safeParse(data)
@@ -45,7 +51,7 @@ export async function POST(req: NextRequest) {
 
     // Update user with complete onboarding data
     const updatedUser = await User.findByIdAndUpdate(
-      currentUser.userId,
+      session.user.id,
       {
         name: profile.displayName,
         timezone: profile.timezone,
@@ -100,9 +106,15 @@ export async function GET(req: NextRequest) {
     await connectDB()
 
     // Get the current user
-    const currentUser = await requireAuth(req)
+    const session = await auth()
+    if (!session?.user?.id) {
+      return NextResponse.json(
+        { success: false, message: 'Unauthorized' },
+        { status: 401 }
+      )
+    }
 
-    const user = await User.findById(currentUser.userId).select(
+    const user = await User.findById(session.user.id).select(
       'preferences timezone name'
     )
 

@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import connectDB from '@/lib/db'
-import { getCurrentUser } from '@/lib/auth-utils'
+import { auth } from '@/lib/auth'
 import { User as UserModel } from '@/lib/models/user'
 import { HabitModel } from '@/lib/models/habit'
 import type {
@@ -12,8 +12,8 @@ import type {
 // GET /api/settings - Get user settings
 export async function GET(request: NextRequest) {
   try {
-    const user = getCurrentUser(request)
-    if (!user) {
+    const session = await auth()
+    if (!session?.user?.id) {
       return NextResponse.json(
         { success: false, error: 'Unauthorized' },
         { status: 401 }
@@ -26,21 +26,21 @@ export async function GET(request: NextRequest) {
     const section = searchParams.get('section') as SettingsSection | null
 
     if (section === 'profile') {
-      const profileData = await getUserProfile(user.userId)
+      const profileData = await getUserProfile(session.user.id)
       return NextResponse.json({
         success: true,
         data: profileData,
       })
     } else if (section === 'statistics') {
-      const statsData = await generateAccountStatistics(user.userId)
+      const statsData = await generateAccountStatistics(session.user.id)
       return NextResponse.json({
         success: true,
         data: statsData,
       })
     } else {
       // For now, return basic profile data
-      const profileData = await getUserProfile(user.userId)
-      const statsData = await generateAccountStatistics(user.userId)
+      const profileData = await getUserProfile(session.user.id)
+      const statsData = await generateAccountStatistics(session.user.id)
 
       return NextResponse.json({
         success: true,
@@ -48,11 +48,11 @@ export async function GET(request: NextRequest) {
           profile: profileData,
           statistics: statsData,
           // Placeholder data for other sections
-          notifications: getDefaultNotificationSettings(user.userId),
-          privacy: getDefaultPrivacySettings(user.userId),
-          preferences: getDefaultUserPreferences(user.userId),
-          security: getDefaultSecuritySettings(user.userId),
-          subscription: getDefaultSubscriptionInfo(user.userId),
+          notifications: getDefaultNotificationSettings(session.user.id),
+          privacy: getDefaultPrivacySettings(session.user.id),
+          preferences: getDefaultUserPreferences(session.user.id),
+          security: getDefaultSecuritySettings(session.user.id),
+          subscription: getDefaultSubscriptionInfo(session.user.id),
         },
       })
     }
@@ -68,8 +68,8 @@ export async function GET(request: NextRequest) {
 // PUT /api/settings - Update user settings
 export async function PUT(request: NextRequest) {
   try {
-    const user = getCurrentUser(request)
-    if (!user) {
+    const session = await auth()
+    if (!session?.user?.id) {
       return NextResponse.json(
         { success: false, error: 'Unauthorized' },
         { status: 401 }
@@ -88,7 +88,7 @@ export async function PUT(request: NextRequest) {
     await connectDB()
 
     if (section === 'profile') {
-      const updatedProfile = await updateUserProfile(user.userId, data)
+      const updatedProfile = await updateUserProfile(session.user.id, data)
       return NextResponse.json({
         success: true,
         message: 'Profile updated successfully',

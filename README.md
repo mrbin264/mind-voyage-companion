@@ -29,7 +29,14 @@ A privacy-first habit tracking and journaling application designed to help users
 3. **Set up environment variables**
    ```bash
    cp .env.example .env.local
-   # Edit .env.local with your actual values
+   
+   # Generate secure JWT and NextAuth secrets
+   pnpm generate:secrets
+   
+   # Or generate in .env format to copy directly
+   pnpm generate:secrets:env >> .env.local
+   
+   # Edit .env.local with your other configuration values
    ```
 
 4. **Start MongoDB** (if using local instance)
@@ -116,14 +123,24 @@ pnpm test:e2e:ui        # Run E2E tests with UI (Playwright configured)
 
 Create a `.env.local` file based on `.env.example`:
 
+#### 🔐 **Secure Secret Generation**
+```bash
+# Generate cryptographically secure secrets automatically
+pnpm generate:secrets                # Interactive format with validation
+pnpm generate:secrets:env           # .env format for direct copy/paste
+```
+
+#### 📋 **Required Variables**
 ```env
+# JWT Configuration (REQUIRED - minimum 32 characters)
+JWT_SECRET=your-super-secure-jwt-secret-key-at-least-32-chars-long
+
+# NextAuth.js Configuration (REQUIRED - minimum 32 characters)  
+NEXTAUTH_SECRET=your-nextauth-secret-key-at-least-32-chars-long
+NEXTAUTH_URL=http://localhost:3000
+
 # MongoDB Configuration (Production only - development uses Memory Server)
 MONGODB_URI=mongodb://localhost:27017/mindvoyage
-MONGODB_DATABASE=mindvoyage
-
-# NextAuth.js Configuration
-NEXTAUTH_SECRET=your-32-character-secret-key
-NEXTAUTH_URL=http://localhost:3000
 
 # Microsoft Entra ID Configuration (formerly Azure AD)
 AZURE_AD_CLIENT_ID=your-entra-id-application-client-id
@@ -133,6 +150,14 @@ AZURE_AD_TENANT_ID=your-entra-id-tenant-id
 # Application Insights (Optional)
 NEXT_PUBLIC_APPINSIGHTS_INSTRUMENTATIONKEY=your-app-insights-key
 ```
+
+#### 🛡️ **Security Requirements**
+- **JWT_SECRET** and **NEXTAUTH_SECRET** are **REQUIRED** for authentication
+- Minimum 32 characters length for all secrets
+- Use the `pnpm generate:secrets` command to create cryptographically secure secrets
+- **Never commit secrets to version control** - they are excluded in `.gitignore`
+- Use different secrets for each environment (dev, staging, production)
+- Store production secrets securely in Azure Key Vault
 
 **Note**: In development mode, the `MONGODB_URI` is optional as the app automatically uses MongoDB Memory Server.
 

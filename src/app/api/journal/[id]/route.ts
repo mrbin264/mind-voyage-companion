@@ -1,32 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server'
 import connectDB from '@/lib/db'
 import { JournalEntryModel } from '@/lib/models/journal'
-import { verify } from 'jsonwebtoken'
 import mongoose from 'mongoose'
-
-interface AuthUser {
-  userId: string
-  email: string
-  name: string
-}
-
-async function getAuthUser(request: NextRequest): Promise<AuthUser | null> {
-  try {
-    const token = request.cookies.get('auth-token')?.value
-
-    if (!token) {
-      return null
-    }
-
-    const secret = process.env.JWT_SECRET || 'fallback-secret-key'
-    const decoded = verify(token, secret) as AuthUser
-
-    return decoded
-  } catch (error) {
-    console.error('Auth verification error:', error)
-    return null
-  }
-}
+import { auth } from '@/lib/auth'
 
 // GET /api/journal/[id] - Get specific journal entry
 export async function GET(
@@ -35,8 +11,8 @@ export async function GET(
 ) {
   try {
     const { id } = await params
-    const user = await getAuthUser(request)
-    if (!user) {
+    const session = await auth()
+    if (!session?.user?.id) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
@@ -48,7 +24,7 @@ export async function GET(
 
     const entry = await JournalEntryModel.findOne({
       _id: id,
-      userId: user.userId,
+      userId: session.user.id,
     })
 
     if (!entry) {
@@ -78,8 +54,8 @@ export async function PUT(
 ) {
   try {
     const { id } = await params
-    const user = await getAuthUser(request)
-    if (!user) {
+    const session = await auth()
+    if (!session?.user?.id) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
@@ -136,7 +112,7 @@ export async function PUT(
     if (favorite !== undefined) updateData.favorite = favorite
 
     const entry = await JournalEntryModel.findOneAndUpdate(
-      { _id: id, userId: user.userId },
+      { _id: id, userId: session.user.id },
       updateData,
       { new: true, runValidators: true }
     )
@@ -168,8 +144,8 @@ export async function DELETE(
 ) {
   try {
     const { id } = await params
-    const user = await getAuthUser(request)
-    if (!user) {
+    const session = await auth()
+    if (!session?.user?.id) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
@@ -181,7 +157,7 @@ export async function DELETE(
 
     const entry = await JournalEntryModel.findOneAndDelete({
       _id: id,
-      userId: user.userId,
+      userId: session.user.id,
     })
 
     if (!entry) {

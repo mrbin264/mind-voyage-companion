@@ -5,6 +5,7 @@ import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
+import { signIn } from 'next-auth/react'
 
 const registerSchema = z
   .object({
@@ -48,6 +49,7 @@ export default function RegisterForm() {
     setLoading(true)
     setError(null)
     try {
+      // First, register the user
       const res = await fetch('/api/auth/register', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -59,6 +61,25 @@ export default function RegisterForm() {
         setLoading(false)
         return
       }
+
+      // Then automatically sign them in
+      console.log('Attempting automatic sign in with:', data.email)
+      const signInResult = await signIn('credentials', {
+        email: data.email,
+        password: data.password,
+        redirect: false,
+      })
+
+      console.log('Sign in result:', signInResult)
+
+      if (signInResult?.error) {
+        console.error('Sign in error:', signInResult.error)
+        setError('Account created but sign in failed. Please try signing in manually.')
+        setLoading(false)
+        return
+      }
+
+      console.log('Sign in successful, redirecting to onboarding')
       // New users always go to onboarding
       router.replace('/onboarding')
     } catch (e) {
