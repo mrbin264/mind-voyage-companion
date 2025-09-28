@@ -1,45 +1,21 @@
 import { NextRequest, NextResponse } from 'next/server'
 import connectDB from '@/lib/db'
 import { JournalEntryModel } from '@/lib/models/journal'
-import { verify } from 'jsonwebtoken'
 import type { JournalStats } from '@/types/journal'
-
-interface AuthUser {
-  userId: string
-  email: string
-  name: string
-}
-
-async function getAuthUser(request: NextRequest): Promise<AuthUser | null> {
-  try {
-    const token = request.cookies.get('auth-token')?.value
-
-    if (!token) {
-      return null
-    }
-
-    const secret = process.env.JWT_SECRET || 'fallback-secret-key'
-    const decoded = verify(token, secret) as AuthUser
-
-    return decoded
-  } catch (error) {
-    console.error('Auth verification error:', error)
-    return null
-  }
-}
+import { auth } from '@/lib/auth'
 
 // GET /api/journal/stats - Get user's journal statistics
 export async function GET(request: NextRequest) {
   try {
-    const user = await getAuthUser(request)
-    if (!user) {
+    const session = await auth()
+    if (!session?.user?.id) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
     await connectDB()
 
     // Get all user entries
-    const entries = await JournalEntryModel.find({ userId: user.userId }).sort({
+    const entries = await JournalEntryModel.find({ userId: session.user.id }).sort({
       date: 1,
     })
 

@@ -3,13 +3,19 @@ import { changePasswordSchema } from '@/lib/validations/auth'
 import { hash, compare } from 'bcryptjs'
 import { User } from '@/lib/models/user'
 import connectDB from '@/lib/db'
-import { requireAuth } from '@/lib/auth-utils'
+import { auth } from '@/lib/auth'
 
 // POST /api/auth/change-password - Change user password
 export async function POST(req: NextRequest) {
   try {
     await connectDB()
-    const user = await requireAuth(req)
+    const session = await auth()
+    if (!session?.user?.id) {
+      return NextResponse.json(
+        { success: false, message: 'Unauthorized' },
+        { status: 401 }
+      )
+    }
     const data = await req.json()
     const parsed = changePasswordSchema.safeParse(data)
 
@@ -27,7 +33,7 @@ export async function POST(req: NextRequest) {
     const { currentPassword, newPassword } = parsed.data
 
     // Find user with password
-    const userProfile = await User.findById(user.userId).select('+password')
+    const userProfile = await User.findById(session.user.id).select('+password')
     if (!userProfile || !userProfile.password) {
       return NextResponse.json(
         {
@@ -75,7 +81,7 @@ export async function POST(req: NextRequest) {
     const hashedNewPassword = await hash(newPassword, 12)
 
     // Update password
-    await User.findByIdAndUpdate(user.userId, {
+    await User.findByIdAndUpdate(session.user.id, {
       password: hashedNewPassword,
     })
 

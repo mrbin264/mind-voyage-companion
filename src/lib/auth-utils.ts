@@ -1,48 +1,46 @@
-import { NextRequest } from 'next/server'
-import { verify } from 'jsonwebtoken'
 
-export interface AuthUser {
-  userId: string
-  email: string
-  name: string
-}
 
-export function getCurrentUser(request: NextRequest): AuthUser | null {
-  try {
-    const token = request.cookies.get('auth-token')?.value
-    console.log(
-      '🍪 Auth token present:',
-      !!token,
-      token ? token.substring(0, 20) + '...' : 'none'
-    )
-
-    if (!token) {
-      return null
-    }
-
-    const secret = process.env.JWT_SECRET || 'fallback-secret-key'
-    const decoded = verify(token, secret) as AuthUser
-    console.log('✅ Token verified for user:', decoded.email)
-
-    return decoded
-  } catch (error) {
-    console.log(
-      '❌ Token verification failed:',
-      error instanceof Error ? error.message : String(error)
-    )
-    return null
+/**
+ * Secure environment variable validation utility
+ * Ensures critical environment variables are present and valid
+ */
+class EnvironmentError extends Error {
+  constructor(message: string) {
+    super(message)
+    this.name = 'EnvironmentError'
   }
 }
 
-export async function requireAuth(request: NextRequest): Promise<AuthUser> {
-  console.log('🔐 RequireAuth called for:', request.url)
-  const user = getCurrentUser(request)
+/**
+ * Validates and returns JWT_SECRET with strict security requirements
+ * Throws EnvironmentError if missing or invalid
+ */
+export function getJWTSecret(): string {
+  const secret = process.env.JWT_SECRET
 
-  if (!user) {
-    console.log('❌ RequireAuth failed: No authenticated user')
-    throw new Error('Authentication required')
+  if (!secret) {
+    throw new EnvironmentError(
+      'JWT_SECRET environment variable is required for authentication. ' +
+      'Please set a strong, cryptographically secure secret (minimum 32 characters).'
+    )
   }
 
-  console.log('✅ RequireAuth succeeded for user:', user.email)
-  return user
+  if (secret.length < 32) {
+    throw new EnvironmentError(
+      'JWT_SECRET must be at least 32 characters long for security. ' +
+      `Current length: ${secret.length}`
+    )
+  }
+
+  // Warn about weak secrets (but don't fail - allow flexibility)
+  if (secret === 'your-secret-key-here' || secret.includes('example') || secret.includes('test')) {
+    console.warn(
+      '⚠️  WARNING: JWT_SECRET appears to be a default/example value. ' +
+      'Please use a cryptographically secure secret in production!'
+    )
+  }
+
+  return secret
 }
+
+

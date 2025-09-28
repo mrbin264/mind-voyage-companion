@@ -3,15 +3,21 @@ import { updateProfileSchema } from '@/lib/validations/auth'
 import { hash, compare } from 'bcryptjs'
 import { User } from '@/lib/models/user'
 import connectDB from '@/lib/db'
-import { requireAuth } from '@/lib/auth-utils'
+import { auth } from '@/lib/auth'
 
 // GET /api/auth/profile - Get current user profile
 export async function GET(req: NextRequest) {
   try {
     await connectDB()
-    const user = await requireAuth(req)
+    const session = await auth()
+    if (!session?.user?.id) {
+      return NextResponse.json(
+        { success: false, message: 'Unauthorized' },
+        { status: 401 }
+      )
+    }
 
-    const userProfile = await User.findById(user.userId).select('-password')
+    const userProfile = await User.findById(session.user.id).select('-password')
     if (!userProfile) {
       return NextResponse.json(
         {
@@ -61,7 +67,13 @@ export async function GET(req: NextRequest) {
 export async function PATCH(req: NextRequest) {
   try {
     await connectDB()
-    const user = await requireAuth(req)
+    const session = await auth()
+    if (!session?.user?.id) {
+      return NextResponse.json(
+        { success: false, message: 'Unauthorized' },
+        { status: 401 }
+      )
+    }
     const data = await req.json()
     const parsed = updateProfileSchema.safeParse(data)
 
@@ -102,7 +114,7 @@ export async function PATCH(req: NextRequest) {
       }
     }
 
-    const updatedUser = await User.findByIdAndUpdate(user.userId, updateData, {
+    const updatedUser = await User.findByIdAndUpdate(session.user.id, updateData, {
       new: true,
       select: '-password',
     })
@@ -157,26 +169,22 @@ export async function PATCH(req: NextRequest) {
 export async function DELETE(req: NextRequest) {
   try {
     await connectDB()
-    const user = await requireAuth(req)
+    const session = await auth()
+    if (!session?.user?.id) {
+      return NextResponse.json(
+        { success: false, message: 'Unauthorized' },
+        { status: 401 }
+      )
+    }
 
     // Delete user account
-    await User.findByIdAndDelete(user.userId)
+    await User.findByIdAndDelete(session.user.id)
 
-    // Create response and clear cookie
-    const response = NextResponse.json({
+    // Return success response (NextAuth will handle session cleanup)
+    return NextResponse.json({
       success: true,
       message: 'Account deleted successfully',
     })
-
-    response.cookies.set('auth-token', '', {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
-      sameSite: 'strict',
-      maxAge: 0,
-      path: '/',
-    })
-
-    return response
   } catch (error) {
     if (error instanceof Error && error.message === 'Authentication required') {
       return NextResponse.json(

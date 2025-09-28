@@ -2,6 +2,7 @@ import type { Metadata } from 'next'
 import { Inter } from 'next/font/google'
 import './globals.css'
 import { ThemeProvider } from '@/contexts/ThemeContext'
+import SessionProvider from '@/components/providers/SessionProvider'
 
 const inter = Inter({ subsets: ['latin'] })
 
@@ -42,11 +43,13 @@ export default function RootLayout({
         />
       </head>
       <body className="min-h-screen antialiased">
-        <ThemeProvider>
-          <div className="min-h-screen bg-[var(--mv-color-bg)] text-[var(--mv-color-text)]">
-            {children}
-          </div>
-        </ThemeProvider>
+        <SessionProvider>
+          <ThemeProvider>
+            <div className="min-h-screen bg-[var(--mv-color-bg)] text-[var(--mv-color-text)]">
+              {children}
+            </div>
+          </ThemeProvider>
+        </SessionProvider>
       </body>
     </html>
   )

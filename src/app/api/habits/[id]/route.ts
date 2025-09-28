@@ -1,33 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server'
 import connectDB from '@/lib/db'
 import { HabitModel, HabitLogModel } from '@/lib/models/habit'
-import { verify } from 'jsonwebtoken'
 import mongoose from 'mongoose'
 import type { UpdateHabitRequest } from '@/types/habit'
 import { calculateHabitProgress } from '@/lib/habit-utils'
-
-interface AuthUser {
-  userId: string
-  email: string
-  name: string
-}
-
-async function getAuthUser(request: NextRequest): Promise<AuthUser | null> {
-  try {
-    const token = request.cookies.get('auth-token')?.value
-
-    if (!token) {
-      return null
-    }
-
-    const secret = process.env.JWT_SECRET || 'fallback-secret-key'
-    const decoded = verify(token, secret) as AuthUser
-
-    return decoded
-  } catch (error) {
-    return null
-  }
-}
+import { auth } from '@/lib/auth'
 
 // GET /api/habits/[id] - Get a specific habit with progress
 export async function GET(
@@ -36,8 +13,8 @@ export async function GET(
 ) {
   try {
     const { id } = await params
-    const user = await getAuthUser(request)
-    if (!user) {
+    const session = await auth()
+    if (!session?.user?.id) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
@@ -49,7 +26,7 @@ export async function GET(
 
     const habit = await HabitModel.findOne({
       _id: id,
-      userId: user.userId,
+      userId: session.user.id,
     })
 
     if (!habit) {
@@ -59,7 +36,7 @@ export async function GET(
     // Get logs for progress calculation
     const logs = await HabitLogModel.find({
       habitId: habit._id,
-      userId: user.userId,
+      userId: session.user.id,
     }).sort({ date: -1 })
 
     const habitWithProgress = calculateHabitProgress(habit, logs)
@@ -81,8 +58,8 @@ export async function PUT(
 ) {
   try {
     const { id } = await params
-    const user = await getAuthUser(request)
-    if (!user) {
+    const session = await auth()
+    if (!session?.user?.id) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
@@ -134,7 +111,7 @@ export async function PUT(
     await connectDB()
 
     const habit = await HabitModel.findOneAndUpdate(
-      { _id: id, userId: user.userId },
+      { _id: id, userId: session.user.id },
       { ...body, updatedAt: new Date() },
       { new: true, runValidators: true }
     )
@@ -168,8 +145,8 @@ export async function DELETE(
 ) {
   try {
     const { id } = await params
-    const user = await getAuthUser(request)
-    if (!user) {
+    const session = await auth()
+    if (!session?.user?.id) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
@@ -182,7 +159,7 @@ export async function DELETE(
     // Check if habit exists and belongs to user
     const habit = await HabitModel.findOne({
       _id: id,
-      userId: user.userId,
+      userId: session.user.id,
     })
 
     if (!habit) {
@@ -191,8 +168,8 @@ export async function DELETE(
 
     // Delete the habit and all associated logs
     await Promise.all([
-      HabitModel.deleteOne({ _id: id, userId: user.userId }),
-      HabitLogModel.deleteMany({ habitId: id, userId: user.userId }),
+      HabitModel.deleteOne({ _id: id, userId: session.user.id }),
+      HabitLogModel.deleteMany({ habitId: id, userId: session.user.id }),
     ])
 
     return NextResponse.json({ message: 'Habit deleted successfully' })

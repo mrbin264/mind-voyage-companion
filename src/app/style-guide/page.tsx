@@ -1,4 +1,5 @@
-import { Metadata } from 'next'
+'use client'
+
 import {
   Layout,
   PageHeader,
@@ -55,12 +56,6 @@ import {
   AlertCircle,
   Info,
 } from 'lucide-react'
-
-export const metadata: Metadata = {
-  title: 'Style Guide | Mind Voyage Companion',
-  description:
-    'Comprehensive design system and component library for the Mind Voyage Companion application.',
-}
 
 export default function StyleGuidePage() {
   const selectOptions = [

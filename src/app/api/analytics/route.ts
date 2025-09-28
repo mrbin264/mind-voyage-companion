@@ -1,9 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { verify } from 'jsonwebtoken'
 import connectDB from '@/lib/db'
 import { HabitModel } from '@/lib/models/habit'
 import { HabitLogModel } from '@/lib/models/habit'
 import { JournalEntryModel } from '@/lib/models/journal'
+import { auth } from '@/lib/auth'
 import type {
   AnalyticsOverview,
   AnalyticsFilters,
@@ -14,24 +14,6 @@ import type {
   AIInsight,
   Achievement,
 } from '@/types/analytics'
-
-interface AuthUser {
-  userId: string
-  email: string
-  name: string
-}
-
-function getUserFromToken(request: NextRequest): AuthUser | null {
-  try {
-    const token = request.cookies.get('auth-token')?.value
-    if (!token) return null
-
-    const secret = process.env.JWT_SECRET || 'fallback-secret-key'
-    return verify(token, secret) as AuthUser
-  } catch {
-    return null
-  }
-}
 
 function getTimeframeDates(timeframe: string): {
   startDate: Date
@@ -530,8 +512,8 @@ export async function GET(request: NextRequest) {
   try {
     await connectDB()
 
-    const user = getUserFromToken(request)
-    if (!user) {
+    const session = await auth()
+    if (!session?.user?.id) {
       return NextResponse.json(
         { success: false, error: 'Unauthorized' },
         { status: 401 }
@@ -546,10 +528,10 @@ export async function GET(request: NextRequest) {
     // Fetch all analytics data
     const [weeklyTrends, streaks, correlations, journalAnalytics] =
       await Promise.all([
-        calculateWeeklyTrends(user.userId, startDate, endDate),
-        calculateHabitStreaks(user.userId),
-        calculateMoodCorrelations(user.userId, startDate),
-        calculateJournalAnalytics(user.userId, startDate, endDate),
+        calculateWeeklyTrends(session.user.id, startDate, endDate),
+        calculateHabitStreaks(session.user.id),
+        calculateMoodCorrelations(session.user.id, startDate),
+        calculateJournalAnalytics(session.user.id, startDate, endDate),
       ])
 
     // Generate AI insights (Pro feature check would go here)

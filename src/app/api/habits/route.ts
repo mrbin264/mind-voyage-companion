@@ -1,42 +1,19 @@
 import { NextRequest, NextResponse } from 'next/server'
 import connectDB from '@/lib/db'
 import { HabitModel, HabitLogModel } from '@/lib/models/habit'
-import { verify } from 'jsonwebtoken'
 import mongoose from 'mongoose'
 import type { CreateHabitRequest, HabitFilters } from '@/types/habit'
 import {
   calculateHabitProgress,
   calculateHabitSummary,
 } from '@/lib/habit-utils'
-
-interface AuthUser {
-  userId: string
-  email: string
-  name: string
-}
-
-async function getAuthUser(request: NextRequest): Promise<AuthUser | null> {
-  try {
-    const token = request.cookies.get('auth-token')?.value
-
-    if (!token) {
-      return null
-    }
-
-    const secret = process.env.JWT_SECRET || 'fallback-secret-key'
-    const decoded = verify(token, secret) as AuthUser
-
-    return decoded
-  } catch (error) {
-    return null
-  }
-}
+import { auth } from '@/lib/auth'
 
 // GET /api/habits - Get user's habits with optional filters
 export async function GET(request: NextRequest) {
   try {
-    const user = await getAuthUser(request)
-    if (!user) {
+    const session = await auth()
+    if (!session?.user) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
@@ -52,7 +29,7 @@ export async function GET(request: NextRequest) {
     }
 
     // Build query
-    const query: any = { userId: user.userId }
+    const query: any = { userId: session.user.id }
 
     if (filters.status !== 'all') {
       switch (filters.status) {
@@ -101,7 +78,7 @@ export async function GET(request: NextRequest) {
       const habitIds = habits.map(h => h._id)
       const logs = await HabitLogModel.find({
         habitId: { $in: habitIds },
-        userId: user.userId,
+        userId: session.user.id,
       })
 
       const habitsWithProgress = habits.map(habit => {
@@ -127,8 +104,8 @@ export async function GET(request: NextRequest) {
 // POST /api/habits - Create a new habit
 export async function POST(request: NextRequest) {
   try {
-    const user = await getAuthUser(request)
-    if (!user) {
+    const session = await auth()
+    if (!session?.user?.id) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
@@ -178,7 +155,7 @@ export async function POST(request: NextRequest) {
 
     const habit = new HabitModel({
       ...body,
-      userId: user.userId,
+      userId: session.user.id,
       status: {
         active: true,
         archived: false,
