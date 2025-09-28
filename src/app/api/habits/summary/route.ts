@@ -3,6 +3,39 @@ import connectDB from '@/lib/db'
 import { HabitModel, HabitLogModel } from '@/lib/models/habit'
 import { calculateHabitSummary } from '@/lib/habit-utils'
 import { auth } from '@/lib/auth'
+import mongoose from 'mongoose'
+
+/**
+ * Enhanced error handler for habit summary API
+ */
+function handleSummaryError(error: unknown) {
+  console.error('Habit summary API error:', error)
+
+  if (error instanceof mongoose.Error) {
+    console.error('MongoDB connection issue in habit summary')
+    return NextResponse.json(
+      {
+        error: 'Database connection error',
+        details:
+          process.env.NODE_ENV === 'development'
+            ? (error as Error).message
+            : undefined,
+      },
+      { status: 503 }
+    )
+  }
+
+  return NextResponse.json(
+    {
+      error: 'Internal server error',
+      details:
+        process.env.NODE_ENV === 'development'
+          ? (error as Error).message
+          : undefined,
+    },
+    { status: 500 }
+  )
+}
 
 // GET /api/habits/summary - Get habit summary statistics
 export async function GET(request: NextRequest) {
@@ -12,6 +45,7 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
+    // Use enhanced connection manager
     await connectDB()
 
     // Get all user habits
@@ -31,10 +65,6 @@ export async function GET(request: NextRequest) {
 
     return NextResponse.json({ summary })
   } catch (error) {
-    console.error('Error fetching habit summary:', error)
-    return NextResponse.json(
-      { error: 'Internal server error' },
-      { status: 500 }
-    )
+    return handleSummaryError(error)
   }
 }

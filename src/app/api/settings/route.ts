@@ -3,11 +3,57 @@ import connectDB from '@/lib/db'
 import { auth } from '@/lib/auth'
 import { User as UserModel } from '@/lib/models/user'
 import { HabitModel } from '@/lib/models/habit'
+import mongoose from 'mongoose'
 import type {
   UserProfile,
   AccountStatistics,
   SettingsSection,
 } from '@/types/settings'
+
+/**
+ * Enhanced error handler for settings API routes
+ */
+function handleSettingsError(error: unknown, operation: string) {
+  console.error(`Settings API error during ${operation}:`, error)
+
+  if (error instanceof mongoose.Error) {
+    console.error('MongoDB connection issue in settings API')
+    return NextResponse.json(
+      {
+        success: false,
+        error: 'Database connection error',
+        details:
+          process.env.NODE_ENV === 'development'
+            ? (error as Error).message
+            : undefined,
+      },
+      { status: 503 }
+    )
+  }
+
+  if (error instanceof mongoose.Error.ValidationError) {
+    return NextResponse.json(
+      {
+        success: false,
+        error: 'Data validation error',
+        details: error.message,
+      },
+      { status: 400 }
+    )
+  }
+
+  return NextResponse.json(
+    {
+      success: false,
+      error: `Failed to ${operation}`,
+      details:
+        process.env.NODE_ENV === 'development'
+          ? (error as Error).message
+          : undefined,
+    },
+    { status: 500 }
+  )
+}
 
 // GET /api/settings - Get user settings
 export async function GET(request: NextRequest) {
@@ -20,6 +66,7 @@ export async function GET(request: NextRequest) {
       )
     }
 
+    // Use enhanced connection manager
     await connectDB()
 
     const { searchParams } = new URL(request.url)
@@ -57,11 +104,7 @@ export async function GET(request: NextRequest) {
       })
     }
   } catch (error) {
-    console.error('Settings GET error:', error)
-    return NextResponse.json(
-      { success: false, error: 'Failed to fetch settings' },
-      { status: 500 }
-    )
+    return handleSettingsError(error, 'fetch settings')
   }
 }
 
@@ -85,6 +128,7 @@ export async function PUT(request: NextRequest) {
       )
     }
 
+    // Use enhanced connection manager
     await connectDB()
 
     if (section === 'profile') {
@@ -103,11 +147,7 @@ export async function PUT(request: NextRequest) {
       })
     }
   } catch (error) {
-    console.error('Settings PUT error:', error)
-    return NextResponse.json(
-      { success: false, error: 'Failed to update settings' },
-      { status: 500 }
-    )
+    return handleSettingsError(error, 'update settings')
   }
 }
 
