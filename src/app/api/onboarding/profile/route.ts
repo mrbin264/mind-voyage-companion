@@ -10,8 +10,12 @@ export async function POST(req: NextRequest) {
 
     // Get the current user
     const session = await auth()
-    console.log('Onboarding profile - session:', session ? 'exists' : 'null', session?.user?.id)
-    
+    console.log(
+      'Onboarding profile - session:',
+      session ? 'exists' : 'null',
+      session?.user?.id
+    )
+
     if (!session?.user?.id) {
       console.log('Onboarding profile - No session or user ID, returning 401')
       return NextResponse.json(

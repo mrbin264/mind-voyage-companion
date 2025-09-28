@@ -74,7 +74,9 @@ export default function RegisterForm() {
 
       if (signInResult?.error) {
         console.error('Sign in error:', signInResult.error)
-        setError('Account created but sign in failed. Please try signing in manually.')
+        setError(
+          'Account created but sign in failed. Please try signing in manually.'
+        )
         setLoading(false)
         return
       }
