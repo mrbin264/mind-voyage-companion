@@ -56,7 +56,8 @@ describe('JWT Security Environment Validation', () => {
     })
 
     it('should return valid JWT secret when properly configured', () => {
-      const validSecret = 'a-very-secure-jwt-secret-with-sufficient-length-for-production-use'
+      const validSecret =
+        'a-very-secure-jwt-secret-with-sufficient-length-for-production-use'
       process.env.JWT_SECRET = validSecret
 
       const result = getJWTSecret()
@@ -68,14 +69,19 @@ describe('JWT Security Environment Validation', () => {
 
       // This should throw an error, NOT return a fallback value
       expect(() => getJWTSecret()).toThrow()
-      
+
       try {
         const result = getJWTSecret()
         // If we reach here, the function didn't throw - that's a security vulnerability
-        expect.fail('getJWTSecret() should have thrown an error when JWT_SECRET is missing, but returned: ' + result)
+        expect.fail(
+          'getJWTSecret() should have thrown an error when JWT_SECRET is missing, but returned: ' +
+            result
+        )
       } catch (error: any) {
         // Expected - function should throw when JWT_SECRET is missing
-        expect(error.message).toContain('JWT_SECRET environment variable is required')
+        expect(error.message).toContain(
+          'JWT_SECRET environment variable is required'
+        )
       }
     })
   })

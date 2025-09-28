@@ -114,10 +114,14 @@ export async function PATCH(req: NextRequest) {
       }
     }
 
-    const updatedUser = await User.findByIdAndUpdate(session.user.id, updateData, {
-      new: true,
-      select: '-password',
-    })
+    const updatedUser = await User.findByIdAndUpdate(
+      session.user.id,
+      updateData,
+      {
+        new: true,
+        select: '-password',
+      }
+    )
 
     if (!updatedUser) {
       return NextResponse.json(

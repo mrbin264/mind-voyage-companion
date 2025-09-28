@@ -15,7 +15,9 @@ export async function GET(request: NextRequest) {
     await connectDB()
 
     // Get all user entries
-    const entries = await JournalEntryModel.find({ userId: session.user.id }).sort({
+    const entries = await JournalEntryModel.find({
+      userId: session.user.id,
+    }).sort({
       date: 1,
     })
 

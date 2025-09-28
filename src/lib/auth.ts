@@ -18,12 +18,15 @@ export const authConfig: NextAuthConfig = {
       name: 'credentials',
       credentials: {
         email: { label: 'Email', type: 'email' },
-        password: { label: 'Password', type: 'password' }
+        password: { label: 'Password', type: 'password' },
       },
       async authorize(credentials) {
         try {
-          console.log('NextAuth authorize - received credentials for:', credentials?.email)
-          
+          console.log(
+            'NextAuth authorize - received credentials for:',
+            credentials?.email
+          )
+
           // Validate input
           const parsed = loginSchema.safeParse(credentials)
           if (!parsed.success) {
@@ -35,13 +38,15 @@ export const authConfig: NextAuthConfig = {
 
           // Check if we're in edge runtime - if so, return null
           if (process.env.NEXT_RUNTIME === 'edge') {
-            console.warn('NextAuth authorize - Database access not available in edge runtime')
+            console.warn(
+              'NextAuth authorize - Database access not available in edge runtime'
+            )
             return null
           }
 
           // Dynamically import database helpers to avoid edge runtime issues
           const { findUserByEmail } = await import('@/lib/auth-helpers')
-          
+
           console.log('NextAuth authorize - looking up user:', email)
           // Find user by email
           const user = await findUserByEmail(email)
@@ -58,7 +63,10 @@ export const authConfig: NextAuthConfig = {
             return null
           }
 
-          console.log('NextAuth authorize - authentication successful for:', user.email)
+          console.log(
+            'NextAuth authorize - authentication successful for:',
+            user.email
+          )
           // Return user object for NextAuth
           return {
             id: user._id.toString(),
@@ -70,7 +78,7 @@ export const authConfig: NextAuthConfig = {
           console.error('NextAuth authorize error:', error)
           return null
         }
-      }
+      },
     }),
 
     // Microsoft Entra ID (Azure AD) authentication
@@ -100,7 +108,7 @@ export const authConfig: NextAuthConfig = {
     async signIn({ user, account, profile }) {
       // Allow sign in for both credentials and OAuth providers
       return true
-    }
+    },
   },
   session: {
     strategy: 'jwt', // Use JWT sessions for better performance
@@ -122,7 +130,7 @@ export async function getServerSession() {
   return await auth()
 }
 
-// Helper to get authenticated user or throw error  
+// Helper to get authenticated user or throw error
 export async function requireAuth() {
   const session = await auth()
   if (!session?.user) {
