@@ -3,9 +3,52 @@ import { registerSchema } from '@/lib/validations/auth'
 import { hash } from 'bcryptjs'
 import { User } from '@/lib/models/user'
 import connectDB from '@/lib/db'
+import mongoose from 'mongoose'
+
+/**
+ * Enhanced error handler for auth registration
+ */
+function handleRegistrationError(error: unknown) {
+  console.error('Registration error:', error)
+
+  if (error instanceof mongoose.Error) {
+    console.error('MongoDB connection issue during registration')
+    return NextResponse.json(
+      {
+        success: false,
+        message: 'Database connection error',
+        errors: {
+          server: ['Service temporarily unavailable. Please try again.'],
+        },
+      },
+      { status: 503 }
+    )
+  }
+
+  if (error instanceof mongoose.Error.ValidationError) {
+    return NextResponse.json(
+      {
+        success: false,
+        message: 'Data validation error',
+        errors: { server: [error.message] },
+      },
+      { status: 400 }
+    )
+  }
+
+  return NextResponse.json(
+    {
+      success: false,
+      message: 'Internal server error',
+      errors: { server: ['Something went wrong. Please try again.'] },
+    },
+    { status: 500 }
+  )
+}
 
 export async function POST(req: NextRequest) {
   try {
+    // Use enhanced connection manager
     await connectDB()
     const data = await req.json()
     const parsed = registerSchema.safeParse(data)
@@ -72,14 +115,6 @@ export async function POST(req: NextRequest) {
       },
     })
   } catch (error) {
-    console.error('Signup error:', error)
-    return NextResponse.json(
-      {
-        success: false,
-        message: 'Internal server error',
-        errors: { server: ['Something went wrong. Please try again.'] },
-      },
-      { status: 500 }
-    )
+    return handleRegistrationError(error)
   }
 }

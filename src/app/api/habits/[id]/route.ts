@@ -6,6 +6,45 @@ import type { UpdateHabitRequest } from '@/types/habit'
 import { calculateHabitProgress } from '@/lib/habit-utils'
 import { auth } from '@/lib/auth'
 
+/**
+ * Enhanced error handler for habit API routes
+ */
+function handleHabitError(error: unknown, operation: string) {
+  console.error(`Habit API error during ${operation}:`, error)
+
+  if (error instanceof mongoose.Error) {
+    console.error('MongoDB connection issue detected')
+    return NextResponse.json(
+      {
+        error: 'Database connection error',
+        details:
+          process.env.NODE_ENV === 'development'
+            ? (error as Error).message
+            : undefined,
+      },
+      { status: 503 }
+    )
+  }
+
+  if (error instanceof mongoose.Error.ValidationError) {
+    return NextResponse.json(
+      { error: 'Validation error', details: error.message },
+      { status: 400 }
+    )
+  }
+
+  return NextResponse.json(
+    {
+      error: 'Internal server error',
+      details:
+        process.env.NODE_ENV === 'development'
+          ? (error as Error).message
+          : undefined,
+    },
+    { status: 500 }
+  )
+}
+
 // GET /api/habits/[id] - Get a specific habit with progress
 export async function GET(
   request: NextRequest,
@@ -43,11 +82,7 @@ export async function GET(
 
     return NextResponse.json({ habit: habitWithProgress })
   } catch (error) {
-    console.error('Error fetching habit:', error)
-    return NextResponse.json(
-      { error: 'Internal server error' },
-      { status: 500 }
-    )
+    return handleHabitError(error, 'habit fetch')
   }
 }
 
@@ -122,19 +157,7 @@ export async function PUT(
 
     return NextResponse.json({ habit })
   } catch (error) {
-    console.error('Error updating habit:', error)
-
-    if (error instanceof mongoose.Error.ValidationError) {
-      return NextResponse.json(
-        { error: 'Validation error', details: error.message },
-        { status: 400 }
-      )
-    }
-
-    return NextResponse.json(
-      { error: 'Internal server error' },
-      { status: 500 }
-    )
+    return handleHabitError(error, 'habit update')
   }
 }
 
@@ -174,10 +197,6 @@ export async function DELETE(
 
     return NextResponse.json({ message: 'Habit deleted successfully' })
   } catch (error) {
-    console.error('Error deleting habit:', error)
-    return NextResponse.json(
-      { error: 'Internal server error' },
-      { status: 500 }
-    )
+    return handleHabitError(error, 'habit deletion')
   }
 }

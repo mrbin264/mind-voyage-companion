@@ -1,14 +1,15 @@
 import { NextResponse } from 'next/server'
 import connectDB from '@/lib/db'
+import mongoose from 'mongoose'
 
 export async function GET() {
   try {
-    const connection = await connectDB()
+    await connectDB()
 
     return NextResponse.json({
       status: 'healthy',
       database: {
-        connected: connection.connection.readyState === 1,
+        connected: mongoose.connection.readyState === 1,
         environment: process.env.NODE_ENV,
         type:
           process.env.NODE_ENV === 'development'

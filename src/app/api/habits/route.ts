@@ -9,6 +9,49 @@ import {
 } from '@/lib/habit-utils'
 import { auth } from '@/lib/auth'
 
+/**
+ * Enhanced error handler for API routes with connection health monitoring
+ */
+function handleDatabaseError(error: unknown, operation: string) {
+  console.error(`Database error during ${operation}:`, error)
+
+  // Check if it's a connection error
+  if (
+    error instanceof mongoose.Error ||
+    (error as any)?.name?.includes('Mongo')
+  ) {
+    console.error('MongoDB connection issue detected, may need reconnection')
+    return NextResponse.json(
+      {
+        error: 'Database connection error',
+        details:
+          process.env.NODE_ENV === 'development'
+            ? (error as Error).message
+            : undefined,
+      },
+      { status: 503 }
+    )
+  }
+
+  if (error instanceof mongoose.Error.ValidationError) {
+    return NextResponse.json(
+      { error: 'Validation error', details: error.message },
+      { status: 400 }
+    )
+  }
+
+  return NextResponse.json(
+    {
+      error: 'Internal server error',
+      details:
+        process.env.NODE_ENV === 'development'
+          ? (error as Error).message
+          : undefined,
+    },
+    { status: 500 }
+  )
+}
+
 // GET /api/habits - Get user's habits with optional filters
 export async function GET(request: NextRequest) {
   try {
@@ -17,6 +60,7 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
+    // Use enhanced connection manager
     await connectDB()
 
     const { searchParams } = new URL(request.url)
@@ -88,16 +132,26 @@ export async function GET(request: NextRequest) {
         return calculateHabitProgress(habit, habitLogs)
       })
 
-      return NextResponse.json({ habits: habitsWithProgress })
+      return NextResponse.json({
+        habits: habitsWithProgress,
+        meta: {
+          total: habitsWithProgress.length,
+          filters,
+          includeProgress: true,
+        },
+      })
     }
 
-    return NextResponse.json({ habits })
+    return NextResponse.json({
+      habits,
+      meta: {
+        total: habits.length,
+        filters,
+        includeProgress: false,
+      },
+    })
   } catch (error) {
-    console.error('Error fetching habits:', error)
-    return NextResponse.json(
-      { error: 'Internal server error' },
-      { status: 500 }
-    )
+    return handleDatabaseError(error, 'habits fetch')
   }
 }
 
@@ -111,10 +165,17 @@ export async function POST(request: NextRequest) {
 
     const body: CreateHabitRequest = await request.json()
 
-    // Validate required fields
+    // Enhanced validation with detailed error messages
     if (!body.title || !body.frequency || !body.target) {
       return NextResponse.json(
-        { error: 'Missing required fields: title, frequency, target' },
+        {
+          error: 'Missing required fields',
+          details: {
+            title: !body.title ? 'Title is required' : null,
+            frequency: !body.frequency ? 'Frequency is required' : null,
+            target: !body.target ? 'Target is required' : null,
+          },
+        },
         { status: 400 }
       )
     }
@@ -151,6 +212,7 @@ export async function POST(request: NextRequest) {
       )
     }
 
+    // Use enhanced connection manager
     await connectDB()
 
     const habit = new HabitModel({
@@ -159,25 +221,27 @@ export async function POST(request: NextRequest) {
       status: {
         active: true,
         archived: false,
+        createdAt: new Date(),
+      },
+      analytics: {
+        totalCompletions: 0,
+        currentStreak: 0,
+        bestStreak: 0,
+        averagePerformance: 0,
+        lastCompletedAt: null,
       },
     })
 
-    await habit.save()
-
-    return NextResponse.json({ habit }, { status: 201 })
-  } catch (error) {
-    console.error('Error creating habit:', error)
-
-    if (error instanceof mongoose.Error.ValidationError) {
-      return NextResponse.json(
-        { error: 'Validation error', details: error.message },
-        { status: 400 }
-      )
-    }
+    const savedHabit = await habit.save()
 
     return NextResponse.json(
-      { error: 'Internal server error' },
-      { status: 500 }
+      {
+        habit: savedHabit,
+        message: 'Habit created successfully',
+      },
+      { status: 201 }
     )
+  } catch (error) {
+    return handleDatabaseError(error, 'habit creation')
   }
 }
