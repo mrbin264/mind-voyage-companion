@@ -12,6 +12,10 @@ db.createUser({
     {
       role: 'readWrite',
       db: 'mind_voyage_companion'
+    },
+    {
+      role: 'dbAdmin',
+      db: 'mind_voyage_companion'
     }
   ]
 });
