@@ -9,7 +9,7 @@ export async function GET() {
     // Determine actual MongoDB type based on connection string
     const mongodbUri = process.env.MONGODB_URI
     let dbType = 'MongoDB'
-    
+
     if (mongodbUri) {
       if (mongodbUri.includes('127.0.0.1') && mongodbUri.includes('/?')) {
         dbType = 'MongoDB Memory Server'
@@ -30,7 +30,9 @@ export async function GET() {
         connected: mongoose.connection.readyState === 1,
         environment: process.env.NODE_ENV,
         type: dbType,
-        uri: mongodbUri ? mongodbUri.replace(/\/\/.*@/, '//***:***@') : 'Memory Server', // Mask credentials
+        uri: mongodbUri
+          ? mongodbUri.replace(/\/\/.*@/, '//***:***@')
+          : 'Memory Server', // Mask credentials
       },
       timestamp: new Date().toISOString(),
     })
