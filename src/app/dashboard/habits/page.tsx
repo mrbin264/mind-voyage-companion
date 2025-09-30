@@ -21,7 +21,6 @@ export default async function HabitsPage() {
   return (
     <DashboardLayout
       user={{ name: user.name, email: user.email }}
-      showDefaultHeader={false}
     >
       <HabitsPageContent user={user} />
     </DashboardLayout>

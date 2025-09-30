@@ -11,34 +11,18 @@ import { throwValidationError } from '@/lib/middleware/error-handler'
 import schemas from '@/lib/validation/schemas'
 
 // POST /api/auth/register - User registration with rate limiting
-export const POST = secureEndpoint.auth(
+export const POST = secureEndpoint.custom(
   async (
     request: NextRequest,
     context: SecurityContext
   ): Promise<NextResponse> => {
     await connectDB()
 
-    // Parse and validate request body
-    let body: any
-    try {
-      body = await request.json()
-    } catch (error) {
-      throwValidationError('Invalid JSON in request body')
-    }
-
-    if (!body) {
-      throwValidationError('No request body provided')
-    }
-
-    // Validate using schema
-    const validation = schemas.createUser.safeParse(body)
-    if (!validation.success) {
-      throwValidationError('Registration validation failed', {
-        errors: validation.error.flatten().fieldErrors,
-      })
-    }
-
-    const { email, password, name, timezone } = validation.data!
+    // Use validated body from security middleware
+    const { email, password, firstName, lastName, timezone } = context.validatedBody!
+    
+    // Combine firstName and lastName into name for user creation
+    const name = `${firstName} ${lastName}`.trim()
 
     // Check if user already exists
     const existingUser = await User.findOne({ email })
@@ -107,5 +91,12 @@ export const POST = secureEndpoint.auth(
       },
       { status: 201 }
     )
+  },
+  {
+    rateLimit: { type: 'auth' },
+    auth: { required: false },
+    validation: { body: schemas.register },
+    sanitization: { sanitizeBody: true },
+    logging: { logRequests: true },
   }
 )

@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from 'react'
 import { Plus, Search, Upload, Settings } from 'lucide-react'
+import { useSession } from 'next-auth/react'
 import { DashboardLayout } from '@/components/layout/DashboardLayout'
 import JournalEntryList from '@/components/journal/JournalEntryList'
 import type {
@@ -23,8 +24,14 @@ export default function JournalHistoryPage() {
   const [currentPage, setCurrentPage] = useState(1)
   const [hasMore, setHasMore] = useState(true)
 
-  // Mock user for now - in real app this would come from auth context
-  const user = { name: 'User', email: 'user@example.com' }
+  // Get user session
+  const { data: session } = useSession()
+
+  // Create user object for DashboardLayout
+  const user = {
+    name: session?.user?.name || 'User',
+    email: session?.user?.email || 'user@example.com',
+  }
 
   // Fetch journal statistics
   useEffect(() => {
@@ -163,12 +170,12 @@ export default function JournalHistoryPage() {
   ]
 
   return (
-    <DashboardLayout user={user} showDefaultHeader={false}>
+    <DashboardLayout user={user}>
       <div className="max-w-6xl mx-auto">
-        {/* Header */}
+        {/* Page Header - Simplified since DashboardLayout shows the main header */}
         <header className="flex flex-wrap justify-between items-center gap-4 mb-8">
           <div>
-            <h1 className="text-3xl font-bold text-gray-100">
+            <h1 className="text-2xl font-bold text-gray-100">
               📖 Journal History
             </h1>
           </div>
