@@ -376,7 +376,7 @@ export function useProfileForm(
     email: initialData?.email || '',
     avatar: initialData?.profilePhoto || '',
     dateOfBirth: initialData?.dateOfBirth || '',
-    bio: initialData?.aboutMe || '',
+    bio: initialData?.bio || '', // Changed from aboutMe to bio
     location: initialData?.location || '',
     timezone: initialData?.timezone || '(GMT-8) Pacific Time',
     language: initialData?.language || 'en-US',
@@ -416,7 +416,7 @@ export function useProfileForm(
         email: initialData.email || '',
         avatar: initialData.profilePhoto || '',
         dateOfBirth: initialData.dateOfBirth || '',
-        bio: initialData.aboutMe || '',
+        bio: initialData.bio || '', // Changed from aboutMe to bio
         location: initialData.location || '',
         timezone: initialData.timezone || '(GMT-8) Pacific Time',
         language: initialData.language || 'en-US',

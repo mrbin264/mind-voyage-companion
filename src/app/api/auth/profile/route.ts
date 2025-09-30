@@ -89,8 +89,21 @@ export async function PATCH(req: NextRequest) {
     }
 
     const updateData: any = {}
-    if (parsed.data.name) updateData.name = parsed.data.name
+    if (parsed.data.firstName) updateData.firstName = parsed.data.firstName
+    if (parsed.data.lastName) updateData.lastName = parsed.data.lastName
+    if (parsed.data.firstName && parsed.data.lastName) {
+      updateData.name = `${parsed.data.firstName} ${parsed.data.lastName}`
+    }
+    if (parsed.data.profilePhoto)
+      updateData.profilePhoto = parsed.data.profilePhoto
+    if (parsed.data.dateOfBirth)
+      updateData.dateOfBirth = parsed.data.dateOfBirth
+    if (parsed.data.bio) updateData.bio = parsed.data.bio
+    if (parsed.data.location) updateData.location = parsed.data.location
     if (parsed.data.timezone) updateData.timezone = parsed.data.timezone
+    if (parsed.data.website) updateData.website = parsed.data.website
+    if (parsed.data.socialLinks)
+      updateData.socialLinks = parsed.data.socialLinks
     if (parsed.data.preferences) {
       updateData.$set = {}
       if (parsed.data.preferences.theme) {

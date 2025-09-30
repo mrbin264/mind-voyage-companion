@@ -169,7 +169,7 @@ async function getUserProfile(userId: string): Promise<UserProfile> {
         email: '',
         profilePhoto: undefined,
         dateOfBirth: undefined,
-        aboutMe: '',
+        bio: '', // Changed from aboutMe
         location: undefined,
         timezone: '(GMT-8) Pacific Time',
         language: 'en-US',
@@ -188,10 +188,10 @@ async function getUserProfile(userId: string): Promise<UserProfile> {
       email: user.email,
       profilePhoto: user.profilePhoto,
       dateOfBirth: user.dateOfBirth,
-      aboutMe: user.aboutMe || '',
+      bio: user.bio || '', // Changed from aboutMe to bio
       location: user.location,
       timezone: user.timezone || '(GMT-8) Pacific Time',
-      language: user.language || 'en-US',
+      language: user.preferences?.language || 'en-US', // Get language from preferences
       website: user.website,
       socialLinks: user.socialLinks,
       emailVerified: user.emailVerified || false,
@@ -210,18 +210,22 @@ async function updateUserProfile(
   userId: string,
   profileData: Partial<UserProfile>
 ) {
-  const updateData = {
+  const updateData: any = {
     firstName: profileData.firstName,
     lastName: profileData.lastName,
     profilePhoto: profileData.profilePhoto,
     dateOfBirth: profileData.dateOfBirth,
-    aboutMe: profileData.aboutMe,
+    bio: profileData.bio, // Changed from aboutMe to bio
     location: profileData.location,
     timezone: profileData.timezone,
-    language: profileData.language,
     website: profileData.website,
     socialLinks: profileData.socialLinks,
     updatedAt: new Date(),
+  }
+
+  // Update language in preferences if provided
+  if (profileData.language) {
+    updateData['preferences.language'] = profileData.language
   }
 
   // Remove undefined fields

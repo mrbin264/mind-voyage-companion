@@ -20,13 +20,6 @@ interface HabitListProps {
   emptyMessage?: string
 }
 
-const filterTabs = [
-  { key: 'all', label: 'All Habits', count: 0 },
-  { key: 'active', label: 'Active', count: 6 },
-  { key: 'paused', label: 'Paused', count: 2 },
-  { key: 'archived', label: 'Archive', count: 0 },
-]
-
 export function HabitList({
   habits,
   loading = false,
@@ -41,6 +34,57 @@ export function HabitList({
   showFilters = true,
   emptyMessage = 'No habits found. Create your first habit to get started!',
 }: HabitListProps) {
+  // Calculate dynamic counts based on actual habits data
+  const habitCounts = React.useMemo(() => {
+    const counts = {
+      all: habits.length,
+      active: 0,
+      paused: 0,
+      archived: 0,
+    }
+
+    habits.forEach(habitProgress => {
+      const habit = habitProgress.habit
+      if (habit.status.archived) {
+        counts.archived++
+      } else if (habit.status.pausedAt) {
+        counts.paused++
+      } else if (habit.status.active) {
+        counts.active++
+      }
+    })
+
+    return counts
+  }, [habits])
+
+  // Filter habits for display based on current filter
+  const displayedHabits = React.useMemo(() => {
+    if (!filters.status || filters.status === 'all') {
+      return habits
+    }
+
+    return habits.filter(habitProgress => {
+      const habit = habitProgress.habit
+      switch (filters.status) {
+        case 'active':
+          return habit.status.active && !habit.status.archived
+        case 'paused':
+          return habit.status.pausedAt && !habit.status.archived
+        case 'archived':
+          return habit.status.archived
+        default:
+          return true
+      }
+    })
+  }, [habits, filters.status])
+
+  const filterTabs = [
+    { key: 'all', label: 'All Habits', count: habitCounts.all },
+    { key: 'active', label: 'Active', count: habitCounts.active },
+    { key: 'paused', label: 'Paused', count: habitCounts.paused },
+    { key: 'archived', label: 'Archive', count: habitCounts.archived },
+  ]
+
   const handleFilterChange = (key: string, value: any) => {
     onFiltersChange?.({ ...filters, [key]: value })
   }
@@ -109,7 +153,7 @@ export function HabitList({
                 onClick={() => handleFilterChange('status', tab.key)}
               >
                 {tab.label}
-                {tab.key !== 'all' && tab.count > 0 && ` (${tab.count})`}
+                <span className="ml-2 text-sm opacity-75">({tab.count})</span>
               </button>
             ))}
           </div>
@@ -117,7 +161,7 @@ export function HabitList({
       )}
 
       {/* Habit Cards */}
-      {habits.length === 0 ? (
+      {displayedHabits.length === 0 ? (
         <Card className="p-12 text-center">
           <div className="max-w-md mx-auto">
             <div className="text-6xl mb-4">🎯</div>
@@ -133,7 +177,7 @@ export function HabitList({
         </Card>
       ) : (
         <div className="space-y-6">
-          {habits.map(habitProgress => (
+          {displayedHabits.map(habitProgress => (
             <HabitCard
               key={habitProgress.habit._id}
               habitProgress={habitProgress}

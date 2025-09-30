@@ -9,7 +9,8 @@ import { signIn } from 'next-auth/react'
 
 const registerSchema = z
   .object({
-    name: z.string().min(1, { message: 'Display name is required' }),
+    firstName: z.string().min(1, { message: 'First name is required' }),
+    lastName: z.string().min(1, { message: 'Last name is required' }),
     email: z.string().email({ message: 'Invalid email address' }),
     password: z
       .string()
@@ -101,36 +102,74 @@ export default function RegisterForm() {
         </p>
 
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
-          <div>
-            <label htmlFor="name" className="sr-only">
-              Display Name
-            </label>
-            <div className="relative">
-              <input
-                type="text"
-                id="name"
-                placeholder="Display Name"
-                className="form-input pr-10"
-                {...register('name')}
-              />
-              <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
-                <svg
-                  className="w-5 h-5 text-gray-500"
-                  xmlns="http://www.w3.org/2000/svg"
-                  viewBox="0 0 20 20"
-                  fill="currentColor"
-                >
-                  <path
-                    fillRule="evenodd"
-                    d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z"
-                    clipRule="evenodd"
-                  />
-                </svg>
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <label htmlFor="firstName" className="sr-only">
+                First Name
+              </label>
+              <div className="relative">
+                <input
+                  type="text"
+                  id="firstName"
+                  placeholder="First Name"
+                  className="form-input pr-10"
+                  {...register('firstName')}
+                />
+                <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+                  <svg
+                    className="w-5 h-5 text-gray-500"
+                    xmlns="http://www.w3.org/2000/svg"
+                    viewBox="0 0 20 20"
+                    fill="currentColor"
+                  >
+                    <path
+                      fillRule="evenodd"
+                      d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z"
+                      clipRule="evenodd"
+                    />
+                  </svg>
+                </div>
               </div>
+              {errors.firstName && (
+                <p className="text-red-400 text-sm mt-2">
+                  {errors.firstName.message}
+                </p>
+              )}
             </div>
-            {errors.name && (
-              <p className="text-red-400 text-sm mt-2">{errors.name.message}</p>
-            )}
+
+            <div>
+              <label htmlFor="lastName" className="sr-only">
+                Last Name
+              </label>
+              <div className="relative">
+                <input
+                  type="text"
+                  id="lastName"
+                  placeholder="Last Name"
+                  className="form-input pr-10"
+                  {...register('lastName')}
+                />
+                <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+                  <svg
+                    className="w-5 h-5 text-gray-500"
+                    xmlns="http://www.w3.org/2000/svg"
+                    viewBox="0 0 20 20"
+                    fill="currentColor"
+                  >
+                    <path
+                      fillRule="evenodd"
+                      d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z"
+                      clipRule="evenodd"
+                    />
+                  </svg>
+                </div>
+              </div>
+              {errors.lastName && (
+                <p className="text-red-400 text-sm mt-2">
+                  {errors.lastName.message}
+                </p>
+              )}
+            </div>
           </div>
 
           <div>

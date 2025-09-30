@@ -20,7 +20,8 @@ export const registerSchema = z
       .min(8, 'Password must be at least 8 characters')
       .refine(passwordValidationRefine, passwordValidationMessage),
     confirmPassword: z.string(),
-    name: z.string().min(2, 'Name must be at least 2 characters'),
+    firstName: z.string().min(1, 'First name is required'),
+    lastName: z.string().min(1, 'Last name is required'),
     timezone: z.string().optional(),
   })
   .refine(data => data.password === data.confirmPassword, {
@@ -54,20 +55,52 @@ export const changePasswordSchema = z.object({
 })
 
 export const updateProfileSchema = z.object({
-  name: z.string().min(2, 'Name must be at least 2 characters').optional(),
+  firstName: z.string().min(1, 'First name is required').optional(),
+  lastName: z.string().min(1, 'Last name is required').optional(),
+  profilePhoto: z.string().optional(),
+  dateOfBirth: z.string().optional(),
+  bio: z.string().max(500, 'Bio must be 500 characters or less').optional(),
+  location: z.string().optional(),
   timezone: z.string().optional(),
+  website: z.string().url('Invalid website URL').optional().or(z.literal('')),
+  socialLinks: z
+    .object({
+      twitter: z.string().optional(),
+      linkedin: z.string().optional(),
+      github: z.string().optional(),
+      instagram: z.string().optional(),
+    })
+    .optional(),
   preferences: z
     .object({
       theme: z.enum(['light', 'dark', 'system']).optional(),
+      dateFormat: z.enum(['MM/DD/YYYY', 'DD/MM/YYYY', 'YYYY-MM-DD']).optional(),
+      timeFormat: z.enum(['12h', '24h']).optional(),
+      weekStartsOn: z.enum(['sunday', 'monday']).optional(),
+      language: z.string().optional(),
+      wakeUpTime: z.string().optional(),
+      sleepTime: z.string().optional(),
       notifications: z
         .object({
           email: z.boolean().optional(),
           push: z.boolean().optional(),
+          habitReminders: z.boolean().optional(),
+          journalReminders: z.boolean().optional(),
+          weeklyReports: z.boolean().optional(),
         })
         .optional(),
       privacy: z
         .object({
           publicProfile: z.boolean().optional(),
+          shareStats: z.boolean().optional(),
+        })
+        .optional(),
+      dashboard: z
+        .object({
+          showWeather: z.boolean().optional(),
+          showQuote: z.boolean().optional(),
+          showStreak: z.boolean().optional(),
+          defaultView: z.enum(['grid', 'list']).optional(),
         })
         .optional(),
     })

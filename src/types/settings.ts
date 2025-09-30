@@ -7,7 +7,7 @@ export interface UserProfile {
   email: string
   profilePhoto?: string
   dateOfBirth?: string
-  aboutMe?: string
+  bio?: string // Changed from aboutMe for consistency
   location?: string
   timezone: string
   language: string

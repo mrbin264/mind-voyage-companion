@@ -20,28 +20,79 @@ export interface ISession extends Document {
   expires: Date
 }
 
+// Structured preferences interface
+export interface IUserPreferences {
+  // Theme and display preferences
+  theme?: 'light' | 'dark' | 'system'
+  dateFormat?: 'MM/DD/YYYY' | 'DD/MM/YYYY' | 'YYYY-MM-DD'
+  timeFormat?: '12h' | '24h'
+  weekStartsOn?: 'sunday' | 'monday'
+
+  // Language and localization
+  language?: 'en-US' | 'vi-VN'
+
+  // Daily rhythm preferences
+  wakeUpTime?: string
+  sleepTime?: string
+
+  // Notification preferences
+  notifications?: {
+    email?: boolean
+    push?: boolean
+    habitReminders?: boolean
+    journalReminders?: boolean
+    weeklyReports?: boolean
+  }
+
+  // Privacy settings
+  privacy?: {
+    publicProfile?: boolean
+    shareStats?: boolean
+  }
+
+  // Onboarding tracking
+  onboardingCompleted?: boolean
+  onboardingStep?: number
+
+  // Dashboard preferences
+  dashboard?: {
+    showWeather?: boolean
+    showQuote?: boolean
+    showStreak?: boolean
+    defaultView?: 'grid' | 'list'
+  }
+}
+
 export interface IUser extends Document {
-  name?: string
+  // Primary identification fields
   firstName?: string
   lastName?: string
   email: string
   password?: string // bcrypt hash, optional for OAuth
+
+  // Computed display name (firstName + lastName or fallback)
+  name?: string
+
+  // Account status
   emailVerified?: Date
   verified?: boolean
-  image?: string
-  profilePhoto?: string
+
+  // Profile information
+  profilePhoto?: string // Primary profile photo field (NextAuth compatible as 'image')
   dateOfBirth?: string
-  aboutMe?: string
+  bio?: string // Changed from aboutMe for consistency
   location?: string
   timezone: string
-  language?: string
   website?: string
+
+  // Social media links
   socialLinks?: {
     twitter?: string
     linkedin?: string
     github?: string
     instagram?: string
   }
+
   // Wisdom/Quotes related fields
   wisdomFavorites?: Array<{
     quoteId: string
@@ -57,9 +108,12 @@ export interface IUser extends Document {
     categoriesExplored: Record<string, number>
     lastVisit?: Date
   }
+
+  // Structured user preferences
+  preferences: IUserPreferences
+
   createdAt: Date
   updatedAt: Date
-  preferences: Record<string, any>
 }
 
 export interface IVerificationToken extends Document {
@@ -93,27 +147,35 @@ const SessionSchema = new Schema<ISession>({
 
 const UserSchema = new Schema<IUser>(
   {
-    name: String,
+    // Primary identification fields
     firstName: String,
     lastName: String,
     email: { type: String, required: true, unique: true },
     password: { type: String, select: false }, // bcrypt hash, optional for OAuth, excluded by default
+
+    // Computed display name (virtual or stored)
+    name: String,
+
+    // Account status
     emailVerified: Date,
     verified: { type: Boolean, default: false },
-    image: String,
-    profilePhoto: String,
+
+    // Profile information
+    profilePhoto: String, // Primary profile photo field
     dateOfBirth: String,
-    aboutMe: String,
+    bio: String, // Changed from aboutMe
     location: String,
     timezone: { type: String, default: 'UTC' },
-    language: { type: String, default: 'en-US' },
     website: String,
+
+    // Social media links
     socialLinks: {
       twitter: String,
       linkedin: String,
       github: String,
       instagram: String,
     },
+
     // Wisdom/Quotes related fields
     wisdomFavorites: [
       {
@@ -131,7 +193,93 @@ const UserSchema = new Schema<IUser>(
       categoriesExplored: { type: Schema.Types.Mixed, default: {} },
       lastVisit: Date,
     },
-    preferences: { type: Schema.Types.Mixed, default: {} },
+
+    // Structured user preferences
+    preferences: {
+      type: {
+        // Theme and display preferences
+        theme: {
+          type: String,
+          enum: ['light', 'dark', 'system'],
+          default: 'system',
+        },
+        dateFormat: {
+          type: String,
+          enum: ['MM/DD/YYYY', 'DD/MM/YYYY', 'YYYY-MM-DD'],
+          default: 'MM/DD/YYYY',
+        },
+        timeFormat: { type: String, enum: ['12h', '24h'], default: '12h' },
+        weekStartsOn: {
+          type: String,
+          enum: ['sunday', 'monday'],
+          default: 'sunday',
+        },
+
+        // Language and localization
+        language: { type: String, default: 'en-US' },
+
+        // Daily rhythm preferences
+        wakeUpTime: String,
+        sleepTime: String,
+
+        // Notification preferences
+        notifications: {
+          email: { type: Boolean, default: true },
+          push: { type: Boolean, default: false },
+          habitReminders: { type: Boolean, default: true },
+          journalReminders: { type: Boolean, default: true },
+          weeklyReports: { type: Boolean, default: true },
+        },
+
+        // Privacy settings
+        privacy: {
+          publicProfile: { type: Boolean, default: false },
+          shareStats: { type: Boolean, default: false },
+        },
+
+        // Onboarding tracking
+        onboardingCompleted: { type: Boolean, default: false },
+        onboardingStep: { type: Number, default: 0 },
+
+        // Dashboard preferences
+        dashboard: {
+          showWeather: { type: Boolean, default: true },
+          showQuote: { type: Boolean, default: true },
+          showStreak: { type: Boolean, default: true },
+          defaultView: {
+            type: String,
+            enum: ['grid', 'list'],
+            default: 'grid',
+          },
+        },
+      },
+      default: () => ({
+        theme: 'system',
+        dateFormat: 'MM/DD/YYYY',
+        timeFormat: '12h',
+        weekStartsOn: 'sunday',
+        language: 'en-US',
+        notifications: {
+          email: true,
+          push: false,
+          habitReminders: true,
+          journalReminders: true,
+          weeklyReports: true,
+        },
+        privacy: {
+          publicProfile: false,
+          shareStats: false,
+        },
+        onboardingCompleted: false,
+        onboardingStep: 0,
+        dashboard: {
+          showWeather: true,
+          showQuote: true,
+          showStreak: true,
+          defaultView: 'grid',
+        },
+      }),
+    },
   },
   {
     timestamps: true,
@@ -143,6 +291,29 @@ const VerificationTokenSchema = new Schema<IVerificationToken>({
   token: { type: String, required: true, unique: true },
   expires: { type: Date, required: true },
 })
+
+// Virtual field for NextAuth compatibility (maps profilePhoto to image)
+UserSchema.virtual('image').get(function () {
+  return this.profilePhoto
+})
+
+UserSchema.virtual('image').set(function (value: string) {
+  this.profilePhoto = value
+})
+
+// Virtual field to compute full name if name is not set
+UserSchema.virtual('displayName').get(function () {
+  if (this.name) return this.name
+  if (this.firstName && this.lastName)
+    return `${this.firstName} ${this.lastName}`
+  if (this.firstName) return this.firstName
+  if (this.lastName) return this.lastName
+  return 'User'
+})
+
+// Ensure virtual fields are serialized
+UserSchema.set('toJSON', { virtuals: true })
+UserSchema.set('toObject', { virtuals: true })
 
 // Add compound index after schema creation
 VerificationTokenSchema.index({ identifier: 1, token: 1 }, { unique: true })

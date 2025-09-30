@@ -38,21 +38,21 @@ export async function POST(req: NextRequest) {
       )
     }
 
-    const { displayName, timezone, language, wakeUpTime, sleepTime } =
+    const { firstName, lastName, timezone, language, wakeUpTime, sleepTime } =
       parsed.data
 
     // Update user with profile information
     const updatedUser = await User.findByIdAndUpdate(
       session.user.id,
       {
-        name: displayName,
+        firstName,
+        lastName,
+        name: `${firstName} ${lastName}`, // Computed display name
         timezone: timezone,
-        preferences: {
-          language,
-          wakeUpTime,
-          sleepTime,
-          onboardingStep: 2, // Track onboarding progress
-        },
+        'preferences.language': language,
+        'preferences.wakeUpTime': wakeUpTime,
+        'preferences.sleepTime': sleepTime,
+        'preferences.onboardingStep': 2, // Track onboarding progress
       },
       { new: true, runValidators: true }
     )
@@ -68,6 +68,8 @@ export async function POST(req: NextRequest) {
       success: true,
       message: 'Profile updated successfully',
       data: {
+        firstName: updatedUser.firstName,
+        lastName: updatedUser.lastName,
         name: updatedUser.name,
         timezone: updatedUser.timezone,
         preferences: updatedUser.preferences,
