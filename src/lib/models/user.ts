@@ -115,19 +115,21 @@ const UserSchema = new Schema<IUser>(
       instagram: String,
     },
     // Wisdom/Quotes related fields
-    wisdomFavorites: [{
-      quoteId: { type: String, required: true },
-      text: { type: String, required: true },
-      author: { type: String, required: true },
-      category: { type: String, default: 'uncategorized' },
-      addedAt: { type: Date, default: Date.now }
-    }],
+    wisdomFavorites: [
+      {
+        quoteId: { type: String, required: true },
+        text: { type: String, required: true },
+        author: { type: String, required: true },
+        category: { type: String, default: 'uncategorized' },
+        addedAt: { type: Date, default: Date.now },
+      },
+    ],
     wisdomStats: {
       quotesViewed: { type: Number, default: 0 },
       dailyStreak: { type: Number, default: 0 },
       totalFavorites: { type: Number, default: 0 },
       categoriesExplored: { type: Schema.Types.Mixed, default: {} },
-      lastVisit: Date
+      lastVisit: Date,
     },
     preferences: { type: Schema.Types.Mixed, default: {} },
   },

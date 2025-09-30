@@ -9,80 +9,104 @@ const quotesDatabase = [
     text: 'The best time to plant a tree was 20 years ago. The second best time is now.',
     author: 'Chinese Proverb',
     category: 'ancient',
-    tags: ['wisdom', 'action', 'time']
+    tags: ['wisdom', 'action', 'time'],
   },
   {
     id: '2',
     text: 'The only way to do great work is to love what you do.',
     author: 'Steve Jobs',
     category: 'modern',
-    tags: ['work', 'passion', 'success']
+    tags: ['work', 'passion', 'success'],
   },
   {
     id: '3',
     text: 'In the middle of difficulty lies opportunity.',
     author: 'Albert Einstein',
     category: 'modern',
-    tags: ['opportunity', 'difficulty', 'growth']
+    tags: ['opportunity', 'difficulty', 'growth'],
   },
   {
     id: '4',
     text: 'The unexamined life is not worth living.',
     author: 'Socrates',
     category: 'ancient',
-    tags: ['philosophy', 'self-reflection', 'wisdom']
+    tags: ['philosophy', 'self-reflection', 'wisdom'],
   },
   {
     id: '5',
     text: 'Be yourself; everyone else is already taken.',
     author: 'Oscar Wilde',
     category: 'modern',
-    tags: ['authenticity', 'individuality', 'self']
+    tags: ['authenticity', 'individuality', 'self'],
   },
   {
     id: '6',
     text: 'Yesterday is history, tomorrow is a mystery, today is a gift.',
     author: 'Master Oogway',
     category: 'modern',
-    tags: ['present', 'mindfulness', 'time']
+    tags: ['present', 'mindfulness', 'time'],
   },
   {
     id: '7',
     text: 'The mind is everything. What you think you become.',
     author: 'Buddha',
     category: 'buddhist',
-    tags: ['mind', 'thoughts', 'transformation']
+    tags: ['mind', 'thoughts', 'transformation'],
   },
   {
     id: '8',
     text: 'You have power over your mind - not outside events. Realize this, and you will find strength.',
     author: 'Marcus Aurelius',
     category: 'stoic',
-    tags: ['control', 'strength', 'mindset']
+    tags: ['control', 'strength', 'mindset'],
   },
   {
     id: '9',
     text: 'The way to get started is to quit talking and begin doing.',
     author: 'Walt Disney',
     category: 'modern',
-    tags: ['action', 'beginning', 'success']
+    tags: ['action', 'beginning', 'success'],
   },
   {
     id: '10',
     text: 'Success is not final, failure is not fatal: it is the courage to continue that counts.',
     author: 'Winston Churchill',
     category: 'modern',
-    tags: ['success', 'failure', 'courage', 'persistence']
-  }
+    tags: ['success', 'failure', 'courage', 'persistence'],
+  },
 ]
 
 const categories = {
-  ancient: { name: 'Ancient Wisdom', emoji: '🏛️', description: 'Stoic • Buddhist • Taoist' },
-  modern: { name: 'Modern Wisdom', emoji: '💡', description: 'Contemporary • Inspirational' },
-  stoic: { name: 'Stoic Philosophy', emoji: '⚖️', description: 'Marcus Aurelius • Epictetus' },
-  buddhist: { name: 'Buddhist Wisdom', emoji: '☸️', description: 'Buddha • Zen • Meditation' },
-  success: { name: 'Success & Achievement', emoji: '🎯', description: 'Business • Leadership' },
-  mindfulness: { name: 'Mindfulness & Peace', emoji: '🧘', description: 'Meditation • Peace' }
+  ancient: {
+    name: 'Ancient Wisdom',
+    emoji: '🏛️',
+    description: 'Stoic • Buddhist • Taoist',
+  },
+  modern: {
+    name: 'Modern Wisdom',
+    emoji: '💡',
+    description: 'Contemporary • Inspirational',
+  },
+  stoic: {
+    name: 'Stoic Philosophy',
+    emoji: '⚖️',
+    description: 'Marcus Aurelius • Epictetus',
+  },
+  buddhist: {
+    name: 'Buddhist Wisdom',
+    emoji: '☸️',
+    description: 'Buddha • Zen • Meditation',
+  },
+  success: {
+    name: 'Success & Achievement',
+    emoji: '🎯',
+    description: 'Business • Leadership',
+  },
+  mindfulness: {
+    name: 'Mindfulness & Peace',
+    emoji: '🧘',
+    description: 'Meditation • Peace',
+  },
 }
 
 export async function GET(request: NextRequest) {
@@ -103,7 +127,9 @@ export async function GET(request: NextRequest) {
 
     // Filter by category
     if (category && category !== 'all') {
-      filteredQuotes = filteredQuotes.filter(quote => quote.category === category)
+      filteredQuotes = filteredQuotes.filter(
+        quote => quote.category === category
+      )
     }
 
     // Filter by search query
@@ -123,7 +149,8 @@ export async function GET(request: NextRequest) {
       const randomQuote = filteredQuotes[randomIndex]
       return NextResponse.json({
         quote: randomQuote,
-        category: categories[randomQuote.category as keyof typeof categories] || null
+        category:
+          categories[randomQuote.category as keyof typeof categories] || null,
       })
     }
 
@@ -141,13 +168,13 @@ export async function GET(request: NextRequest) {
         page,
         limit,
         total: filteredQuotes.length,
-        pages: Math.ceil(filteredQuotes.length / limit)
+        pages: Math.ceil(filteredQuotes.length / limit),
       },
       categories: Object.entries(categories).map(([key, value]) => ({
         id: key,
         ...value,
-        count: quotesDatabase.filter(q => q.category === key).length
-      }))
+        count: quotesDatabase.filter(q => q.category === key).length,
+      })),
     })
   } catch (error) {
     console.error('Quotes API error:', error)
@@ -171,14 +198,17 @@ export async function POST(request: NextRequest) {
     // In a real app, you might store user's daily quote preference or use AI to personalize
     // For now, we'll return a quote based on the current date to ensure consistency
     const today = new Date().toDateString()
-    const seed = today.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0)
+    const seed = today
+      .split('')
+      .reduce((acc, char) => acc + char.charCodeAt(0), 0)
     const dailyQuoteIndex = seed % quotesDatabase.length
     const dailyQuote = quotesDatabase[dailyQuoteIndex]
 
     return NextResponse.json({
       quote: dailyQuote,
-      category: categories[dailyQuote.category as keyof typeof categories] || null,
-      date: today
+      category:
+        categories[dailyQuote.category as keyof typeof categories] || null,
+      date: today,
     })
   } catch (error) {
     console.error('Daily quote API error:', error)

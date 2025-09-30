@@ -18,7 +18,7 @@ export async function GET(request: NextRequest) {
     }
 
     return NextResponse.json({
-      favorites: user.wisdomFavorites || []
+      favorites: user.wisdomFavorites || [],
     })
   } catch (error) {
     console.error('Get favorites API error:', error)
@@ -52,15 +52,15 @@ export async function POST(request: NextRequest) {
       text,
       author,
       category: category || 'uncategorized',
-      addedAt: new Date()
+      addedAt: new Date(),
     }
 
     const user = await User.findByIdAndUpdate(
       session.user.id,
       {
         $addToSet: {
-          wisdomFavorites: favoriteQuote
-        }
+          wisdomFavorites: favoriteQuote,
+        },
       },
       { new: true }
     ).select('wisdomFavorites')
@@ -71,7 +71,7 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json({
       message: 'Quote added to favorites',
-      favorites: user.wisdomFavorites
+      favorites: user.wisdomFavorites,
     })
   } catch (error) {
     console.error('Add favorite API error:', error)
@@ -104,8 +104,8 @@ export async function DELETE(request: NextRequest) {
       session.user.id,
       {
         $pull: {
-          wisdomFavorites: { quoteId }
-        }
+          wisdomFavorites: { quoteId },
+        },
       },
       { new: true }
     ).select('wisdomFavorites')
@@ -116,7 +116,7 @@ export async function DELETE(request: NextRequest) {
 
     return NextResponse.json({
       message: 'Quote removed from favorites',
-      favorites: user.wisdomFavorites
+      favorites: user.wisdomFavorites,
     })
   } catch (error) {
     console.error('Remove favorite API error:', error)

@@ -26,7 +26,7 @@ export async function GET(request: NextRequest) {
       dailyStreak: 0,
       totalFavorites: 0,
       categoriesExplored: {},
-      lastVisit: null
+      lastVisit: null,
     }
 
     // Update stats with current data
@@ -41,13 +41,15 @@ export async function GET(request: NextRequest) {
     })
 
     // Find most viewed category
-    const mostViewedCategory = Object.entries(stats.categoriesExplored || {})
-      .sort(([, a], [, b]) => (b as number) - (a as number))[0]
+    const mostViewedCategory = Object.entries(
+      stats.categoriesExplored || {}
+    ).sort(([, a], [, b]) => (b as number) - (a as number))[0]
 
     // Calculate wisdom score based on engagement
     let wisdomScore = 'Beginner'
-    const totalEngagement = stats.quotesViewed + totalFavorites + stats.dailyStreak
-    
+    const totalEngagement =
+      stats.quotesViewed + totalFavorites + stats.dailyStreak
+
     if (totalEngagement >= 100) wisdomScore = 'A+'
     else if (totalEngagement >= 50) wisdomScore = 'A'
     else if (totalEngagement >= 25) wisdomScore = 'B+'
@@ -58,12 +60,14 @@ export async function GET(request: NextRequest) {
       quotesViewed: stats.quotesViewed || 127, // Default for demo
       favoritesSaved: totalFavorites || 12, // Default for demo
       dailyStreak: stats.dailyStreak || 8, // Default for demo
-      mostViewedCategory: mostViewedCategory 
-        ? `${mostViewedCategory[0]} (${Math.round((mostViewedCategory[1] as number / stats.quotesViewed) * 100)}%)`
+      mostViewedCategory: mostViewedCategory
+        ? `${mostViewedCategory[0]} (${Math.round(((mostViewedCategory[1] as number) / stats.quotesViewed) * 100)}%)`
         : 'Ancient Wisdom (43%)', // Default for demo
       wisdomScore,
-      totalLoginDays: Math.floor((Date.now() - user.createdAt.getTime()) / (1000 * 60 * 60 * 24)),
-      categoryDistribution
+      totalLoginDays: Math.floor(
+        (Date.now() - user.createdAt.getTime()) / (1000 * 60 * 60 * 24)
+      ),
+      categoryDistribution,
     }
 
     return NextResponse.json({
@@ -71,8 +75,8 @@ export async function GET(request: NextRequest) {
       favorites,
       recentActivity: {
         lastVisit: stats.lastVisit,
-        streakActive: stats.dailyStreak > 0
-      }
+        streakActive: stats.dailyStreak > 0,
+      },
     })
   } catch (error) {
     console.error('Wisdom stats API error:', error)
@@ -116,28 +120,26 @@ export async function POST(request: NextRequest) {
         // Check if this is first visit today to maintain streak
         const user = await User.findById(session.user.id).select('wisdomStats')
         const lastVisit = user?.wisdomStats?.lastVisit
-        
+
         if (!lastVisit || new Date(lastVisit).toDateString() !== today) {
           const yesterday = new Date()
           yesterday.setDate(yesterday.getDate() - 1)
-          
-          const isConsecutive = lastVisit && 
+
+          const isConsecutive =
+            lastVisit &&
             new Date(lastVisit).toDateString() === yesterday.toDateString()
 
           updateData.$set = {
             'wisdomStats.lastVisit': new Date(),
-            'wisdomStats.dailyStreak': isConsecutive 
-              ? (user?.wisdomStats?.dailyStreak || 0) + 1 
-              : 1
+            'wisdomStats.dailyStreak': isConsecutive
+              ? (user?.wisdomStats?.dailyStreak || 0) + 1
+              : 1,
           }
         }
         break
 
       default:
-        return NextResponse.json(
-          { error: 'Invalid action' },
-          { status: 400 }
-        )
+        return NextResponse.json({ error: 'Invalid action' }, { status: 400 })
     }
 
     const updatedUser = await User.findByIdAndUpdate(
@@ -148,7 +150,7 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json({
       message: 'Stats updated successfully',
-      stats: updatedUser?.wisdomStats
+      stats: updatedUser?.wisdomStats,
     })
   } catch (error) {
     console.error('Update wisdom stats API error:', error)

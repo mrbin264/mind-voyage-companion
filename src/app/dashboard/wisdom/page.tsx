@@ -22,7 +22,7 @@ export default async function WisdomPage() {
   const user: AuthUser = {
     userId: session.user.id || '',
     email: session.user.email || '',
-    name: session.user.name || ''
+    name: session.user.name || '',
   }
 
   return (

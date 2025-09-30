@@ -12,7 +12,7 @@ import {
   BarChart2,
   BookOpen,
   Brain,
-  Loader2
+  Loader2,
 } from 'lucide-react'
 import { useWisdom } from '@/hooks/useWisdom'
 
@@ -27,7 +27,7 @@ export function WisdomContent() {
     fetchRandomQuote,
     addToFavorites,
     removeFromFavorites,
-    isFavorited
+    isFavorited,
   } = useWisdom()
 
   const [selectedFilter, setSelectedFilter] = useState('Daily Quotes')
@@ -37,26 +37,26 @@ export function WisdomContent() {
   // Create filters with proper counts from API categories
   const filters = [
     { name: 'Daily Quotes', id: 'all', count: null },
-    { 
-      name: 'Stoic', 
-      id: 'stoic', 
-      count: categories.find(c => c.id === 'stoic')?.count || 0 
+    {
+      name: 'Stoic',
+      id: 'stoic',
+      count: categories.find(c => c.id === 'stoic')?.count || 0,
     },
-    { 
-      name: 'Buddhist', 
-      id: 'buddhist', 
-      count: categories.find(c => c.id === 'buddhist')?.count || 0 
+    {
+      name: 'Buddhist',
+      id: 'buddhist',
+      count: categories.find(c => c.id === 'buddhist')?.count || 0,
     },
-    { 
-      name: 'Modern', 
-      id: 'modern', 
-      count: categories.find(c => c.id === 'modern')?.count || 0 
+    {
+      name: 'Modern',
+      id: 'modern',
+      count: categories.find(c => c.id === 'modern')?.count || 0,
     },
-    { 
-      name: 'Ancient', 
-      id: 'ancient', 
-      count: categories.find(c => c.id === 'ancient')?.count || 0 
-    }
+    {
+      name: 'Ancient',
+      id: 'ancient',
+      count: categories.find(c => c.id === 'ancient')?.count || 0,
+    },
   ]
 
   const popularTags = ['#courage', '#wisdom', '#love', '#success', '#growth']
@@ -65,7 +65,8 @@ export function WisdomContent() {
     setActionLoading('new-quote')
     try {
       const selectedFilterData = filters.find(f => f.name === selectedFilter)
-      const categoryId = selectedFilterData?.id === 'all' ? undefined : selectedFilterData?.id
+      const categoryId =
+        selectedFilterData?.id === 'all' ? undefined : selectedFilterData?.id
       await fetchRandomQuote(categoryId)
     } finally {
       setActionLoading(null)
@@ -96,7 +97,7 @@ export function WisdomContent() {
         await navigator.share({
           title: 'Daily Wisdom Quote',
           text: `"${currentQuote.text}" — ${currentQuote.author}`,
-          url: window.location.href
+          url: window.location.href,
         })
       } catch (error) {
         console.log('Error sharing:', error)
@@ -123,7 +124,7 @@ export function WisdomContent() {
     // Set the filter to match this category
     const filterName = getFilterNameFromCategory(category.id)
     setSelectedFilter(filterName)
-    
+
     // Fetch a random quote from this category
     setActionLoading('explore')
     try {
@@ -136,12 +137,12 @@ export function WisdomContent() {
   // Helper function to map category IDs to filter names
   const getFilterNameFromCategory = (categoryId: string) => {
     const mapping: Record<string, string> = {
-      'ancient': 'Ancient',
-      'modern': 'Modern', 
-      'stoic': 'Stoic',
-      'buddhist': 'Buddhist',
-      'success': 'Modern', // Map success to modern for now
-      'mindfulness': 'Buddhist' // Map mindfulness to buddhist for now
+      ancient: 'Ancient',
+      modern: 'Modern',
+      stoic: 'Stoic',
+      buddhist: 'Buddhist',
+      success: 'Modern', // Map success to modern for now
+      mindfulness: 'Buddhist', // Map mindfulness to buddhist for now
     }
     return mapping[categoryId] || 'Daily Quotes'
   }
@@ -275,13 +276,15 @@ export function WisdomContent() {
                     <span>{category.emoji}</span>
                     {category.name}
                   </h4>
-                  <p className="text-xs text-gray-400 mt-1">{category.description}</p>
+                  <p className="text-xs text-gray-400 mt-1">
+                    {category.description}
+                  </p>
                   <p className="text-xs text-gray-500 my-2">
                     {category.count} quotes available
                   </p>
-                  <button 
+                  <button
                     className="text-sm font-semibold text-blue-400 hover:underline"
-                    onClick={(e) => {
+                    onClick={e => {
                       e.stopPropagation()
                       handleExploreCategory(category)
                     }}
@@ -291,7 +294,7 @@ export function WisdomContent() {
                 </div>
               ))}
             </div>
-            <button 
+            <button
               className="text-sm font-semibold text-blue-400 hover:underline mt-4"
               onClick={() => alert('Custom categories feature coming soon! 🎯')}
             >
@@ -310,7 +313,7 @@ export function WisdomContent() {
               <input
                 type="search"
                 value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
+                onChange={e => setSearchQuery(e.target.value)}
                 placeholder="Search quotes by keyword..."
                 className="w-full bg-gray-800 border border-gray-700 rounded-lg pl-10 pr-4 py-2 text-white placeholder-gray-500 focus:ring-2 focus:ring-blue-500 focus:outline-none"
               />
@@ -333,11 +336,16 @@ export function WisdomContent() {
                 AI-Powered Recommendations (Pro)
               </h4>
               <p className="text-sm text-gray-400 mt-2">
-                Based on your habits and mood, we suggest quotes about patience and persistence.
+                Based on your habits and mood, we suggest quotes about patience
+                and persistence.
               </p>
-              <button 
+              <button
                 className="text-sm font-semibold text-purple-400 hover:underline mt-3"
-                onClick={() => alert('✨ Personalized AI recommendations are a Pro feature! Upgrade to unlock smart quote suggestions based on your habits and mood.')}
+                onClick={() =>
+                  alert(
+                    '✨ Personalized AI recommendations are a Pro feature! Upgrade to unlock smart quote suggestions based on your habits and mood.'
+                  )
+                }
               >
                 ✨ Get Personalized Quotes
               </button>
@@ -356,9 +364,16 @@ export function WisdomContent() {
             <div className="space-y-4">
               {favorites.length > 0 ? (
                 favorites.slice(0, 2).map(quote => (
-                  <div key={quote.quoteId} className="bg-gray-800/50 p-3 rounded-lg">
-                    <p className="text-gray-300 text-sm">&ldquo;{quote.text}&rdquo;</p>
-                    <p className="text-xs text-gray-500 mt-1">— {quote.author}</p>
+                  <div
+                    key={quote.quoteId}
+                    className="bg-gray-800/50 p-3 rounded-lg"
+                  >
+                    <p className="text-gray-300 text-sm">
+                      &ldquo;{quote.text}&rdquo;
+                    </p>
+                    <p className="text-xs text-gray-500 mt-1">
+                      — {quote.author}
+                    </p>
                   </div>
                 ))
               ) : (
@@ -368,13 +383,17 @@ export function WisdomContent() {
                 </div>
               )}
             </div>
-            <button 
+            <button
               className="text-xs font-semibold text-blue-400 hover:underline mt-4"
               onClick={() => {
                 if (favorites.length === 0) {
-                  alert('📚 No favorites yet! Start by clicking the heart icon on quotes you love.')
+                  alert(
+                    '📚 No favorites yet! Start by clicking the heart icon on quotes you love.'
+                  )
                 } else {
-                  alert(`📚 You have ${favorites.length} favorite quote${favorites.length > 1 ? 's' : ''}! Full favorites page coming soon.`)
+                  alert(
+                    `📚 You have ${favorites.length} favorite quote${favorites.length > 1 ? 's' : ''}! Full favorites page coming soon.`
+                  )
                 }
               }}
             >
@@ -391,11 +410,15 @@ export function WisdomContent() {
             <ul className="text-sm text-gray-400 space-y-2">
               <li className="flex justify-between">
                 <span>Quotes viewed:</span>
-                <span className="font-semibold text-gray-200">{stats?.quotesViewed || 0}</span>
+                <span className="font-semibold text-gray-200">
+                  {stats?.quotesViewed || 0}
+                </span>
               </li>
               <li className="flex justify-between">
                 <span>Favorites saved:</span>
-                <span className="font-semibold text-gray-200">{stats?.favoritesSaved || 0}</span>
+                <span className="font-semibold text-gray-200">
+                  {stats?.favoritesSaved || 0}
+                </span>
               </li>
               <li className="flex justify-between">
                 <span>Daily streak:</span>
@@ -411,22 +434,30 @@ export function WisdomContent() {
               </li>
               <li className="flex justify-between">
                 <span>Your wisdom score:</span>
-                <span className="font-semibold text-green-400">{stats?.wisdomScore || 'Beginner'}</span>
+                <span className="font-semibold text-green-400">
+                  {stats?.wisdomScore || 'Beginner'}
+                </span>
               </li>
             </ul>
-            <button 
+            <button
               className="text-xs font-semibold text-blue-400 hover:underline mt-4"
               onClick={() => {
                 const quotesViewed = stats?.quotesViewed || 0
                 const favoritesSaved = stats?.favoritesSaved || 0
                 const dailyStreak = stats?.dailyStreak || 0
-                
+
                 if (quotesViewed === 0 && favoritesSaved === 0) {
-                  alert('📊 Start exploring quotes to build your wisdom stats! Generate quotes and add favorites.')
+                  alert(
+                    '📊 Start exploring quotes to build your wisdom stats! Generate quotes and add favorites.'
+                  )
                 } else {
-                  const categoriesExplored = Object.keys(stats?.categoryDistribution || {}).length
+                  const categoriesExplored = Object.keys(
+                    stats?.categoryDistribution || {}
+                  ).length
                   const wisdomScore = stats?.wisdomScore || 'Beginner'
-                  alert(`📊 Your Wisdom Stats:\n• Quotes Viewed: ${quotesViewed}\n• Favorites Saved: ${favoritesSaved}\n• Daily Streak: ${dailyStreak} days\n• Categories Explored: ${categoriesExplored}\n• Wisdom Level: ${wisdomScore}\n\nDetailed analytics page coming soon!`)
+                  alert(
+                    `📊 Your Wisdom Stats:\n• Quotes Viewed: ${quotesViewed}\n• Favorites Saved: ${favoritesSaved}\n• Daily Streak: ${dailyStreak} days\n• Categories Explored: ${categoriesExplored}\n• Wisdom Level: ${wisdomScore}\n\nDetailed analytics page coming soon!`
+                  )
                 }
               }}
             >

@@ -159,8 +159,8 @@ export function DashboardContent({ user }: DashboardContentProps) {
                   <WidgetCard
                     key={habitProgress.habit._id}
                     className={`p-4 border-l-4 ${
-                      habitProgress.todayLog?.completed 
-                        ? 'border-green-500' 
+                      habitProgress.todayLog?.completed
+                        ? 'border-green-500'
                         : 'border-gray-500'
                     }`}
                   >
@@ -347,7 +347,9 @@ export function DashboardContent({ user }: DashboardContentProps) {
               </Link>
               <Link href="/dashboard/wisdom" className="block">
                 <button className="p-4 bg-[#18181B] border border-white/10 rounded-lg hover:border-blue-500 text-left transition-colors w-full">
-                  <h4 className="font-bold text-gray-200">🏛️ Get Daily Wisdom</h4>
+                  <h4 className="font-bold text-gray-200">
+                    🏛️ Get Daily Wisdom
+                  </h4>
                   <p className="text-sm text-gray-400">New Quote</p>
                 </button>
               </Link>
