@@ -3,7 +3,8 @@ import connectDB from '@/lib/db'
 import { HabitModel } from '@/lib/models/habit'
 import { HabitLogModel } from '@/lib/models/habit'
 import { JournalEntryModel } from '@/lib/models/journal'
-import { auth } from '@/lib/auth'
+import { secureEndpoint } from '@/lib/middleware/security'
+import type { SecurityContext } from '@/lib/middleware/security'
 import type {
   AnalyticsOverview,
   AnalyticsFilters,
@@ -508,30 +509,26 @@ function generateAchievements(
   return { recent: achievements, next: nextAchievement }
 }
 
-export async function GET(request: NextRequest) {
-  try {
-    await connectDB()
+export const GET = secureEndpoint.api(async (
+  request: NextRequest,
+  context: SecurityContext
+): Promise<NextResponse> => {
+  const { session } = context
+  
+  await connectDB()
 
-    const session = await auth()
-    if (!session?.user?.id) {
-      return NextResponse.json(
-        { success: false, error: 'Unauthorized' },
-        { status: 401 }
-      )
-    }
-
-    const { searchParams } = new URL(request.url)
-    const timeframe = searchParams.get('timeframe') || 'month'
-
-    const { startDate, endDate } = getTimeframeDates(timeframe)
+  const { searchParams } = new URL(request.url)
+  const timeframe = (searchParams.get('timeframe') || 'month') as 'week' | 'month' | 'quarter' | 'year' | 'all'
+  
+  const { startDate, endDate } = getTimeframeDates(timeframe)
 
     // Fetch all analytics data
     const [weeklyTrends, streaks, correlations, journalAnalytics] =
       await Promise.all([
-        calculateWeeklyTrends(session.user.id, startDate, endDate),
-        calculateHabitStreaks(session.user.id),
-        calculateMoodCorrelations(session.user.id, startDate),
-        calculateJournalAnalytics(session.user.id, startDate, endDate),
+        calculateWeeklyTrends(session!.user.id, startDate, endDate),
+        calculateHabitStreaks(session!.user.id),
+        calculateMoodCorrelations(session!.user.id, startDate),
+        calculateJournalAnalytics(session!.user.id, startDate, endDate),
       ])
 
     // Generate AI insights (Pro feature check would go here)
@@ -593,11 +590,5 @@ export async function GET(request: NextRequest) {
       success: true,
       data: overview,
     })
-  } catch (error) {
-    console.error('Analytics API error:', error)
-    return NextResponse.json(
-      { success: false, error: 'Internal server error' },
-      { status: 500 }
-    )
   }
-}
+)

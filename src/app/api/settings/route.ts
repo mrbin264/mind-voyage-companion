@@ -1,8 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server'
 import connectDB from '@/lib/db'
-import { auth } from '@/lib/auth'
 import { User as UserModel } from '@/lib/models/user'
 import { HabitModel } from '@/lib/models/habit'
+import { secureEndpoint } from '@/lib/middleware/security'
+import type { SecurityContext } from '@/lib/middleware/security'
 import mongoose from 'mongoose'
 import type {
   UserProfile,
@@ -56,38 +57,34 @@ function handleSettingsError(error: unknown, operation: string) {
 }
 
 // GET /api/settings - Get user settings
-export async function GET(request: NextRequest) {
-  try {
-    const session = await auth()
-    if (!session?.user?.id) {
-      return NextResponse.json(
-        { success: false, error: 'Unauthorized' },
-        { status: 401 }
-      )
-    }
+export const GET = secureEndpoint.api(async (
+  request: NextRequest,
+  context: SecurityContext
+): Promise<NextResponse> => {
+  const { session } = context
+  
+  // Use enhanced connection manager
+  await connectDB()
 
-    // Use enhanced connection manager
-    await connectDB()
+  const { searchParams } = new URL(request.url)
+  const section = searchParams.get('section') as SettingsSection | null
 
-    const { searchParams } = new URL(request.url)
-    const section = searchParams.get('section') as SettingsSection | null
-
-    if (section === 'profile') {
-      const profileData = await getUserProfile(session.user.id)
-      return NextResponse.json({
-        success: true,
-        data: profileData,
+  if (section === 'profile') {
+    const profileData = await getUserProfile(session!.user.id)
+    return NextResponse.json({
+      success: true,
+      data: profileData,
       })
     } else if (section === 'statistics') {
-      const statsData = await generateAccountStatistics(session.user.id)
+      const statsData = await generateAccountStatistics(session!.user.id)
       return NextResponse.json({
         success: true,
         data: statsData,
       })
     } else {
       // For now, return basic profile data
-      const profileData = await getUserProfile(session.user.id)
-      const statsData = await generateAccountStatistics(session.user.id)
+      const profileData = await getUserProfile(session!.user.id)
+      const statsData = await generateAccountStatistics(session!.user.id)
 
       return NextResponse.json({
         success: true,
@@ -95,35 +92,28 @@ export async function GET(request: NextRequest) {
           profile: profileData,
           statistics: statsData,
           // Placeholder data for other sections
-          notifications: getDefaultNotificationSettings(session.user.id),
-          privacy: getDefaultPrivacySettings(session.user.id),
-          preferences: getDefaultUserPreferences(session.user.id),
-          security: getDefaultSecuritySettings(session.user.id),
-          subscription: getDefaultSubscriptionInfo(session.user.id),
+          notifications: getDefaultNotificationSettings(session!.user.id),
+          privacy: getDefaultPrivacySettings(session!.user.id),
+          preferences: getDefaultUserPreferences(session!.user.id),
+          security: getDefaultSecuritySettings(session!.user.id),
+          subscription: getDefaultSubscriptionInfo(session!.user.id),
         },
       })
     }
-  } catch (error) {
-    return handleSettingsError(error, 'fetch settings')
-  }
-}
+})
 
 // PUT /api/settings - Update user settings
-export async function PUT(request: NextRequest) {
-  try {
-    const session = await auth()
-    if (!session?.user?.id) {
-      return NextResponse.json(
-        { success: false, error: 'Unauthorized' },
-        { status: 401 }
-      )
-    }
+export const PUT = secureEndpoint.mutation(async (
+  request: NextRequest,
+  context: SecurityContext
+): Promise<NextResponse> => {
+  const { session } = context
+  
+  const { section, data } = await request.json()
 
-    const { section, data } = await request.json()
-
-    if (!section || !data) {
-      return NextResponse.json(
-        { success: false, error: 'Section and data are required' },
+  if (!section || !data) {
+    return NextResponse.json(
+      { success: false, error: 'Section and data are required' },
         { status: 400 }
       )
     }
@@ -132,7 +122,7 @@ export async function PUT(request: NextRequest) {
     await connectDB()
 
     if (section === 'profile') {
-      const updatedProfile = await updateUserProfile(session.user.id, data)
+      const updatedProfile = await updateUserProfile(session!.user.id, data)
       return NextResponse.json({
         success: true,
         message: 'Profile updated successfully',
@@ -146,10 +136,7 @@ export async function PUT(request: NextRequest) {
         data: data,
       })
     }
-  } catch (error) {
-    return handleSettingsError(error, 'update settings')
-  }
-}
+})
 
 // Helper Functions
 async function getUserProfile(userId: string): Promise<UserProfile> {

@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { auth } from '@/lib/auth'
 import connectDB from '@/lib/db'
+import { secureEndpoint } from '@/lib/middleware/security'
+import type { SecurityContext } from '@/lib/middleware/security'
 
 // Sample quotes data - in a real app, this would come from a database
 const quotesDatabase = [
@@ -109,19 +110,18 @@ const categories = {
   },
 }
 
-export async function GET(request: NextRequest) {
-  try {
-    const session = await auth()
-    if (!session?.user?.id) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-    }
+export const GET = secureEndpoint.api(async (
+  request: NextRequest,
+  context: SecurityContext
+): Promise<NextResponse> => {
+  const { session } = context
+  
+  await connectDB()
 
-    await connectDB()
-
-    const { searchParams } = new URL(request.url)
-    const category = searchParams.get('category')
-    const search = searchParams.get('search')
-    const random = searchParams.get('random') === 'true'
+  const { searchParams } = new URL(request.url)
+  const category = searchParams.get('category')
+  const search = searchParams.get('search')
+  const random = searchParams.get('random') === 'true'
 
     let filteredQuotes = [...quotesDatabase]
 
@@ -176,45 +176,30 @@ export async function GET(request: NextRequest) {
         count: quotesDatabase.filter(q => q.category === key).length,
       })),
     })
-  } catch (error) {
-    console.error('Quotes API error:', error)
-    return NextResponse.json(
-      { error: 'Internal server error' },
-      { status: 500 }
-    )
-  }
-}
+})
 
 // Get daily quote for the user
-export async function POST(request: NextRequest) {
-  try {
-    const session = await auth()
-    if (!session?.user?.id) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-    }
+export const POST = secureEndpoint.api(async (
+  request: NextRequest,
+  context: SecurityContext
+): Promise<NextResponse> => {
+  const { session } = context
+  
+  await connectDB()
 
-    await connectDB()
+  // In a real app, you might store user's daily quote preference or use AI to personalize
+  // For now, we'll return a quote based on the current date to ensure consistency
+  const today = new Date().toDateString()
+  const seed = today
+    .split('')
+    .reduce((acc, char) => acc + char.charCodeAt(0), 0)
+  const dailyQuoteIndex = seed % quotesDatabase.length
+  const dailyQuote = quotesDatabase[dailyQuoteIndex]
 
-    // In a real app, you might store user's daily quote preference or use AI to personalize
-    // For now, we'll return a quote based on the current date to ensure consistency
-    const today = new Date().toDateString()
-    const seed = today
-      .split('')
-      .reduce((acc, char) => acc + char.charCodeAt(0), 0)
-    const dailyQuoteIndex = seed % quotesDatabase.length
-    const dailyQuote = quotesDatabase[dailyQuoteIndex]
-
-    return NextResponse.json({
-      quote: dailyQuote,
-      category:
-        categories[dailyQuote.category as keyof typeof categories] || null,
-      date: today,
-    })
-  } catch (error) {
-    console.error('Daily quote API error:', error)
-    return NextResponse.json(
-      { error: 'Internal server error' },
-      { status: 500 }
-    )
-  }
-}
+  return NextResponse.json({
+    quote: dailyQuote,
+    category:
+      categories[dailyQuote.category as keyof typeof categories] || null,
+    date: today,
+  })
+})

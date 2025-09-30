@@ -1,247 +1,230 @@
+/**
+ * Secure Habits API with comprehensive security middleware
+ * GET /api/habits - List user habits with filtering and validation
+ * POST /api/habits - Create new habit with validation and rate limiting
+ */
 import { NextRequest, NextResponse } from 'next/server'
 import connectDB from '@/lib/db'
 import { HabitModel, HabitLogModel } from '@/lib/models/habit'
-import mongoose from 'mongoose'
-import type { CreateHabitRequest, HabitFilters } from '@/types/habit'
-import {
-  calculateHabitProgress,
-  calculateHabitSummary,
-} from '@/lib/habit-utils'
-import { auth } from '@/lib/auth'
-
-/**
- * Enhanced error handler for API routes with connection health monitoring
- */
-function handleDatabaseError(error: unknown, operation: string) {
-  console.error(`Database error during ${operation}:`, error)
-
-  // Check if it's a connection error
-  if (
-    error instanceof mongoose.Error ||
-    (error as any)?.name?.includes('Mongo')
-  ) {
-    console.error('MongoDB connection issue detected, may need reconnection')
-    return NextResponse.json(
-      {
-        error: 'Database connection error',
-        details:
-          process.env.NODE_ENV === 'development'
-            ? (error as Error).message
-            : undefined,
-      },
-      { status: 503 }
-    )
-  }
-
-  if (error instanceof mongoose.Error.ValidationError) {
-    return NextResponse.json(
-      { error: 'Validation error', details: error.message },
-      { status: 400 }
-    )
-  }
-
-  return NextResponse.json(
-    {
-      error: 'Internal server error',
-      details:
-        process.env.NODE_ENV === 'development'
-          ? (error as Error).message
-          : undefined,
-    },
-    { status: 500 }
-  )
-}
+import type { CreateHabitRequest } from '@/types/habit'
+import { calculateHabitProgress } from '@/lib/habit-utils'
+import { secureEndpoint, type SecurityContext } from '@/lib/middleware/security'
+import { throwValidationError } from '@/lib/middleware/error-handler'
+import schemas from '@/lib/validation/schemas'
+import { createSafeRegex } from '@/lib/security/sanitization'
 
 // GET /api/habits - Get user's habits with optional filters
-export async function GET(request: NextRequest) {
-  try {
-    const session = await auth()
-    if (!session?.user) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+export const GET = secureEndpoint.api(async (
+  request: NextRequest, 
+  context: SecurityContext
+): Promise<NextResponse> => {
+  const { session } = context
+  
+  await connectDB()
+
+  const { searchParams } = new URL(request.url)
+  
+  // Validate query parameters using schema
+  const queryValidation = schemas.habitQuery.safeParse({
+    status: searchParams.get('status') || 'active',
+    category: searchParams.get('category') || undefined,
+    include_progress: searchParams.get('include_progress') || 'false',
+    date_from: searchParams.get('date_from') || undefined,
+    date_to: searchParams.get('date_to') || undefined,
+    page: searchParams.get('page') || '1',
+    limit: searchParams.get('limit') || '20',
+    sortBy: searchParams.get('sortBy') || 'createdAt',
+    sortOrder: searchParams.get('sortOrder') || 'desc'
+  })
+
+  if (!queryValidation.success) {
+    throwValidationError('Invalid query parameters', queryValidation.error.issues)
+  }
+
+  const filters = queryValidation.data!
+
+  // Build secure MongoDB query
+  const query: any = { userId: session!.user.id }
+
+  // Status filtering
+  if (filters.status !== 'all') {
+    switch (filters.status) {
+      case 'active':
+        query['status.active'] = true
+        query['status.archived'] = false
+        break
+      case 'paused':
+        query['status.active'] = false
+        query['status.pausedAt'] = { $exists: true }
+        break
+      case 'archived':
+        query['status.archived'] = true
+        break
     }
+  }
 
-    // Use enhanced connection manager
-    await connectDB()
+  // Category filtering (exact match)
+  if (filters.category) {
+    query.category = filters.category
+  }
 
-    const { searchParams } = new URL(request.url)
-    const filters: HabitFilters = {
-      status: (searchParams.get('status') as any) || 'all',
-      category: searchParams.get('category') || undefined,
-      frequency: (searchParams.get('frequency') as any) || undefined,
-      priority: (searchParams.get('priority') as any) || undefined,
-      search: searchParams.get('search') || undefined,
+  // Date range filtering
+  if (filters.date_from || filters.date_to) {
+    query.createdAt = {}
+    if (filters.date_from) {
+      query.createdAt.$gte = filters.date_from
     }
-
-    // Build query
-    const query: any = { userId: session.user.id }
-
-    if (filters.status !== 'all') {
-      switch (filters.status) {
-        case 'active':
-          query['status.active'] = true
-          query['status.archived'] = false
-          break
-        case 'paused':
-          query['status.active'] = false
-          query['status.pausedAt'] = { $exists: true }
-          break
-        case 'archived':
-          query['status.archived'] = true
-          break
-      }
+    if (filters.date_to) {
+      query.createdAt.$lte = filters.date_to
     }
+  }
 
-    if (filters.category) {
-      query.category = filters.category
-    }
-
-    if (filters.frequency) {
-      query['frequency.type'] = filters.frequency
-    }
-
-    if (filters.priority) {
-      query.priority = filters.priority
-    }
-
-    if (filters.search) {
+  // Search functionality with safe regex
+  const searchQuery = searchParams.get('q')
+  if (searchQuery) {
+    const safeRegex = createSafeRegex(searchQuery)
+    if (safeRegex) {
       query.$or = [
-        { title: { $regex: filters.search, $options: 'i' } },
-        { description: { $regex: filters.search, $options: 'i' } },
-        { category: { $regex: filters.search, $options: 'i' } },
+        { title: safeRegex },
+        { description: safeRegex },
+        { category: safeRegex },
       ]
     }
-
-    const habits = await HabitModel.find(query).sort({
-      priority: -1,
-      createdAt: -1,
-    })
-
-    // Get logs for progress calculation if requested
-    const includeProgress = searchParams.get('include_progress') === 'true'
-    if (includeProgress) {
-      const habitIds = habits.map(h => h._id)
-      const logs = await HabitLogModel.find({
-        habitId: { $in: habitIds },
-        userId: session.user.id,
-      })
-
-      const habitsWithProgress = habits.map(habit => {
-        const habitLogs = logs.filter(
-          log => log.habitId.toString() === habit._id.toString()
-        )
-        return calculateHabitProgress(habit, habitLogs)
-      })
-
-      return NextResponse.json({
-        habits: habitsWithProgress,
-        meta: {
-          total: habitsWithProgress.length,
-          filters,
-          includeProgress: true,
-        },
-      })
-    }
-
-    return NextResponse.json({
-      habits,
-      meta: {
-        total: habits.length,
-        filters,
-        includeProgress: false,
-      },
-    })
-  } catch (error) {
-    return handleDatabaseError(error, 'habits fetch')
   }
-}
+
+  // Execute query with pagination and sorting
+  const skip = (filters.page - 1) * filters.limit
+  const sortField = filters.sortBy === 'priority' ? 'priority' : 'createdAt'
+  const sortOrder = filters.sortOrder === 'asc' ? 1 : -1
+
+  const [habits, totalCount] = await Promise.all([
+    HabitModel.find(query)
+      .sort({ [sortField]: sortOrder })
+      .skip(skip)
+      .limit(filters.limit)
+      .lean(),
+    HabitModel.countDocuments(query)
+  ])
+
+  // Calculate progress if requested
+  let responseData: any[] = habits
+  if (filters.include_progress) {
+    const habitIds = habits.map(h => h._id)
+    const logs = await HabitLogModel.find({
+      habitId: { $in: habitIds },
+      userId: session!.user.id,
+    }).lean()
+
+    responseData = habits.map(habit => {
+      const habitLogs = logs.filter(
+        log => log.habitId.toString() === (habit._id as any).toString()
+      )
+      return calculateHabitProgress(habit as any, habitLogs as any)
+    })
+  }
+
+  return NextResponse.json({
+    success: true,
+    data: responseData,
+    meta: {
+      pagination: {
+        page: filters.page,
+        limit: filters.limit,
+        total: totalCount,
+        totalPages: Math.ceil(totalCount / filters.limit)
+      },
+      filters: {
+        status: filters.status,
+        category: filters.category,
+        includeProgress: filters.include_progress,
+        search: searchQuery
+      },
+      timestamp: new Date().toISOString()
+    }
+  })
+})
 
 // POST /api/habits - Create a new habit
-export async function POST(request: NextRequest) {
+export const POST = secureEndpoint.mutation(async (
+  request: NextRequest,
+  context: SecurityContext
+): Promise<NextResponse> => {
+  const { session } = context
+  
+  await connectDB()
+
+  // Parse and validate request body
+  let body: CreateHabitRequest | undefined
   try {
-    const session = await auth()
-    if (!session?.user?.id) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-    }
-
-    const body: CreateHabitRequest = await request.json()
-
-    // Enhanced validation with detailed error messages
-    if (!body.title || !body.frequency || !body.target) {
-      return NextResponse.json(
-        {
-          error: 'Missing required fields',
-          details: {
-            title: !body.title ? 'Title is required' : null,
-            frequency: !body.frequency ? 'Frequency is required' : null,
-            target: !body.target ? 'Target is required' : null,
-          },
-        },
-        { status: 400 }
-      )
-    }
-
-    // Validate frequency
-    if (body.frequency.type === 'weekly' || body.frequency.type === 'custom') {
-      if (
-        !body.frequency.daysOfWeek ||
-        body.frequency.daysOfWeek.length === 0
-      ) {
-        return NextResponse.json(
-          { error: 'Weekly and custom habits must specify days of week' },
-          { status: 400 }
-        )
-      }
-
-      // Validate days of week
-      if (!body.frequency.daysOfWeek.every(day => day >= 0 && day <= 6)) {
-        return NextResponse.json(
-          { error: 'Days of week must be between 0 (Sunday) and 6 (Saturday)' },
-          { status: 400 }
-        )
-      }
-    }
-
-    // Validate target
-    if (
-      ['count', 'duration', 'amount'].includes(body.target.type) &&
-      !body.target.value
-    ) {
-      return NextResponse.json(
-        { error: `${body.target.type} habits must have a target value` },
-        { status: 400 }
-      )
-    }
-
-    // Use enhanced connection manager
-    await connectDB()
-
-    const habit = new HabitModel({
-      ...body,
-      userId: session.user.id,
-      status: {
-        active: true,
-        archived: false,
-        createdAt: new Date(),
-      },
-      analytics: {
-        totalCompletions: 0,
-        currentStreak: 0,
-        bestStreak: 0,
-        averagePerformance: 0,
-        lastCompletedAt: null,
-      },
-    })
-
-    const savedHabit = await habit.save()
-
-    return NextResponse.json(
-      {
-        habit: savedHabit,
-        message: 'Habit created successfully',
-      },
-      { status: 201 }
-    )
+    body = await request.json()
   } catch (error) {
-    return handleDatabaseError(error, 'habit creation')
+    throwValidationError('Invalid JSON in request body')
   }
-}
+
+  if (!body) {
+    throwValidationError('No request body provided')
+  }
+
+  // Validate using schema
+  const validation = schemas.createHabit.safeParse(body)
+  if (!validation.success) {
+    throwValidationError('Invalid habit data', {
+      issues: validation.error.issues.map(issue => ({
+        field: issue.path.join('.'),
+        message: issue.message,
+        code: issue.code
+      }))
+    })
+  }
+
+  const validatedData = validation.data!
+
+  // Additional business logic validation
+  if (validatedData.frequency.type === 'weekly' || validatedData.frequency.type === 'custom') {
+    if (!validatedData.frequency.days || validatedData.frequency.days.length === 0) {
+      throwValidationError('Weekly and custom habits must specify days of week')
+    }
+  }
+
+  // Check if user has too many habits (rate limiting by resource count)
+  const existingHabitsCount = await HabitModel.countDocuments({ 
+    userId: session!.user.id,
+    'status.archived': false
+  })
+
+  if (existingHabitsCount >= 50) { // Reasonable limit
+    throwValidationError('Maximum number of active habits reached (50)')
+  }
+
+  // Create habit with secure defaults
+  const habit = new HabitModel({
+    ...validatedData,
+    userId: session!.user.id,
+    status: {
+      active: true,
+      archived: false,
+      createdAt: new Date(),
+    },
+    analytics: {
+      totalCompletions: 0,
+      currentStreak: 0,
+      bestStreak: 0,
+      averagePerformance: 0,
+      lastCompletedAt: null,
+    },
+    // Security: Ensure these fields are controlled
+    createdAt: new Date(),
+    updatedAt: new Date()
+  })
+
+  const savedHabit = await habit.save()
+
+  return NextResponse.json({
+    success: true,
+    data: savedHabit,
+    message: 'Habit created successfully',
+    meta: {
+      timestamp: new Date().toISOString()
+    }
+  }, { status: 201 })
+})

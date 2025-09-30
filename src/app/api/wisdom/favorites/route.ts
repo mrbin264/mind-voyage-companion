@@ -1,128 +1,105 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { auth } from '@/lib/auth'
 import connectDB from '@/lib/db'
 import { User } from '@/lib/models/user'
+import { secureEndpoint } from '@/lib/middleware/security'
+import type { SecurityContext } from '@/lib/middleware/security'
 
-export async function GET(request: NextRequest) {
-  try {
-    const session = await auth()
-    if (!session?.user?.id) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-    }
+export const GET = secureEndpoint.api(async (
+  request: NextRequest,
+  context: SecurityContext
+): Promise<NextResponse> => {
+  const { session } = context
+  
+  await connectDB()
 
-    await connectDB()
+  const user = await User.findById(session!.user.id).select('wisdomFavorites')
+  if (!user) {
+    return NextResponse.json({ error: 'User not found' }, { status: 404 })
+  }
 
-    const user = await User.findById(session.user.id).select('wisdomFavorites')
-    if (!user) {
-      return NextResponse.json({ error: 'User not found' }, { status: 404 })
-    }
+  return NextResponse.json({
+    favorites: user.wisdomFavorites || [],
+  })
+})
 
-    return NextResponse.json({
-      favorites: user.wisdomFavorites || [],
-    })
-  } catch (error) {
-    console.error('Get favorites API error:', error)
+export const POST = secureEndpoint.mutation(async (
+  request: NextRequest,
+  context: SecurityContext
+): Promise<NextResponse> => {
+  const { session } = context
+  
+  const { quoteId, text, author, category } = await request.json()
+
+  if (!quoteId || !text || !author) {
     return NextResponse.json(
-      { error: 'Internal server error' },
-      { status: 500 }
+      { error: 'Missing required fields: quoteId, text, author' },
+      { status: 400 }
     )
   }
-}
 
-export async function POST(request: NextRequest) {
-  try {
-    const session = await auth()
-    if (!session?.user?.id) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-    }
+  await connectDB()
 
-    const { quoteId, text, author, category } = await request.json()
+  const favoriteQuote = {
+    quoteId,
+    text,
+    author,
+    category: category || 'uncategorized',
+    addedAt: new Date(),
+  }
 
-    if (!quoteId || !text || !author) {
-      return NextResponse.json(
-        { error: 'Missing required fields: quoteId, text, author' },
-        { status: 400 }
-      )
-    }
-
-    await connectDB()
-
-    const favoriteQuote = {
-      quoteId,
-      text,
-      author,
-      category: category || 'uncategorized',
-      addedAt: new Date(),
-    }
-
-    const user = await User.findByIdAndUpdate(
-      session.user.id,
-      {
-        $addToSet: {
-          wisdomFavorites: favoriteQuote,
-        },
+  const user = await User.findByIdAndUpdate(
+    session!.user.id,
+    {
+      $addToSet: {
+        wisdomFavorites: favoriteQuote,
       },
-      { new: true }
-    ).select('wisdomFavorites')
+    },
+    { new: true }
+  ).select('wisdomFavorites')
 
-    if (!user) {
-      return NextResponse.json({ error: 'User not found' }, { status: 404 })
-    }
+  if (!user) {
+    return NextResponse.json({ error: 'User not found' }, { status: 404 })
+  }
 
-    return NextResponse.json({
-      message: 'Quote added to favorites',
-      favorites: user.wisdomFavorites,
-    })
-  } catch (error) {
-    console.error('Add favorite API error:', error)
+  return NextResponse.json({
+    message: 'Quote added to favorites',
+    favorites: user.wisdomFavorites,
+  })
+})
+
+export const DELETE = secureEndpoint.mutation(async (
+  request: NextRequest,
+  context: SecurityContext
+): Promise<NextResponse> => {
+  const { session } = context
+  
+  const { quoteId } = await request.json()
+
+  if (!quoteId) {
     return NextResponse.json(
-      { error: 'Internal server error' },
-      { status: 500 }
+      { error: 'Missing required field: quoteId' },
+      { status: 400 }
     )
   }
-}
 
-export async function DELETE(request: NextRequest) {
-  try {
-    const session = await auth()
-    if (!session?.user?.id) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-    }
+  await connectDB()
 
-    const { quoteId } = await request.json()
-
-    if (!quoteId) {
-      return NextResponse.json(
-        { error: 'Missing required field: quoteId' },
-        { status: 400 }
-      )
-    }
-
-    await connectDB()
-
-    const user = await User.findByIdAndUpdate(
-      session.user.id,
-      {
-        $pull: {
-          wisdomFavorites: { quoteId },
-        },
+  const user = await User.findByIdAndUpdate(
+    session!.user.id,
+    {
+      $pull: {
+        wisdomFavorites: { quoteId },
       },
-      { new: true }
-    ).select('wisdomFavorites')
+    },
+    { new: true }
+  ).select('wisdomFavorites')
 
-    if (!user) {
-      return NextResponse.json({ error: 'User not found' }, { status: 404 })
-    }
-
-    return NextResponse.json({
-      message: 'Quote removed from favorites',
-      favorites: user.wisdomFavorites,
-    })
-  } catch (error) {
-    console.error('Remove favorite API error:', error)
-    return NextResponse.json(
-      { error: 'Internal server error' },
-      { status: 500 }
-    )
+  if (!user) {
+    return NextResponse.json({ error: 'User not found' }, { status: 404 })
   }
-}
+
+  return NextResponse.json({
+    message: 'Quote removed from favorites',
+    favorites: user.wisdomFavorites,
+  })
+})

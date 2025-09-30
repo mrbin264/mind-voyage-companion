@@ -1,225 +1,165 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { updateProfileSchema } from '@/lib/validations/auth'
-import { hash, compare } from 'bcryptjs'
+import { secureEndpoint, type SecurityContext } from '@/lib/middleware/security'
+import { updateProfileSchema } from '@/lib/validation/schemas'
 import { User } from '@/lib/models/user'
 import connectDB from '@/lib/db'
-import { auth } from '@/lib/auth'
 
 // GET /api/auth/profile - Get current user profile
-export async function GET(req: NextRequest) {
-  try {
-    await connectDB()
-    const session = await auth()
-    if (!session?.user?.id) {
-      return NextResponse.json(
-        { success: false, message: 'Unauthorized' },
-        { status: 401 }
-      )
-    }
+export const GET = secureEndpoint.api(async (
+  request: NextRequest,
+  context: SecurityContext
+): Promise<NextResponse> => {
+  await connectDB()
+  const { session } = context
+  
+  if (!session?.user?.id) {
+    return NextResponse.json(
+      { success: false, message: 'Unauthorized' },
+      { status: 401 }
+    )
+  }
 
-    const userProfile = await User.findById(session.user.id).select('-password')
-    if (!userProfile) {
-      return NextResponse.json(
-        {
-          success: false,
-          message: 'User not found',
-        },
-        { status: 404 }
-      )
-    }
-
-    return NextResponse.json({
-      success: true,
-      user: {
-        id: userProfile._id.toString(),
-        email: userProfile.email,
-        name: userProfile.name,
-        verified: userProfile.verified,
-        timezone: userProfile.timezone,
-        preferences: userProfile.preferences,
-        createdAt: userProfile.createdAt,
-        updatedAt: userProfile.updatedAt,
-      },
-    })
-  } catch (error) {
-    if (error instanceof Error && error.message === 'Authentication required') {
-      return NextResponse.json(
-        {
-          success: false,
-          message: 'Authentication required',
-        },
-        { status: 401 }
-      )
-    }
-
-    console.error('Get profile error:', error)
+  const userProfile = await User.findById(session.user.id).select('-password')
+  if (!userProfile) {
     return NextResponse.json(
       {
         success: false,
-        message: 'Internal server error',
+        message: 'User not found',
       },
-      { status: 500 }
+      { status: 404 }
     )
   }
-}
+
+  return NextResponse.json({
+    success: true,
+    user: {
+      id: userProfile._id.toString(),
+      email: userProfile.email,
+      name: userProfile.name,
+      verified: userProfile.verified,
+      timezone: userProfile.timezone,
+      preferences: userProfile.preferences,
+      createdAt: userProfile.createdAt,
+      updatedAt: userProfile.updatedAt,
+    },
+  })
+})
 
 // PATCH /api/auth/profile - Update user profile
-export async function PATCH(req: NextRequest) {
-  try {
-    await connectDB()
-    const session = await auth()
-    if (!session?.user?.id) {
-      return NextResponse.json(
-        { success: false, message: 'Unauthorized' },
-        { status: 401 }
-      )
-    }
-    const data = await req.json()
-    const parsed = updateProfileSchema.safeParse(data)
-
-    if (!parsed.success) {
-      return NextResponse.json(
-        {
-          success: false,
-          message: 'Validation failed',
-          errors: parsed.error.flatten().fieldErrors,
-        },
-        { status: 400 }
-      )
-    }
-
-    const updateData: any = {}
-    if (parsed.data.firstName) updateData.firstName = parsed.data.firstName
-    if (parsed.data.lastName) updateData.lastName = parsed.data.lastName
-    if (parsed.data.firstName && parsed.data.lastName) {
-      updateData.name = `${parsed.data.firstName} ${parsed.data.lastName}`
-    }
-    if (parsed.data.profilePhoto)
-      updateData.profilePhoto = parsed.data.profilePhoto
-    if (parsed.data.dateOfBirth)
-      updateData.dateOfBirth = parsed.data.dateOfBirth
-    if (parsed.data.bio) updateData.bio = parsed.data.bio
-    if (parsed.data.location) updateData.location = parsed.data.location
-    if (parsed.data.timezone) updateData.timezone = parsed.data.timezone
-    if (parsed.data.website) updateData.website = parsed.data.website
-    if (parsed.data.socialLinks)
-      updateData.socialLinks = parsed.data.socialLinks
-    if (parsed.data.preferences) {
-      updateData.$set = {}
-      if (parsed.data.preferences.theme) {
-        updateData.$set['preferences.theme'] = parsed.data.preferences.theme
-      }
-      if (parsed.data.preferences.notifications) {
-        if (parsed.data.preferences.notifications.email !== undefined) {
-          updateData.$set['preferences.notifications.email'] =
-            parsed.data.preferences.notifications.email
-        }
-        if (parsed.data.preferences.notifications.push !== undefined) {
-          updateData.$set['preferences.notifications.push'] =
-            parsed.data.preferences.notifications.push
-        }
-      }
-      if (parsed.data.preferences.privacy) {
-        if (parsed.data.preferences.privacy.publicProfile !== undefined) {
-          updateData.$set['preferences.privacy.publicProfile'] =
-            parsed.data.preferences.privacy.publicProfile
-        }
-      }
-    }
-
-    const updatedUser = await User.findByIdAndUpdate(
-      session.user.id,
-      updateData,
-      {
-        new: true,
-        select: '-password',
-      }
+export const PATCH = secureEndpoint.custom(async (
+  request: NextRequest,
+  context: SecurityContext
+): Promise<NextResponse> => {
+  await connectDB()
+  const { session, validatedBody } = context
+  
+  if (!session?.user?.id) {
+    return NextResponse.json(
+      { success: false, message: 'Unauthorized' },
+      { status: 401 }
     )
+  }
 
-    if (!updatedUser) {
-      return NextResponse.json(
-        {
-          success: false,
-          message: 'User not found',
-        },
-        { status: 404 }
-      )
+  const updateData: any = {}
+  if (validatedBody.firstName) updateData.firstName = validatedBody.firstName
+  if (validatedBody.lastName) updateData.lastName = validatedBody.lastName
+  if (validatedBody.firstName && validatedBody.lastName) {
+    updateData.name = `${validatedBody.firstName} ${validatedBody.lastName}`
+  }
+  if (validatedBody.profilePhoto)
+    updateData.profilePhoto = validatedBody.profilePhoto
+  if (validatedBody.dateOfBirth)
+    updateData.dateOfBirth = validatedBody.dateOfBirth
+  if (validatedBody.bio) updateData.bio = validatedBody.bio
+  if (validatedBody.location) updateData.location = validatedBody.location
+  if (validatedBody.timezone) updateData.timezone = validatedBody.timezone
+  if (validatedBody.website) updateData.website = validatedBody.website
+  if (validatedBody.socialLinks)
+    updateData.socialLinks = validatedBody.socialLinks
+  if (validatedBody.preferences) {
+    updateData.$set = {}
+    if (validatedBody.preferences.theme) {
+      updateData.$set['preferences.theme'] = validatedBody.preferences.theme
     }
-
-    return NextResponse.json({
-      success: true,
-      message: 'Profile updated successfully',
-      user: {
-        id: updatedUser._id.toString(),
-        email: updatedUser.email,
-        name: updatedUser.name,
-        verified: updatedUser.verified,
-        timezone: updatedUser.timezone,
-        preferences: updatedUser.preferences,
-        createdAt: updatedUser.createdAt,
-        updatedAt: updatedUser.updatedAt,
-      },
-    })
-  } catch (error) {
-    if (error instanceof Error && error.message === 'Authentication required') {
-      return NextResponse.json(
-        {
-          success: false,
-          message: 'Authentication required',
-        },
-        { status: 401 }
-      )
+    if (validatedBody.preferences.notifications) {
+      if (validatedBody.preferences.notifications.email !== undefined) {
+        updateData.$set['preferences.notifications.email'] =
+          validatedBody.preferences.notifications.email
+      }
+      if (validatedBody.preferences.notifications.push !== undefined) {
+        updateData.$set['preferences.notifications.push'] =
+          validatedBody.preferences.notifications.push
+      }
     }
+    if (validatedBody.preferences.privacy) {
+      if (validatedBody.preferences.privacy.publicProfile !== undefined) {
+        updateData.$set['preferences.privacy.publicProfile'] =
+          validatedBody.preferences.privacy.publicProfile
+      }
+    }
+  }
 
-    console.error('Update profile error:', error)
+  const updatedUser = await User.findByIdAndUpdate(
+    session.user.id,
+    updateData,
+    {
+      new: true,
+      select: '-password',
+    }
+  )
+
+  if (!updatedUser) {
     return NextResponse.json(
       {
         success: false,
-        message: 'Internal server error',
+        message: 'User not found',
       },
-      { status: 500 }
+      { status: 404 }
     )
   }
-}
+
+  return NextResponse.json({
+    success: true,
+    message: 'Profile updated successfully',
+    user: {
+      id: updatedUser._id.toString(),
+      email: updatedUser.email,
+      name: updatedUser.name,
+      verified: updatedUser.verified,
+      timezone: updatedUser.timezone,
+      preferences: updatedUser.preferences,
+      createdAt: updatedUser.createdAt,
+      updatedAt: updatedUser.updatedAt,
+    },
+  })
+}, {
+  rateLimit: { type: 'mutation' },
+  auth: { required: true },
+  validation: { body: updateProfileSchema },
+  sanitization: { sanitizeBody: true }
+})
 
 // DELETE /api/auth/profile - Delete user account
-export async function DELETE(req: NextRequest) {
-  try {
-    await connectDB()
-    const session = await auth()
-    if (!session?.user?.id) {
-      return NextResponse.json(
-        { success: false, message: 'Unauthorized' },
-        { status: 401 }
-      )
-    }
-
-    // Delete user account
-    await User.findByIdAndDelete(session.user.id)
-
-    // Return success response (NextAuth will handle session cleanup)
-    return NextResponse.json({
-      success: true,
-      message: 'Account deleted successfully',
-    })
-  } catch (error) {
-    if (error instanceof Error && error.message === 'Authentication required') {
-      return NextResponse.json(
-        {
-          success: false,
-          message: 'Authentication required',
-        },
-        { status: 401 }
-      )
-    }
-
-    console.error('Delete account error:', error)
+export const DELETE = secureEndpoint.mutation(async (
+  request: NextRequest,
+  context: SecurityContext
+): Promise<NextResponse> => {
+  await connectDB()
+  const { session } = context
+  
+  if (!session?.user?.id) {
     return NextResponse.json(
-      {
-        success: false,
-        message: 'Internal server error',
-      },
-      { status: 500 }
+      { success: false, message: 'Unauthorized' },
+      { status: 401 }
     )
   }
-}
+
+  // Delete user account
+  await User.findByIdAndDelete(session.user.id)
+
+  // Return success response (NextAuth will handle session cleanup)
+  return NextResponse.json({
+    success: true,
+    message: 'Account deleted successfully',
+  })
+})
