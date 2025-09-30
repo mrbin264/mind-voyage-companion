@@ -377,4 +377,47 @@ GET/PUT    /api/preferences               // Get/update preferences
 
 ---
 
+## 🌅 Light Mode Design Implementation
+
+### **New Priority: UI Theme Enhancement**
+**Timeline**: 3-4 weeks | **Effort**: 15-20 days | **Priority**: MEDIUM-HIGH
+
+After reviewing the current dark mode implementation, a comprehensive light mode design plan has been developed. This enhancement will provide users with theme flexibility and improve accessibility.
+
+#### **Current Dark Mode Analysis**
+- **Background System**: `#0A0A0A` body, `#101010` sidebar, `#18181B` cards
+- **Typography**: Gray-100/300/400 hierarchy with white accents
+- **Interactive Elements**: Blue/purple gradients with white text
+- **Border System**: White/10 opacity for subtle separation
+
+#### **Proposed Light Mode System**
+- **Background System**: `#FAFAFA` body, `#F8FAFC` sidebar, `#FFFFFF` cards
+- **Typography**: Slate-900/700/500 hierarchy with high contrast
+- **Interactive Elements**: Indigo-500 primary with refined secondary colors
+- **Border System**: Slate-200/300 for clean separation with subtle shadows
+
+#### **Implementation Strategy**
+1. **Phase 1**: CSS custom properties and utility classes (2-3 days)
+2. **Phase 2**: Layout components (DashboardLayout, navigation) (3-4 days)  
+3. **Phase 3**: Widget cards and dashboard content (2-3 days)
+4. **Phase 4**: Form components and interactive elements (2-3 days)
+5. **Phase 5**: Feature-specific areas (analytics, habits, journal) (3-4 days)
+6. **Phase 6**: Testing, accessibility, and polish (2-3 days)
+
+#### **Key Benefits**
+- **User Choice**: Theme flexibility for different environments and preferences
+- **Accessibility**: Better contrast options for users with visual needs
+- **Professional Appeal**: Clean light theme suitable for workplace usage  
+- **Modern Standards**: Meets current design and accessibility expectations
+
+#### **Technical Approach**
+- Enhance existing theme toggle system with comprehensive light mode styles
+- Maintain semantic color tokens for consistency across themes
+- Implement smooth theme transitions with 200ms duration
+- Ensure WCAG AA compliance for color contrast ratios
+
+**📋 Detailed Implementation Plan**: See `docs/light-mode-design-plan.md` for comprehensive technical specifications, component-by-component breakdown, and quality assurance guidelines.
+
+---
+
 *This enhancement plan provides a clear roadmap to transform the Mind Voyage Companion dashboard from its current state with multiple broken features into a fully functional, professional productivity application. Each phase builds systematically toward a complete, polished user experience.*

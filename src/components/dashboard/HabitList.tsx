@@ -115,7 +115,7 @@ export function HabitList({
       {/* Header with Page Title and Add Button */}
       <div className="flex flex-wrap justify-between items-center gap-4">
         <div>
-          <h2 className="text-3xl font-bold text-gray-100">📈 My Habits</h2>
+          <h2 className="text-3xl font-bold text-slate-900 dark:text-gray-100">📈 My Habits</h2>
         </div>
         <div className="flex items-center gap-2">
           {onAddHabit && (
@@ -129,7 +129,7 @@ export function HabitList({
           )}
           <Button
             variant="secondary"
-            className="text-sm bg-gray-700 hover:bg-gray-600 text-gray-200 font-semibold py-2 px-4 rounded-lg transition-colors flex items-center gap-2"
+            className="text-sm bg-slate-100 hover:bg-slate-200 text-slate-700 dark:bg-gray-700 dark:hover:bg-gray-600 dark:text-gray-200 font-semibold py-2 px-4 rounded-lg transition-colors flex items-center gap-2"
           >
             <Settings className="w-4 h-4" />
             Settings
@@ -140,15 +140,15 @@ export function HabitList({
       {/* Filters */}
       {showFilters && !compact && (
         <div className="space-y-4">
-          {/* Filter Tabs - Dark theme matching HTML design */}
+          {/* Filter Tabs - Light/dark theme */}
           <div className="flex flex-wrap gap-4">
             {filterTabs.map(tab => (
               <button
                 key={tab.key}
                 className={`flex-1 sm:flex-auto font-semibold py-3 px-6 rounded-lg transition-colors ${
                   filters.status === tab.key
-                    ? 'bg-blue-600/20 text-blue-300'
-                    : 'bg-gray-800 hover:bg-gray-700 text-gray-300'
+                    ? 'bg-blue-600/20 text-blue-700 dark:text-blue-300'
+                    : 'bg-slate-100 hover:bg-slate-200 text-slate-700 dark:bg-gray-800 dark:hover:bg-gray-700 dark:text-gray-300'
                 }`}
                 onClick={() => handleFilterChange('status', tab.key)}
               >
