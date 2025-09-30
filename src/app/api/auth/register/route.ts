@@ -1,94 +1,61 @@
+/**
+ * Secure User Registration API with rate limiting and validation
+ * POST /api/auth/register - Create new user account
+ */
 import { NextRequest, NextResponse } from 'next/server'
-import { registerSchema } from '@/lib/validations/auth'
 import { hash } from 'bcryptjs'
 import { User } from '@/lib/models/user'
 import connectDB from '@/lib/db'
-import mongoose from 'mongoose'
+import { secureEndpoint, type SecurityContext } from '@/lib/middleware/security'
+import { throwValidationError } from '@/lib/middleware/error-handler'
+import schemas from '@/lib/validation/schemas'
 
-/**
- * Enhanced error handler for auth registration
- */
-function handleRegistrationError(error: unknown) {
-  console.error('Registration error:', error)
-
-  if (error instanceof mongoose.Error) {
-    console.error('MongoDB connection issue during registration')
-    return NextResponse.json(
-      {
-        success: false,
-        message: 'Database connection error',
-        errors: {
-          server: ['Service temporarily unavailable. Please try again.'],
-        },
-      },
-      { status: 503 }
-    )
-  }
-
-  if (error instanceof mongoose.Error.ValidationError) {
-    return NextResponse.json(
-      {
-        success: false,
-        message: 'Data validation error',
-        errors: { server: [error.message] },
-      },
-      { status: 400 }
-    )
-  }
-
-  return NextResponse.json(
-    {
-      success: false,
-      message: 'Internal server error',
-      errors: { server: ['Something went wrong. Please try again.'] },
-    },
-    { status: 500 }
-  )
-}
-
-export async function POST(req: NextRequest) {
-  try {
-    // Use enhanced connection manager
+// POST /api/auth/register - User registration with rate limiting
+export const POST = secureEndpoint.auth(
+  async (
+    request: NextRequest,
+    context: SecurityContext
+  ): Promise<NextResponse> => {
     await connectDB()
-    const data = await req.json()
-    const parsed = registerSchema.safeParse(data)
 
-    if (!parsed.success) {
-      return NextResponse.json(
-        {
-          success: false,
-          message: 'Validation failed',
-          errors: parsed.error.flatten().fieldErrors,
-        },
-        { status: 400 }
-      )
+    // Parse and validate request body
+    let body: any
+    try {
+      body = await request.json()
+    } catch (error) {
+      throwValidationError('Invalid JSON in request body')
     }
 
-    const { email, password, firstName, lastName, timezone } = parsed.data
+    if (!body) {
+      throwValidationError('No request body provided')
+    }
+
+    // Validate using schema
+    const validation = schemas.createUser.safeParse(body)
+    if (!validation.success) {
+      throwValidationError('Registration validation failed', {
+        errors: validation.error.flatten().fieldErrors,
+      })
+    }
+
+    const { email, password, name, timezone } = validation.data!
 
     // Check if user already exists
     const existingUser = await User.findOne({ email })
     if (existingUser) {
-      return NextResponse.json(
-        {
-          success: false,
-          message: 'User already exists',
-          errors: { email: ['Email already in use'] },
-        },
-        { status: 400 }
-      )
+      throwValidationError('User already exists', {
+        email: ['Email already in use'],
+      })
     }
 
-    // Hash password
+    // Hash password securely
     const hashedPassword = await hash(password, 12)
 
-    // Create user with firstName and lastName
+    // Create user with secure defaults
     const user = await User.create({
       email,
       password: hashedPassword,
-      firstName,
-      lastName,
-      name: `${firstName} ${lastName}`, // Computed display name
+      name,
       verified: false,
       timezone: timezone || 'UTC',
       preferences: {
@@ -117,24 +84,28 @@ export async function POST(req: NextRequest) {
           defaultView: 'grid',
         },
       },
+      createdAt: new Date(),
+      updatedAt: new Date(),
     })
 
-    // Return success response (NextAuth will handle authentication)
-    return NextResponse.json({
-      success: true,
-      message: 'Account created successfully. Please sign in to continue.',
-      user: {
-        id: user._id.toString(),
-        email: user.email,
-        firstName: user.firstName,
-        lastName: user.lastName,
-        name: user.name,
-        verified: user.verified,
-        timezone: user.timezone,
-        createdAt: user.createdAt,
+    // Return success response
+    return NextResponse.json(
+      {
+        success: true,
+        message: 'Account created successfully. Please sign in to continue.',
+        data: {
+          id: user._id.toString(),
+          email: user.email,
+          name: user.name,
+          verified: user.verified,
+          timezone: user.timezone,
+          createdAt: user.createdAt,
+        },
+        meta: {
+          timestamp: new Date().toISOString(),
+        },
       },
-    })
-  } catch (error) {
-    return handleRegistrationError(error)
+      { status: 201 }
+    )
   }
-}
+)

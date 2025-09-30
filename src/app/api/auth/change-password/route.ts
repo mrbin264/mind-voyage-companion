@@ -1,36 +1,25 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { changePasswordSchema } from '@/lib/validations/auth'
+import { secureEndpoint, type SecurityContext } from '@/lib/middleware/security'
+import { changePasswordSchema } from '@/lib/validation/schemas'
 import { hash, compare } from 'bcryptjs'
 import { User } from '@/lib/models/user'
-import connectDB from '@/lib/db'
-import { auth } from '@/lib/auth'
 
 // POST /api/auth/change-password - Change user password
-export async function POST(req: NextRequest) {
-  try {
-    await connectDB()
-    const session = await auth()
+export const POST = secureEndpoint.custom(
+  async (
+    request: NextRequest,
+    context: SecurityContext
+  ): Promise<NextResponse> => {
+    const { validatedBody, session } = context
+
     if (!session?.user?.id) {
       return NextResponse.json(
         { success: false, message: 'Unauthorized' },
         { status: 401 }
       )
     }
-    const data = await req.json()
-    const parsed = changePasswordSchema.safeParse(data)
 
-    if (!parsed.success) {
-      return NextResponse.json(
-        {
-          success: false,
-          message: 'Validation failed',
-          errors: parsed.error.flatten().fieldErrors,
-        },
-        { status: 400 }
-      )
-    }
-
-    const { currentPassword, newPassword } = parsed.data
+    const { currentPassword, newPassword } = validatedBody
 
     // Find user with password
     const userProfile = await User.findById(session.user.id).select('+password')
@@ -89,24 +78,11 @@ export async function POST(req: NextRequest) {
       success: true,
       message: 'Password changed successfully',
     })
-  } catch (error) {
-    if (error instanceof Error && error.message === 'Authentication required') {
-      return NextResponse.json(
-        {
-          success: false,
-          message: 'Authentication required',
-        },
-        { status: 401 }
-      )
-    }
-
-    console.error('Change password error:', error)
-    return NextResponse.json(
-      {
-        success: false,
-        message: 'Internal server error',
-      },
-      { status: 500 }
-    )
+  },
+  {
+    rateLimit: { type: 'auth' },
+    auth: { required: true },
+    validation: { body: changePasswordSchema },
+    sanitization: { sanitizeBody: true },
   }
-}
+)

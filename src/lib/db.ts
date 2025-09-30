@@ -1,586 +1,362 @@
-import mongoose, { Connection } from 'mongoose'
+/**
+ * Enhanced MongoDB Database Connection - Production Ready
+ * Removed MongoDB Memory Server dependencies for Docker deployment
+ */
+import mongoose from 'mongoose'
 
-// MongoDB Memory Server for development (only on server-side)
-let mongoMemoryServer: any = null
-let mongoMemoryServerPromise: Promise<any> | null = null
-
-// Connection state interface
+// Connection state tracking
 interface ConnectionState {
-  conn: Connection | null
-  promise: Promise<Connection> | null
-  uri: string | null
+  isConnected: boolean
   isConnecting: boolean
-  lastConnected: number | null
-  connectionAttempts: number
+  connectionCount: number
+  lastConnected: Date | null
+  lastError: Error | null
+  retryCount: number
 }
 
-/**
- * Connection metrics tracking interface
- */
-interface ConnectionMetrics {
-  totalConnections: number
-  successfulConnections: number
-  failedConnections: number
-  averageConnectionTime: number
-  longestConnectionTime: number
-  lastConnectionTime: number
-  connectionStartTime: number | null
-  disconnectionCount: number
-  reconnectionCount: number
-  errors: Array<{
-    timestamp: Date
-    error: string
-    type: 'connection' | 'disconnection' | 'operation'
-  }>
+const connectionState: ConnectionState = {
+  isConnected: false,
+  isConnecting: false,
+  connectionCount: 0,
+  lastConnected: null,
+  lastError: null,
+  retryCount: 0,
 }
 
-/**
- * Performance metrics tracking
- */
-interface PerformanceMetrics {
-  queryCount: number
-  averageQueryTime: number
-  slowQueries: Array<{
-    timestamp: Date
-    duration: number
-    operation: string
-  }>
-  activeConnections: number
-  poolUtilization: number
-}
-
-// Global connection cache with enhanced state tracking
-declare global {
-  var __mongoConnection: ConnectionState | undefined
-  var __mongoMetrics: ConnectionMetrics | undefined
-  var __mongoPerformance: PerformanceMetrics | undefined
-}
-
-// Connection configuration with optimal settings (modern Mongoose options)
-const CONNECTION_CONFIG = {
+// Connection configuration optimized for production
+const CONNECTION_OPTIONS = {
   // Connection pool settings
   maxPoolSize: 10, // Maximum number of connections
-  minPoolSize: 2, // Minimum number of connections
-  maxIdleTimeMS: 30000, // Close connections after 30 seconds of inactivity
-  serverSelectionTimeoutMS: 5000, // How long to wait for server selection
-  socketTimeoutMS: 45000, // How long a send or receive on a socket can take before timing out
+  minPoolSize: 5, // Minimum number of connections
+  maxIdleTimeMS: 30000, // Close connections after 30s of inactivity
+  serverSelectionTimeoutMS: 5000, // How long to try selecting a server
+  socketTimeoutMS: 45000, // How long a send or receive on a socket can take
+
+  // Performance optimizations
+  bufferCommands: false, // Disable mongoose buffering
 
   // Reliability settings
-  retryWrites: true, // Automatically retry certain write operations
-  retryReads: true, // Automatically retry certain read operations
+  retryWrites: true, // Enable retryable writes
+  retryReads: true, // Enable retryable reads
 
-  // Additional settings for production stability
+  // Connection behavior
   connectTimeoutMS: 10000, // How long to wait for initial connection
-  family: 4, // Use IPv4, skip trying IPv6
-}
+  heartbeatFrequencyMS: 10000, // How often to check server status
 
-// Development-specific configuration
-const DEV_CONNECTION_CONFIG = {
-  ...CONNECTION_CONFIG,
-  maxPoolSize: 5, // Smaller pool for development
-  minPoolSize: 1,
-  maxIdleTimeMS: 10000, // Shorter idle time for development
+  // Authentication
+  authSource: 'mind_voyage_companion', // Database to authenticate against
 }
 
 /**
- * Create MongoDB Memory Server instance (development only)
+ * Get MongoDB URI with proper error handling
  */
-async function createMemoryServer(): Promise<any> {
+function getMongoURI(): string {
+  const uri = process.env.MONGODB_URI
+
+  if (!uri) {
+    throw new Error(
+      'MONGODB_URI environment variable is required. ' +
+        'Please set it in your .env.local file or environment.'
+    )
+  }
+
+  // Validate URI format
+  if (!uri.startsWith('mongodb://') && !uri.startsWith('mongodb+srv://')) {
+    throw new Error(
+      'Invalid MONGODB_URI format. Must start with mongodb:// or mongodb+srv://'
+    )
+  }
+
+  return uri
+}
+
+/**
+ * Enhanced connection function with retry logic and monitoring
+ */
+async function connectDB(): Promise<typeof mongoose> {
   try {
-    const { MongoMemoryServer } = await import('mongodb-memory-server')
-    const server = await MongoMemoryServer.create({
-      binary: {
-        version: '7.0.0', // Use a stable MongoDB version
-        downloadDir: './mongodb-binaries', // Cache binaries locally
-      },
-      instance: {
-        dbName: 'mind-voyage-companion-dev',
-        storageEngine: 'wiredTiger',
-      },
-    })
-    console.log('📝 MongoDB Memory Server started for development')
-    return server
-  } catch (error) {
-    console.error('Failed to start MongoDB Memory Server:', error)
-    throw new Error('Could not initialize development database')
-  }
-}
-
-/**
- * Get MongoDB URI with environment-specific logic
- */
-async function getMongoUri(): Promise<string> {
-  // Runtime safety checks
-  if (typeof window !== 'undefined') {
-    throw new Error('Database connection attempted on client-side')
-  }
-
-  if (process.env.NEXT_RUNTIME === 'edge') {
-    throw new Error('Database connection not supported in edge runtime')
-  }
-
-  // Check for explicit MONGODB_URI first (Docker or production)
-  const MONGODB_URI = process.env.MONGODB_URI
-  if (MONGODB_URI) {
-    console.log('📝 Using MongoDB URI from environment variable')
-    return MONGODB_URI
-  }
-
-  // Development fallback: Use Memory Server only if no MONGODB_URI is set
-  if (process.env.NODE_ENV === 'development') {
-    console.log(
-      '📝 No MONGODB_URI found, falling back to Memory Server for development'
-    )
-
-    // Use MongoDB Memory Server in development with proper singleton management
-    if (!mongoMemoryServer) {
-      // If a creation is already in progress, wait for it
-      if (!mongoMemoryServerPromise) {
-        mongoMemoryServerPromise = createMemoryServer()
-      }
-      mongoMemoryServer = await mongoMemoryServerPromise
-      mongoMemoryServerPromise = null
+    // Return existing connection if already connected
+    if (connectionState.isConnected && mongoose.connection.readyState === 1) {
+      return mongoose
     }
-    return mongoMemoryServer.getUri()
+
+    // Prevent multiple simultaneous connection attempts
+    if (connectionState.isConnecting) {
+      // Wait for ongoing connection attempt
+      await new Promise(resolve => {
+        const checkConnection = () => {
+          if (!connectionState.isConnecting || connectionState.isConnected) {
+            resolve(void 0)
+          } else {
+            setTimeout(checkConnection, 100)
+          }
+        }
+        checkConnection()
+      })
+      return mongoose
+    }
+
+    connectionState.isConnecting = true
+    const mongoUri = getMongoURI()
+
+    console.log('🔌 Connecting to MongoDB...', {
+      environment: process.env.NODE_ENV,
+      uri: mongoUri.replace(/\/\/([^:]+):([^@]+)@/, '//$1:***@'), // Hide password
+      options: CONNECTION_OPTIONS,
+    })
+
+    // Set mongoose configuration
+    mongoose.set('strictQuery', true)
+    mongoose.set('bufferCommands', false)
+
+    // Connect with retry logic
+    let connection: typeof mongoose
+    const maxRetries = 3
+
+    for (let attempt = 1; attempt <= maxRetries; attempt++) {
+      try {
+        connection = await mongoose.connect(mongoUri, CONNECTION_OPTIONS)
+        break
+      } catch (error) {
+        console.warn(
+          `🔄 Connection attempt ${attempt}/${maxRetries} failed:`,
+          error
+        )
+
+        if (attempt === maxRetries) {
+          throw error
+        }
+
+        // Exponential backoff
+        const delay = Math.pow(2, attempt) * 1000
+        await new Promise(resolve => setTimeout(resolve, delay))
+      }
+    }
+
+    // Update connection state
+    connectionState.isConnected = true
+    connectionState.isConnecting = false
+    connectionState.connectionCount++
+    connectionState.lastConnected = new Date()
+    connectionState.lastError = null
+    connectionState.retryCount = 0
+
+    console.log('✅ MongoDB connected successfully', {
+      host: mongoose.connection.host,
+      database: mongoose.connection.name,
+      connectionCount: connectionState.connectionCount,
+    })
+
+    // Set up connection event listeners
+    setupConnectionListeners()
+
+    return connection!
+  } catch (error) {
+    connectionState.isConnecting = false
+    connectionState.lastError = error as Error
+    connectionState.retryCount++
+
+    console.error('❌ MongoDB connection failed:', {
+      error: (error as Error).message,
+      retryCount: connectionState.retryCount,
+      uri: getMongoURI().replace(/\/\/([^:]+):([^@]+)@/, '//$1:***@'),
+    })
+
+    throw new Error(`Database connection failed: ${(error as Error).message}`)
   }
-
-  // Production: Require MONGODB_URI
-  throw new Error(
-    'Please define the MONGODB_URI environment variable for production. ' +
-      'For Docker: mongodb://username:password@mongodb:27017/database_name'
-  )
 }
 
 /**
- * Initialize global connection state
+ * Set up MongoDB connection event listeners
  */
-function initializeConnectionState(): ConnectionState {
-  return {
-    conn: null,
-    promise: null,
-    uri: null,
-    isConnecting: false,
-    lastConnected: null,
-    connectionAttempts: 0,
-  }
-}
+function setupConnectionListeners(): void {
+  const db = mongoose.connection
 
-/**
- * Get or initialize the global connection state
- */
-function getConnectionState(): ConnectionState {
-  if (!global.__mongoConnection) {
-    global.__mongoConnection = initializeConnectionState()
-  }
-  return global.__mongoConnection
-}
+  // Remove existing listeners to prevent duplicates
+  db.removeAllListeners()
 
-/**
- * Check if the current connection is healthy
- */
-function isConnectionHealthy(state: ConnectionState): boolean {
-  return !!(
-    state.conn &&
-    state.conn.readyState === 1 && // Connected
-    state.uri &&
-    state.lastConnected &&
-    Date.now() - state.lastConnected < 300000 // Connection is less than 5 minutes old
-  )
-}
-
-/**
- * Initialize connection metrics tracking
- */
-function initializeConnectionMetrics(): ConnectionMetrics {
-  return {
-    totalConnections: 0,
-    successfulConnections: 0,
-    failedConnections: 0,
-    averageConnectionTime: 0,
-    longestConnectionTime: 0,
-    lastConnectionTime: 0,
-    connectionStartTime: null,
-    disconnectionCount: 0,
-    reconnectionCount: 0,
-    errors: [],
-  }
-}
-
-/**
- * Initialize performance metrics tracking
- */
-function initializePerformanceMetrics(): PerformanceMetrics {
-  return {
-    queryCount: 0,
-    averageQueryTime: 0,
-    slowQueries: [],
-    activeConnections: 0,
-    poolUtilization: 0,
-  }
-}
-
-/**
- * Get or initialize connection metrics
- */
-function getConnectionMetrics(): ConnectionMetrics {
-  if (!global.__mongoMetrics) {
-    global.__mongoMetrics = initializeConnectionMetrics()
-  }
-  return global.__mongoMetrics
-}
-
-/**
- * Get or initialize performance metrics
- */
-function getPerformanceMetrics(): PerformanceMetrics {
-  if (!global.__mongoPerformance) {
-    global.__mongoPerformance = initializePerformanceMetrics()
-  }
-  return global.__mongoPerformance
-}
-
-/**
- * Record connection start for timing
- */
-function recordConnectionStart(): void {
-  const metrics = getConnectionMetrics()
-  metrics.connectionStartTime = Date.now()
-  metrics.totalConnections++
-}
-
-/**
- * Record successful connection and timing
- */
-function recordConnectionSuccess(): void {
-  const metrics = getConnectionMetrics()
-  if (metrics.connectionStartTime) {
-    const connectionTime = Date.now() - metrics.connectionStartTime
-    metrics.lastConnectionTime = connectionTime
-    metrics.longestConnectionTime = Math.max(
-      metrics.longestConnectionTime,
-      connectionTime
-    )
-
-    // Calculate running average
-    metrics.averageConnectionTime =
-      (metrics.averageConnectionTime * metrics.successfulConnections +
-        connectionTime) /
-      (metrics.successfulConnections + 1)
-
-    metrics.connectionStartTime = null
-  }
-  metrics.successfulConnections++
-}
-
-/**
- * Record connection failure
- */
-function recordConnectionFailure(error: string): void {
-  const metrics = getConnectionMetrics()
-  metrics.failedConnections++
-  metrics.connectionStartTime = null
-
-  // Store error (keep last 10 errors)
-  metrics.errors.push({
-    timestamp: new Date(),
-    error,
-    type: 'connection',
+  db.on('connected', () => {
+    console.log('🔗 MongoDB connected')
+    connectionState.isConnected = true
   })
 
-  if (metrics.errors.length > 10) {
-    metrics.errors.shift()
-  }
+  db.on('disconnected', () => {
+    console.warn('🔌 MongoDB disconnected')
+    connectionState.isConnected = false
+  })
+
+  db.on('error', error => {
+    console.error('❌ MongoDB connection error:', error)
+    connectionState.lastError = error
+    connectionState.isConnected = false
+  })
+
+  db.on('reconnected', () => {
+    console.log('🔄 MongoDB reconnected')
+    connectionState.isConnected = true
+    connectionState.lastError = null
+  })
+
+  // Graceful shutdown handling
+  process.on('SIGINT', async () => {
+    console.log('🛑 Shutting down MongoDB connection...')
+    await mongoose.connection.close()
+    process.exit(0)
+  })
+
+  process.on('SIGTERM', async () => {
+    console.log('🛑 Terminating MongoDB connection...')
+    await mongoose.connection.close()
+    process.exit(0)
+  })
 }
 
 /**
- * Record disconnection
+ * Get connection health information
  */
-function recordDisconnection(reason?: string): void {
-  const metrics = getConnectionMetrics()
-  metrics.disconnectionCount++
-
-  if (reason) {
-    metrics.errors.push({
-      timestamp: new Date(),
-      error: reason,
-      type: 'disconnection',
-    })
-
-    if (metrics.errors.length > 10) {
-      metrics.errors.shift()
-    }
-  }
-}
-
-/**
- * Update active connections count
- */
-function updateActiveConnections(count: number): void {
-  const performance = getPerformanceMetrics()
-  performance.activeConnections = count
-
-  // Calculate pool utilization (assuming max pool size from config)
-  const maxPoolSize = process.env.NODE_ENV === 'development' ? 5 : 10
-  performance.poolUtilization = (count / maxPoolSize) * 100
-}
-
-/**
- * Record query performance
- */
-function recordQueryPerformance(operation: string, duration: number): void {
-  const performance = getPerformanceMetrics()
-  performance.queryCount++
-
-  // Calculate running average
-  performance.averageQueryTime =
-    (performance.averageQueryTime * (performance.queryCount - 1) + duration) /
-    performance.queryCount
-
-  // Record slow queries (>1000ms)
-  if (duration > 1000) {
-    performance.slowQueries.push({
-      timestamp: new Date(),
-      duration,
-      operation,
-    })
-
-    // Keep only last 20 slow queries
-    if (performance.slowQueries.length > 20) {
-      performance.slowQueries.shift()
-    }
-  }
-}
-
-/**
- * Get comprehensive metrics report
- */
-export function getConnectionMetricsReport(): {
-  connection: ConnectionMetrics
-  performance: PerformanceMetrics
-  status: {
-    isConnected: boolean
-    readyState: number
-    connectionAge: number
-  }
-} {
-  const state = getConnectionState()
-  const connectionMetrics = getConnectionMetrics()
-  const performanceMetrics = getPerformanceMetrics()
-
+export function getConnectionHealth() {
   return {
-    connection: connectionMetrics,
-    performance: performanceMetrics,
-    status: {
-      isConnected: isConnectionHealthy(state),
-      readyState: state.conn?.readyState || 0,
-      connectionAge: state.lastConnected ? Date.now() - state.lastConnected : 0,
-    },
+    ...connectionState,
+    readyState: mongoose.connection.readyState,
+    readyStateText: getReadyStateText(mongoose.connection.readyState),
+    host: mongoose.connection.host,
+    port: mongoose.connection.port,
+    database: mongoose.connection.name,
   }
 }
 
 /**
- * Enhanced connection function with health monitoring and automatic reconnection
+ * Convert mongoose ready state to human readable text
  */
-async function connectDB(): Promise<Connection> {
-  const state = getConnectionState()
-
-  // Return existing healthy connection
-  if (isConnectionHealthy(state)) {
-    return state.conn!
+function getReadyStateText(state: number): string {
+  switch (state) {
+    case 0:
+      return 'disconnected'
+    case 1:
+      return 'connected'
+    case 2:
+      return 'connecting'
+    case 3:
+      return 'disconnecting'
+    default:
+      return 'unknown'
   }
+}
 
-  // If connection is in progress, wait for it
-  if (state.isConnecting && state.promise) {
-    try {
-      return await state.promise
-    } catch (error) {
-      // If waiting connection fails, continue to create new one
-      console.warn(
-        '⚠️ Previous connection attempt failed, creating new connection'
-      )
-      state.isConnecting = false
-      state.promise = null
-    }
-  }
-
-  // Double-check for existing connection after waiting
-  if (isConnectionHealthy(state)) {
-    return state.conn!
-  }
-
-  // Create new connection
-  state.isConnecting = true
-  state.connectionAttempts++
-
+/**
+ * Force disconnect from MongoDB
+ */
+export async function disconnectDB(): Promise<void> {
   try {
-    const mongoUri = await getMongoUri()
-
-    // Ensure mongoose is not already connected to a different URI
     if (mongoose.connection.readyState !== 0) {
-      const currentUri = mongoose.connection.host
-      if (currentUri && currentUri !== mongoUri) {
-        console.log('🔄 Disconnecting from different MongoDB URI')
-        await mongoose.disconnect()
-      }
-    }
-
-    // Use different configs for dev/prod
-    const config =
-      process.env.NODE_ENV === 'development'
-        ? DEV_CONNECTION_CONFIG
-        : CONNECTION_CONFIG
-
-    console.log(
-      `📝 Connecting to MongoDB (attempt ${state.connectionAttempts})...`
-    )
-
-    // Record connection start for metrics
-    recordConnectionStart()
-
-    state.promise = mongoose
-      .connect(mongoUri, config)
-      .then(mongooseInstance => {
-        const connection = mongooseInstance.connection
-
-        // Set up connection event listeners for monitoring
-        connection.on('connected', () => {
-          console.log(
-            `📝 Connected to MongoDB: ${process.env.NODE_ENV === 'development' ? 'Memory Server' : 'Production'}`
-          )
-          state.lastConnected = Date.now()
-          state.connectionAttempts = 0 // Reset attempts on successful connection
-
-          // Record successful connection metrics
-          recordConnectionSuccess()
-          updateActiveConnections(connection.readyState === 1 ? 1 : 0)
-        })
-
-        connection.on('disconnected', () => {
-          console.warn('⚠️ MongoDB disconnected')
-          state.conn = null
-          state.lastConnected = null
-
-          // Record disconnection metrics
-          recordDisconnection('Connection lost')
-          updateActiveConnections(0)
-        })
-
-        connection.on('error', error => {
-          console.error('❌ MongoDB connection error:', error)
-          state.conn = null
-          state.promise = null
-          state.lastConnected = null
-        })
-
-        connection.on('reconnected', () => {
-          console.log('🔄 MongoDB reconnected')
-          state.lastConnected = Date.now()
-        })
-
-        // Set connection state
-        state.conn = connection
-        state.uri = mongoUri
-        state.isConnecting = false
-
-        return connection
-      })
-
-    const connection = await state.promise
-    return connection
-  } catch (error) {
-    state.isConnecting = false
-    state.promise = null
-    state.conn = null
-
-    console.error(
-      `❌ Failed to connect to MongoDB (attempt ${state.connectionAttempts}):`,
-      error
-    )
-
-    // Record connection failure metrics
-    recordConnectionFailure(
-      error instanceof Error ? error.message : String(error)
-    )
-
-    // Exponential backoff for connection retries
-    if (state.connectionAttempts < 3) {
-      const delay = Math.min(
-        1000 * Math.pow(2, state.connectionAttempts - 1),
-        10000
-      )
-      console.log(`🔄 Retrying connection in ${delay}ms...`)
-      await new Promise(resolve => setTimeout(resolve, delay))
-      return connectDB() // Recursive retry
-    }
-
-    throw new Error(
-      `Failed to connect to MongoDB after ${state.connectionAttempts} attempts: ${error}`
-    )
-  }
-}
-
-/**
- * Gracefully disconnect from MongoDB
- */
-async function disconnectDB(): Promise<void> {
-  const state = getConnectionState()
-
-  try {
-    if (state.conn) {
-      await mongoose.disconnect()
-      console.log('📝 Disconnected from MongoDB')
-    }
-
-    // Clean up MongoDB Memory Server in development
-    if (mongoMemoryServer && process.env.NODE_ENV === 'development') {
-      await mongoMemoryServer.stop()
-      mongoMemoryServer = null
-      console.log('📝 MongoDB Memory Server stopped')
+      await mongoose.connection.close()
+      connectionState.isConnected = false
+      console.log('🔌 MongoDB disconnected')
     }
   } catch (error) {
     console.error('Error disconnecting from MongoDB:', error)
-  } finally {
-    // Reset connection state
-    Object.assign(state, initializeConnectionState())
+    throw error
   }
 }
 
 /**
- * Get connection health status for monitoring
+ * Health check endpoint data
  */
-function getConnectionHealth(): {
-  isConnected: boolean
-  readyState: number | null
-  host: string | null
-  lastConnected: number | null
-  connectionAttempts: number
-} {
-  const state = getConnectionState()
+export async function healthCheck() {
+  const health = getConnectionHealth()
 
   return {
-    isConnected: isConnectionHealthy(state),
-    readyState: state.conn?.readyState || null,
-    host: state.conn?.host || null,
-    lastConnected: state.lastConnected,
-    connectionAttempts: state.connectionAttempts,
+    database: {
+      status: health.isConnected ? 'connected' : 'disconnected',
+      readyState: health.readyStateText,
+      host: health.host,
+      database: health.database,
+      lastConnected: health.lastConnected,
+      connectionCount: health.connectionCount,
+      ...(health.lastError && {
+        lastError: health.lastError.message,
+      }),
+    },
+    environment: process.env.NODE_ENV,
+    timestamp: new Date().toISOString(),
+  }
+}
+
+// Export the enhanced connection function
+export default connectDB
+
+/**
+ * Migration Helper: Check if we can connect to Docker MongoDB
+ */
+export async function validateDockerConnection(): Promise<boolean> {
+  try {
+    const uri = getMongoURI()
+    console.log('🔍 Validating Docker MongoDB connection...')
+
+    // Test connection
+    const testConnection = await mongoose.createConnection(uri, {
+      ...CONNECTION_OPTIONS,
+      serverSelectionTimeoutMS: 3000, // Shorter timeout for validation
+    })
+
+    // Test basic operation
+    await testConnection.db?.admin().ping()
+    await testConnection.close()
+
+    console.log('✅ Docker MongoDB connection validated')
+    return true
+  } catch (error) {
+    console.error('❌ Docker MongoDB connection validation failed:', {
+      error: (error as Error).message,
+      suggestion:
+        'Make sure Docker MongoDB is running: docker-compose up mongodb -d',
+    })
+    return false
   }
 }
 
 /**
- * Force reconnection (useful for testing or recovery)
+ * Setup database indexes for optimal performance
  */
-async function forceReconnectDB(): Promise<Connection> {
-  const state = getConnectionState()
+export async function setupDatabaseIndexes(): Promise<void> {
+  try {
+    console.log('📊 Setting up database indexes...')
 
-  // Disconnect current connection
-  if (state.conn) {
-    await mongoose.disconnect()
+    const db = mongoose.connection.db
+    if (!db) {
+      throw new Error('Database connection not available')
+    }
+
+    // Habits collection indexes
+    const habitsCollection = db.collection('habits')
+    await Promise.all([
+      habitsCollection.createIndex({ userId: 1, 'status.active': 1 }),
+      habitsCollection.createIndex({ userId: 1, category: 1 }),
+      habitsCollection.createIndex({ userId: 1, priority: 1, createdAt: -1 }),
+    ])
+
+    // HabitLogs collection indexes
+    const habitLogsCollection = db.collection('habitlogs')
+    await Promise.all([
+      habitLogsCollection.createIndex({ userId: 1, date: -1 }),
+      habitLogsCollection.createIndex({ habitId: 1, date: -1 }),
+      habitLogsCollection.createIndex({ userId: 1, completed: 1, date: -1 }),
+      habitLogsCollection.createIndex(
+        { habitId: 1, userId: 1, date: 1 },
+        { unique: true }
+      ),
+    ])
+
+    // Users collection indexes
+    const usersCollection = db.collection('users')
+    await Promise.all([
+      usersCollection.createIndex({ email: 1 }, { unique: true }),
+      usersCollection.createIndex({ createdAt: -1 }),
+    ])
+
+    console.log('✅ Database indexes created successfully')
+  } catch (error) {
+    console.error('❌ Failed to setup database indexes:', error)
+    // Don't throw - indexes are performance optimization, not critical
   }
-
-  // Reset state and reconnect
-  Object.assign(state, initializeConnectionState())
-  return connectDB()
 }
-
-export default connectDB
-export { disconnectDB, getConnectionHealth, forceReconnectDB }

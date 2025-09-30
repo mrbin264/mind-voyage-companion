@@ -1,15 +1,18 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { updateProfileSchema } from '@/lib/validations/auth'
-import { hash, compare } from 'bcryptjs'
+import { secureEndpoint, type SecurityContext } from '@/lib/middleware/security'
+import { updateProfileSchema } from '@/lib/validation/schemas'
 import { User } from '@/lib/models/user'
 import connectDB from '@/lib/db'
-import { auth } from '@/lib/auth'
 
 // GET /api/auth/profile - Get current user profile
-export async function GET(req: NextRequest) {
-  try {
+export const GET = secureEndpoint.api(
+  async (
+    request: NextRequest,
+    context: SecurityContext
+  ): Promise<NextResponse> => {
     await connectDB()
-    const session = await auth()
+    const { session } = context
+
     if (!session?.user?.id) {
       return NextResponse.json(
         { success: false, message: 'Unauthorized' },
@@ -41,88 +44,60 @@ export async function GET(req: NextRequest) {
         updatedAt: userProfile.updatedAt,
       },
     })
-  } catch (error) {
-    if (error instanceof Error && error.message === 'Authentication required') {
-      return NextResponse.json(
-        {
-          success: false,
-          message: 'Authentication required',
-        },
-        { status: 401 }
-      )
-    }
-
-    console.error('Get profile error:', error)
-    return NextResponse.json(
-      {
-        success: false,
-        message: 'Internal server error',
-      },
-      { status: 500 }
-    )
   }
-}
+)
 
 // PATCH /api/auth/profile - Update user profile
-export async function PATCH(req: NextRequest) {
-  try {
+export const PATCH = secureEndpoint.custom(
+  async (
+    request: NextRequest,
+    context: SecurityContext
+  ): Promise<NextResponse> => {
     await connectDB()
-    const session = await auth()
+    const { session, validatedBody } = context
+
     if (!session?.user?.id) {
       return NextResponse.json(
         { success: false, message: 'Unauthorized' },
         { status: 401 }
       )
     }
-    const data = await req.json()
-    const parsed = updateProfileSchema.safeParse(data)
-
-    if (!parsed.success) {
-      return NextResponse.json(
-        {
-          success: false,
-          message: 'Validation failed',
-          errors: parsed.error.flatten().fieldErrors,
-        },
-        { status: 400 }
-      )
-    }
 
     const updateData: any = {}
-    if (parsed.data.firstName) updateData.firstName = parsed.data.firstName
-    if (parsed.data.lastName) updateData.lastName = parsed.data.lastName
-    if (parsed.data.firstName && parsed.data.lastName) {
-      updateData.name = `${parsed.data.firstName} ${parsed.data.lastName}`
+    if (validatedBody.firstName) updateData.firstName = validatedBody.firstName
+    if (validatedBody.lastName) updateData.lastName = validatedBody.lastName
+    if (validatedBody.firstName && validatedBody.lastName) {
+      updateData.name = `${validatedBody.firstName} ${validatedBody.lastName}`
     }
-    if (parsed.data.profilePhoto)
-      updateData.profilePhoto = parsed.data.profilePhoto
-    if (parsed.data.dateOfBirth)
-      updateData.dateOfBirth = parsed.data.dateOfBirth
-    if (parsed.data.bio) updateData.bio = parsed.data.bio
-    if (parsed.data.location) updateData.location = parsed.data.location
-    if (parsed.data.timezone) updateData.timezone = parsed.data.timezone
-    if (parsed.data.website) updateData.website = parsed.data.website
-    if (parsed.data.socialLinks)
-      updateData.socialLinks = parsed.data.socialLinks
-    if (parsed.data.preferences) {
+    if (validatedBody.profilePhoto)
+      updateData.profilePhoto = validatedBody.profilePhoto
+    if (validatedBody.dateOfBirth)
+      updateData.dateOfBirth = validatedBody.dateOfBirth
+    if (validatedBody.bio) updateData.bio = validatedBody.bio
+    if (validatedBody.location) updateData.location = validatedBody.location
+    if (validatedBody.timezone) updateData.timezone = validatedBody.timezone
+    if (validatedBody.website) updateData.website = validatedBody.website
+    if (validatedBody.socialLinks)
+      updateData.socialLinks = validatedBody.socialLinks
+    if (validatedBody.preferences) {
       updateData.$set = {}
-      if (parsed.data.preferences.theme) {
-        updateData.$set['preferences.theme'] = parsed.data.preferences.theme
+      if (validatedBody.preferences.theme) {
+        updateData.$set['preferences.theme'] = validatedBody.preferences.theme
       }
-      if (parsed.data.preferences.notifications) {
-        if (parsed.data.preferences.notifications.email !== undefined) {
+      if (validatedBody.preferences.notifications) {
+        if (validatedBody.preferences.notifications.email !== undefined) {
           updateData.$set['preferences.notifications.email'] =
-            parsed.data.preferences.notifications.email
+            validatedBody.preferences.notifications.email
         }
-        if (parsed.data.preferences.notifications.push !== undefined) {
+        if (validatedBody.preferences.notifications.push !== undefined) {
           updateData.$set['preferences.notifications.push'] =
-            parsed.data.preferences.notifications.push
+            validatedBody.preferences.notifications.push
         }
       }
-      if (parsed.data.preferences.privacy) {
-        if (parsed.data.preferences.privacy.publicProfile !== undefined) {
+      if (validatedBody.preferences.privacy) {
+        if (validatedBody.preferences.privacy.publicProfile !== undefined) {
           updateData.$set['preferences.privacy.publicProfile'] =
-            parsed.data.preferences.privacy.publicProfile
+            validatedBody.preferences.privacy.publicProfile
         }
       }
     }
@@ -160,33 +135,24 @@ export async function PATCH(req: NextRequest) {
         updatedAt: updatedUser.updatedAt,
       },
     })
-  } catch (error) {
-    if (error instanceof Error && error.message === 'Authentication required') {
-      return NextResponse.json(
-        {
-          success: false,
-          message: 'Authentication required',
-        },
-        { status: 401 }
-      )
-    }
-
-    console.error('Update profile error:', error)
-    return NextResponse.json(
-      {
-        success: false,
-        message: 'Internal server error',
-      },
-      { status: 500 }
-    )
+  },
+  {
+    rateLimit: { type: 'mutation' },
+    auth: { required: true },
+    validation: { body: updateProfileSchema },
+    sanitization: { sanitizeBody: true },
   }
-}
+)
 
 // DELETE /api/auth/profile - Delete user account
-export async function DELETE(req: NextRequest) {
-  try {
+export const DELETE = secureEndpoint.mutation(
+  async (
+    request: NextRequest,
+    context: SecurityContext
+  ): Promise<NextResponse> => {
     await connectDB()
-    const session = await auth()
+    const { session } = context
+
     if (!session?.user?.id) {
       return NextResponse.json(
         { success: false, message: 'Unauthorized' },
@@ -202,24 +168,5 @@ export async function DELETE(req: NextRequest) {
       success: true,
       message: 'Account deleted successfully',
     })
-  } catch (error) {
-    if (error instanceof Error && error.message === 'Authentication required') {
-      return NextResponse.json(
-        {
-          success: false,
-          message: 'Authentication required',
-        },
-        { status: 401 }
-      )
-    }
-
-    console.error('Delete account error:', error)
-    return NextResponse.json(
-      {
-        success: false,
-        message: 'Internal server error',
-      },
-      { status: 500 }
-    )
   }
-}
+)

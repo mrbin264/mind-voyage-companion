@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { auth } from '@/lib/auth'
 import connectDB from '@/lib/db'
+import { secureEndpoint } from '@/lib/middleware/security'
+import type { SecurityContext } from '@/lib/middleware/security'
 
 // Sample quotes data - in a real app, this would come from a database
 const quotesDatabase = [
@@ -109,12 +110,12 @@ const categories = {
   },
 }
 
-export async function GET(request: NextRequest) {
-  try {
-    const session = await auth()
-    if (!session?.user?.id) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-    }
+export const GET = secureEndpoint.api(
+  async (
+    request: NextRequest,
+    context: SecurityContext
+  ): Promise<NextResponse> => {
+    const { session } = context
 
     await connectDB()
 
@@ -176,22 +177,16 @@ export async function GET(request: NextRequest) {
         count: quotesDatabase.filter(q => q.category === key).length,
       })),
     })
-  } catch (error) {
-    console.error('Quotes API error:', error)
-    return NextResponse.json(
-      { error: 'Internal server error' },
-      { status: 500 }
-    )
   }
-}
+)
 
 // Get daily quote for the user
-export async function POST(request: NextRequest) {
-  try {
-    const session = await auth()
-    if (!session?.user?.id) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-    }
+export const POST = secureEndpoint.api(
+  async (
+    request: NextRequest,
+    context: SecurityContext
+  ): Promise<NextResponse> => {
+    const { session } = context
 
     await connectDB()
 
@@ -210,11 +205,5 @@ export async function POST(request: NextRequest) {
         categories[dailyQuote.category as keyof typeof categories] || null,
       date: today,
     })
-  } catch (error) {
-    console.error('Daily quote API error:', error)
-    return NextResponse.json(
-      { error: 'Internal server error' },
-      { status: 500 }
-    )
   }
-}
+)

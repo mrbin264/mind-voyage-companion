@@ -1,27 +1,18 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { resetConfirmSchema } from '@/lib/validations/auth'
+import { secureEndpoint, type SecurityContext } from '@/lib/middleware/security'
+import { resetConfirmSchema } from '@/lib/validation/schemas'
 import { hash } from 'bcryptjs'
 import { User, VerificationToken } from '@/lib/models/user'
 import connectDB from '@/lib/db'
 
-export async function POST(req: NextRequest) {
-  try {
+export const POST = secureEndpoint.custom(
+  async (
+    request: NextRequest,
+    context: SecurityContext
+  ): Promise<NextResponse> => {
     await connectDB()
-    const data = await req.json()
-    const parsed = resetConfirmSchema.safeParse(data)
-
-    if (!parsed.success) {
-      return NextResponse.json(
-        {
-          success: false,
-          message: 'Validation failed',
-          errors: parsed.error.flatten().fieldErrors,
-        },
-        { status: 400 }
-      )
-    }
-
-    const { token, password } = parsed.data
+    const { validatedBody } = context
+    const { token, password } = validatedBody
 
     // Find valid verification token
     const verificationToken = await VerificationToken.findOne({
@@ -70,15 +61,11 @@ export async function POST(req: NextRequest) {
       message:
         'Password has been reset successfully. You can now log in with your new password.',
     })
-  } catch (error) {
-    console.error('Reset confirm error:', error)
-    return NextResponse.json(
-      {
-        success: false,
-        message: 'Internal server error',
-        errors: { server: ['Something went wrong. Please try again.'] },
-      },
-      { status: 500 }
-    )
+  },
+  {
+    rateLimit: { type: 'auth' },
+    auth: { required: false },
+    validation: { body: resetConfirmSchema },
+    sanitization: { sanitizeBody: true },
   }
-}
+)

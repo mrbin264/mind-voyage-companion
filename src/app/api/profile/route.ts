@@ -1,33 +1,34 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { auth } from '@/lib/auth'
 import connectDB from '@/lib/db'
 import { User } from '@/lib/models/user'
 import { HabitModel } from '@/lib/models/habit'
 import { JournalEntryModel } from '@/lib/models/journal'
+import { secureEndpoint } from '@/lib/middleware/security'
+import type { SecurityContext } from '@/lib/middleware/security'
 
-export async function GET(request: NextRequest) {
-  try {
-    const session = await auth()
-    if (!session?.user?.id) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-    }
+export const GET = secureEndpoint.api(
+  async (
+    request: NextRequest,
+    context: SecurityContext
+  ): Promise<NextResponse> => {
+    const { session } = context
 
     await connectDB()
 
     // Get user data
-    const user = await User.findById(session.user.id)
+    const user = await User.findById(session!.user.id)
     if (!user) {
       return NextResponse.json({ error: 'User not found' }, { status: 404 })
     }
 
     // Get user statistics
     const [totalHabits, totalJournalEntries] = await Promise.all([
-      HabitModel.countDocuments({ userId: session.user.id }),
-      JournalEntryModel.countDocuments({ userId: session.user.id }),
+      HabitModel.countDocuments({ userId: session!.user.id }),
+      JournalEntryModel.countDocuments({ userId: session!.user.id }),
     ])
 
     // Calculate current streak (simplified - you may want to implement proper streak calculation)
-    const recentHabits = await HabitModel.find({ userId: session.user.id })
+    const recentHabits = await HabitModel.find({ userId: session!.user.id })
       .populate('logs')
       .limit(10)
 
@@ -56,21 +57,15 @@ export async function GET(request: NextRequest) {
     }
 
     return NextResponse.json(profileData)
-  } catch (error) {
-    console.error('Profile GET error:', error)
-    return NextResponse.json(
-      { error: 'Internal server error' },
-      { status: 500 }
-    )
   }
-}
+)
 
-export async function PUT(request: NextRequest) {
-  try {
-    const session = await auth()
-    if (!session?.user?.id) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-    }
+export const PUT = secureEndpoint.mutation(
+  async (
+    request: NextRequest,
+    context: SecurityContext
+  ): Promise<NextResponse> => {
+    const { session } = context
 
     const body = await request.json()
     const { firstName, lastName, email, timezone } = body
@@ -94,7 +89,7 @@ export async function PUT(request: NextRequest) {
 
     // Update user profile
     const updatedUser = await User.findByIdAndUpdate(
-      session.user.id,
+      session!.user.id,
       {
         firstName: firstName.trim(),
         lastName: lastName.trim(),
@@ -118,11 +113,5 @@ export async function PUT(request: NextRequest) {
         timezone: updatedUser.timezone,
       },
     })
-  } catch (error) {
-    console.error('Profile PUT error:', error)
-    return NextResponse.json(
-      { error: 'Internal server error' },
-      { status: 500 }
-    )
   }
-}
+)

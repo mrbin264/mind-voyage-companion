@@ -1,15 +1,17 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { completeOnboardingSchema } from '@/lib/validations/onboarding'
+import { secureEndpoint, type SecurityContext } from '@/lib/middleware/security'
+import { completeOnboardingSchema } from '@/lib/validation/schemas'
 import { User } from '@/lib/models/user'
 import connectDB from '@/lib/db'
-import { auth } from '@/lib/auth'
 
-export async function POST(req: NextRequest) {
-  try {
+export const POST = secureEndpoint.custom(
+  async (
+    request: NextRequest,
+    context: SecurityContext
+  ): Promise<NextResponse> => {
     await connectDB()
+    const { session, validatedBody } = context
 
-    // Get the current user
-    const session = await auth()
     if (!session?.user?.id) {
       return NextResponse.json(
         { success: false, message: 'Unauthorized' },
@@ -17,21 +19,7 @@ export async function POST(req: NextRequest) {
       )
     }
 
-    const data = await req.json()
-    const parsed = completeOnboardingSchema.safeParse(data)
-
-    if (!parsed.success) {
-      return NextResponse.json(
-        {
-          success: false,
-          message: 'Validation failed',
-          errors: parsed.error.flatten().fieldErrors,
-        },
-        { status: 400 }
-      )
-    }
-
-    const { profile, habit } = parsed.data
+    const { profile, habit } = validatedBody
 
     // Create habit data structure
     const habitData = habit.habitId
@@ -84,29 +72,24 @@ export async function POST(req: NextRequest) {
         onboardingCompleted: true,
       },
     })
-  } catch (error) {
-    if (error instanceof Error && error.message === 'Authentication required') {
-      return NextResponse.json(
-        { success: false, message: 'Authentication required' },
-        { status: 401 }
-      )
-    }
-
-    console.error('Complete onboarding error:', error)
-    return NextResponse.json(
-      { success: false, message: 'Internal server error' },
-      { status: 500 }
-    )
+  },
+  {
+    rateLimit: { type: 'mutation' },
+    auth: { required: true },
+    validation: { body: completeOnboardingSchema },
+    sanitization: { sanitizeBody: true },
   }
-}
+)
 
 // GET endpoint to check onboarding status
-export async function GET(req: NextRequest) {
-  try {
+export const GET = secureEndpoint.api(
+  async (
+    request: NextRequest,
+    context: SecurityContext
+  ): Promise<NextResponse> => {
     await connectDB()
+    const { session } = context
 
-    // Get the current user
-    const session = await auth()
     if (!session?.user?.id) {
       return NextResponse.json(
         { success: false, message: 'Unauthorized' },
@@ -140,18 +123,5 @@ export async function GET(req: NextRequest) {
         },
       },
     })
-  } catch (error) {
-    if (error instanceof Error && error.message === 'Authentication required') {
-      return NextResponse.json(
-        { success: false, message: 'Authentication required' },
-        { status: 401 }
-      )
-    }
-
-    console.error('Get onboarding status error:', error)
-    return NextResponse.json(
-      { success: false, message: 'Internal server error' },
-      { status: 500 }
-    )
   }
-}
+)

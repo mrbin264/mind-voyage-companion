@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { getConnectionHealth, getConnectionMetricsReport } from '@/lib/db'
+import { getConnectionHealth, healthCheck } from '@/lib/db'
 
 /**
  * Database Health Check Endpoint
@@ -11,7 +11,7 @@ import { getConnectionHealth, getConnectionMetricsReport } from '@/lib/db'
 export async function GET(req: NextRequest) {
   try {
     const health = getConnectionHealth()
-    const metricsReport = getConnectionMetricsReport()
+    const healthCheckData = await healthCheck()
 
     const status = health.isConnected ? 'healthy' : 'unhealthy'
     const httpStatus = health.isConnected ? 200 : 503 // Service Unavailable if DB is down
@@ -21,46 +21,22 @@ export async function GET(req: NextRequest) {
       database: {
         connected: health.isConnected,
         readyState: health.readyState,
-        readyStateText: getReadyStateText(health.readyState),
+        readyStateText: health.readyStateText,
         host: health.host,
+        port: health.port,
+        databaseName: health.database,
         lastConnected: health.lastConnected,
         lastConnectedAt: health.lastConnected
-          ? new Date(health.lastConnected).toISOString()
+          ? health.lastConnected.toISOString()
           : null,
-        connectionAttempts: health.connectionAttempts,
-        uptime: health.lastConnected ? Date.now() - health.lastConnected : null,
-      },
-      metrics: {
-        connection: {
-          total: metricsReport.connection.totalConnections,
-          successful: metricsReport.connection.successfulConnections,
-          failed: metricsReport.connection.failedConnections,
-          successRate:
-            metricsReport.connection.totalConnections > 0
-              ? (
-                  (metricsReport.connection.successfulConnections /
-                    metricsReport.connection.totalConnections) *
-                  100
-                ).toFixed(2) + '%'
-              : 'N/A',
-          averageTime: metricsReport.connection.averageConnectionTime + 'ms',
-          longestTime: metricsReport.connection.longestConnectionTime + 'ms',
-          disconnections: metricsReport.connection.disconnectionCount,
-          reconnections: metricsReport.connection.reconnectionCount,
-        },
-        performance: {
-          queryCount: metricsReport.performance.queryCount,
-          averageQueryTime: metricsReport.performance.averageQueryTime + 'ms',
-          slowQueries: metricsReport.performance.slowQueries.length,
-          activeConnections: metricsReport.performance.activeConnections,
-          poolUtilization:
-            metricsReport.performance.poolUtilization.toFixed(1) + '%',
-        },
-        recentErrors: metricsReport.connection.errors.slice(-3).map(error => ({
-          timestamp: error.timestamp,
-          type: error.type,
-          message: error.error,
-        })),
+        connectionCount: health.connectionCount,
+        uptime: health.lastConnected
+          ? Date.now() - health.lastConnected.getTime()
+          : null,
+        retryCount: health.retryCount,
+        ...(health.lastError && {
+          lastError: health.lastError.message,
+        }),
       },
       timestamp: new Date().toISOString(),
       environment: process.env.NODE_ENV,
@@ -83,26 +59,6 @@ export async function GET(req: NextRequest) {
 }
 
 /**
- * Convert Mongoose ready state number to human-readable text
- */
-function getReadyStateText(readyState: number | null): string {
-  switch (readyState) {
-    case 0:
-      return 'disconnected'
-    case 1:
-      return 'connected'
-    case 2:
-      return 'connecting'
-    case 3:
-      return 'disconnecting'
-    case 99:
-      return 'uninitialized'
-    default:
-      return 'unknown'
-  }
-}
-
-/**
  * Optional: Add a POST endpoint to force reconnection (useful for testing)
  * Only available in development environment
  */
@@ -115,8 +71,11 @@ export async function POST(req: NextRequest) {
   }
 
   try {
-    const { forceReconnectDB } = await import('@/lib/db')
-    await forceReconnectDB()
+    const { disconnectDB } = await import('@/lib/db')
+    const connectDB = (await import('@/lib/db')).default
+
+    await disconnectDB()
+    await connectDB()
 
     return NextResponse.json({
       status: 'success',

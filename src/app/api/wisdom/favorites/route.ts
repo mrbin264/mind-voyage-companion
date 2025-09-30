@@ -1,18 +1,19 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { auth } from '@/lib/auth'
 import connectDB from '@/lib/db'
 import { User } from '@/lib/models/user'
+import { secureEndpoint } from '@/lib/middleware/security'
+import type { SecurityContext } from '@/lib/middleware/security'
 
-export async function GET(request: NextRequest) {
-  try {
-    const session = await auth()
-    if (!session?.user?.id) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-    }
+export const GET = secureEndpoint.api(
+  async (
+    request: NextRequest,
+    context: SecurityContext
+  ): Promise<NextResponse> => {
+    const { session } = context
 
     await connectDB()
 
-    const user = await User.findById(session.user.id).select('wisdomFavorites')
+    const user = await User.findById(session!.user.id).select('wisdomFavorites')
     if (!user) {
       return NextResponse.json({ error: 'User not found' }, { status: 404 })
     }
@@ -20,21 +21,15 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({
       favorites: user.wisdomFavorites || [],
     })
-  } catch (error) {
-    console.error('Get favorites API error:', error)
-    return NextResponse.json(
-      { error: 'Internal server error' },
-      { status: 500 }
-    )
   }
-}
+)
 
-export async function POST(request: NextRequest) {
-  try {
-    const session = await auth()
-    if (!session?.user?.id) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-    }
+export const POST = secureEndpoint.mutation(
+  async (
+    request: NextRequest,
+    context: SecurityContext
+  ): Promise<NextResponse> => {
+    const { session } = context
 
     const { quoteId, text, author, category } = await request.json()
 
@@ -56,7 +51,7 @@ export async function POST(request: NextRequest) {
     }
 
     const user = await User.findByIdAndUpdate(
-      session.user.id,
+      session!.user.id,
       {
         $addToSet: {
           wisdomFavorites: favoriteQuote,
@@ -73,21 +68,15 @@ export async function POST(request: NextRequest) {
       message: 'Quote added to favorites',
       favorites: user.wisdomFavorites,
     })
-  } catch (error) {
-    console.error('Add favorite API error:', error)
-    return NextResponse.json(
-      { error: 'Internal server error' },
-      { status: 500 }
-    )
   }
-}
+)
 
-export async function DELETE(request: NextRequest) {
-  try {
-    const session = await auth()
-    if (!session?.user?.id) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-    }
+export const DELETE = secureEndpoint.mutation(
+  async (
+    request: NextRequest,
+    context: SecurityContext
+  ): Promise<NextResponse> => {
+    const { session } = context
 
     const { quoteId } = await request.json()
 
@@ -101,7 +90,7 @@ export async function DELETE(request: NextRequest) {
     await connectDB()
 
     const user = await User.findByIdAndUpdate(
-      session.user.id,
+      session!.user.id,
       {
         $pull: {
           wisdomFavorites: { quoteId },
@@ -118,11 +107,5 @@ export async function DELETE(request: NextRequest) {
       message: 'Quote removed from favorites',
       favorites: user.wisdomFavorites,
     })
-  } catch (error) {
-    console.error('Remove favorite API error:', error)
-    return NextResponse.json(
-      { error: 'Internal server error' },
-      { status: 500 }
-    )
   }
-}
+)

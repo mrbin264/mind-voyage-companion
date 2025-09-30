@@ -2,7 +2,12 @@ import { NextRequest, NextResponse } from 'next/server'
 import connectDB from '@/lib/db'
 import { JournalEntryModel } from '@/lib/models/journal'
 import type { JournalEntry, JournalSearchParams } from '@/types/journal'
-import { auth } from '@/lib/auth'
+import { secureEndpoint } from '@/lib/middleware/security'
+import type { SecurityContext } from '@/lib/middleware/security'
+import {
+  journalQuerySchema,
+  createJournalEntrySchema,
+} from '@/lib/validation/schemas'
 
 // Helper to format date as YYYY-MM-DD in user's timezone
 function formatDateForEntry(date: Date): string {
@@ -10,12 +15,12 @@ function formatDateForEntry(date: Date): string {
 }
 
 // GET /api/journal - Get journal entries with optional search/filter
-export async function GET(request: NextRequest) {
-  try {
-    const session = await auth()
-    if (!session?.user?.id) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-    }
+export const GET = secureEndpoint.api(
+  async (
+    request: NextRequest,
+    context: SecurityContext
+  ): Promise<NextResponse> => {
+    const { session } = context
 
     await connectDB()
 
@@ -62,7 +67,7 @@ export async function GET(request: NextRequest) {
     }
 
     const result = await JournalEntryModel.searchEntries(
-      session.user.id,
+      session!.user.id,
       searchParameters
     )
 
@@ -70,63 +75,51 @@ export async function GET(request: NextRequest) {
       success: true,
       data: result,
     })
-  } catch (error) {
-    console.error('GET /api/journal error:', error)
-    return NextResponse.json(
-      { error: 'Failed to fetch journal entries' },
-      { status: 500 }
-    )
   }
-}
+)
 
 // POST /api/journal - Create new journal entry
-export async function POST(request: NextRequest) {
-  try {
-    const session = await auth()
-    if (!session?.user?.id) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-    }
+export const POST = secureEndpoint.mutation(
+  async (
+    request: NextRequest,
+    context: SecurityContext
+  ): Promise<NextResponse> => {
+    const { session } = context
 
     await connectDB()
 
-    const body = await request.json()
-    const { title, content, mood, tags, date } = body
-
-    // Validation
-    if (!content || content.trim().length === 0) {
+    // Parse and validate request body
+    let body: any
+    try {
+      body = await request.json()
+    } catch (error) {
       return NextResponse.json(
-        { error: 'Content is required' },
+        { error: 'Invalid JSON in request body' },
         { status: 400 }
       )
     }
 
-    if (content.length > 50000) {
+    // Validate using schema
+    const validation = createJournalEntrySchema.safeParse(body)
+    if (!validation.success) {
       return NextResponse.json(
-        { error: 'Content too long (max 50,000 characters)' },
+        {
+          error: 'Validation failed',
+          details: validation.error.issues,
+        },
         { status: 400 }
       )
     }
 
-    if (mood && (mood < 1 || mood > 5)) {
-      return NextResponse.json(
-        { error: 'Mood must be between 1 and 5' },
-        { status: 400 }
-      )
-    }
-
-    if (tags && tags.length > 20) {
-      return NextResponse.json(
-        { error: 'Maximum 20 tags allowed per entry' },
-        { status: 400 }
-      )
-    }
+    const { title, content, mood, tags, isPrivate, weather, location } =
+      validation.data!
 
     // Use provided date or current date
-    const entryDate = date || formatDateForEntry(new Date())
+    const entryDate = formatDateForEntry(new Date())
 
     // Check if entry already exists for this date
     const existingEntry = await JournalEntryModel.findOne({
-      userId: session.user.id,
+      userId: session!.user.id,
       date: entryDate,
     })
 
@@ -139,7 +132,7 @@ export async function POST(request: NextRequest) {
 
     // Create new journal entry
     const journalEntry = new JournalEntryModel({
-      userId: session.user.id,
+      userId: session!.user.id,
       title: title?.trim(),
       content: content.trim(),
       mood,
@@ -148,6 +141,9 @@ export async function POST(request: NextRequest) {
           ?.map((tag: string) => tag.trim())
           .filter((tag: string) => tag.length > 0) || [],
       date: entryDate,
+      isPrivate: isPrivate ?? true,
+      weather,
+      location,
       favorite: false,
     })
 
@@ -160,11 +156,5 @@ export async function POST(request: NextRequest) {
       },
       { status: 201 }
     )
-  } catch (error) {
-    console.error('POST /api/journal error:', error)
-    return NextResponse.json(
-      { error: 'Failed to create journal entry' },
-      { status: 500 }
-    )
   }
-}
+)
