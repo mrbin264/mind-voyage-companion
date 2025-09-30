@@ -11,6 +11,7 @@ const loginSchema = z.object({
 })
 
 export const authConfig: NextAuthConfig = {
+  basePath: '/api/auth',
   // Use JWT sessions for simplicity (no database adapter needed)
   providers: [
     // Email/Password authentication
@@ -118,6 +119,7 @@ export const authConfig: NextAuthConfig = {
     error: '/auth/error',
   },
   trustHost: true, // Required for deployment
+  debug: process.env.NODE_ENV === 'development', // Enable debug logs in development
 }
 
 // Export auth functions for use in middleware and components

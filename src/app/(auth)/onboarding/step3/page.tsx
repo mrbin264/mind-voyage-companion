@@ -2,229 +2,278 @@
 
 import React, { useState } from 'react'
 import Link from 'next/link'
+import { Globe, Clock } from 'lucide-react'
 import { OnboardingLayout } from '@/components/onboarding/OnboardingLayout'
-
-interface Habit {
-  id: number
-  emoji: string
-  name: string
-  shortDesc: string
-  longName: string
-  longDesc: string
-  popular: boolean
-}
-
-const defaultHabits: Habit[] = [
-  {
-    id: 1,
-    emoji: '💧',
-    name: 'Hydration',
-    shortDesc: '8 glasses/day',
-    longName: 'Drink 8 Glasses of Water',
-    longDesc: 'Daily hydration goal',
-    popular: true,
-  },
-  {
-    id: 2,
-    emoji: '📚',
-    name: 'Reading',
-    shortDesc: '20 minutes/day',
-    longName: 'Read for 20 Minutes',
-    longDesc: 'Expand your knowledge',
-    popular: false,
-  },
-  {
-    id: 3,
-    emoji: '🚶',
-    name: 'Exercise',
-    shortDesc: 'Daily movement',
-    longName: 'Daily Exercise',
-    longDesc: 'Stay active and healthy',
-    popular: false,
-  },
-  {
-    id: 4,
-    emoji: '📝',
-    name: 'Journaling',
-    shortDesc: 'Evening reflect',
-    longName: 'Evening Journaling',
-    longDesc: 'Reflect on your day',
-    popular: true,
-  },
-  {
-    id: 5,
-    emoji: '🧘',
-    name: 'Meditation',
-    shortDesc: 'Mindfulness',
-    longName: 'Mindful Meditation',
-    longDesc: 'Practice daily mindfulness',
-    popular: false,
-  },
-]
+import { timezoneOptions, languageOptions } from '@/hooks/useSettings'
 
 export default function OnboardingStep3() {
-  const [selectedHabitId, setSelectedHabitId] = useState<number>(1)
-  const [showCustomForm, setShowCustomForm] = useState<boolean>(false)
+  const [timezone, setTimezone] = useState('(GMT-8) Pacific Time')
+  const [language, setLanguage] = useState('en-US')
+  const [wakeUpTime, setWakeUpTime] = useState('07:00')
+  const [sleepTime, setSleepTime] = useState('23:00')
 
-  const selectedHabit = defaultHabits.find(h => h.id === selectedHabitId)
+  const handleGoToDashboard = async () => {
+    try {
+      const response = await fetch('/api/onboarding/complete', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          profile: {
+            timezone,
+            language,
+            wakeUpTime,
+            sleepTime,
+          },
+          habit: {
+            habitId: 1, // Default habit
+            reminderTime: '09:00', // 24-hour format as expected by validation
+            frequency: 'daily',
+          },
+        }),
+      })
 
-  const handleHabitSelect = (habitId: number) => {
-    setSelectedHabitId(habitId)
-    setShowCustomForm(false)
-  }
+      if (!response.ok) {
+        const errorData = await response.json()
+        console.error('Onboarding completion failed:', errorData.message)
+        return
+      }
 
-  const handleCreateCustom = () => {
-    setShowCustomForm(true)
-  }
+      const result = await response.json()
+      console.log('Onboarding completed successfully:', result)
 
-  const handleSubmit = () => {
-    // TODO: Save habit data to backend
-    console.log('Selected habit:', selectedHabit)
+      // Redirect to habits page
+      window.location.href = '/dashboard'
+    } catch (error) {
+      console.error('Network error:', error)
+      // Redirect anyway for now
+      window.location.href = '/dashboard'
+    }
   }
 
   return (
-    <OnboardingLayout currentStep={3} totalSteps={4}>
+    <OnboardingLayout currentStep={3} totalSteps={3}>
       {/* Main Content Grid */}
-      <div className="grid grid-cols-1 lg:grid-cols-5 gap-16 py-12 md:py-16">
-        {/* Left Column: Habit Selection */}
+      <div className="grid grid-cols-1 lg:grid-cols-5 gap-16 items-start py-12 md:py-16">
+        {/* Left Column: Preferences Setup */}
         <div className="lg:col-span-3">
           <div className="max-w-xl mx-auto">
-            <h2 className="text-4xl font-bold text-gray-100">
-              Create Your First Habit 🎯
-            </h2>
+            <h2 className="text-4xl font-bold text-gray-100">Final Setup</h2>
             <p className="text-gray-400 mt-3 mb-8">
-              Choose from our most popular habits or create your own custom
-              habit.
+              Let&apos;s personalize your experience with your timezone,
+              language, and schedule preferences.
             </p>
 
-            <h3 className="font-semibold text-gray-300 mb-4">
-              Popular Starting Habits:
-            </h3>
-            <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-              {defaultHabits.map(habit => (
-                <div
-                  key={habit.id}
-                  onClick={() => handleHabitSelect(habit.id)}
-                  className={`bg-white/[0.03] border border-white/10 backdrop-blur-sm p-4 rounded-xl cursor-pointer transition-all duration-200 hover:border-blue-500/50 ${
-                    selectedHabitId === habit.id
-                      ? 'border-blue-500 shadow-lg shadow-blue-500/20'
-                      : ''
-                  }`}
-                >
-                  <div className="flex justify-between items-start">
-                    <span className="text-2xl">{habit.emoji}</span>
-                    {habit.popular && (
-                      <span className="text-yellow-400">⭐</span>
-                    )}
-                  </div>
-                  <h4 className="font-bold text-gray-200 mt-2">{habit.name}</h4>
-                  <p className="text-sm text-gray-400">{habit.shortDesc}</p>
-                  <button className="text-sm font-semibold text-blue-400 mt-3">
-                    Select
-                  </button>
-                </div>
-              ))}
+            {/* Preferences Form */}
+            <div className="space-y-6 bg-gray-800/30 p-6 rounded-xl mb-8">
+              <h3 className="font-semibold text-gray-300 mb-4">
+                Regional Preferences
+              </h3>
 
-              {/* Custom Habit Card */}
-              <div
-                onClick={handleCreateCustom}
-                className="bg-white/[0.03] border border-dashed border-gray-600 hover:border-blue-500 p-4 rounded-xl cursor-pointer transition-all duration-200"
-              >
-                <span className="text-2xl">➕</span>
-                <h4 className="font-bold text-gray-200 mt-2">Custom</h4>
-                <p className="text-sm text-gray-400">Create your own</p>
-                <button className="text-sm font-semibold text-blue-400 mt-3">
-                  Create
-                </button>
+              {/* Timezone Selection */}
+              <div>
+                <label className="block text-sm font-medium text-gray-300 mb-2">
+                  <Clock className="inline w-4 h-4 mr-2" />
+                  Timezone
+                </label>
+                <select
+                  value={timezone}
+                  onChange={e => setTimezone(e.target.value)}
+                  className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg text-gray-300 focus:border-blue-500 focus:outline-none"
+                >
+                  {timezoneOptions.map(option => (
+                    <option key={option.value} value={option.value}>
+                      {option.label}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              {/* Language Selection */}
+              <div>
+                <label className="block text-sm font-medium text-gray-300 mb-2">
+                  <Globe className="inline w-4 h-4 mr-2" />
+                  Language
+                </label>
+                <select
+                  value={language}
+                  onChange={e => setLanguage(e.target.value)}
+                  className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg text-gray-300 focus:border-blue-500 focus:outline-none"
+                >
+                  {languageOptions.map(option => (
+                    <option key={option.value} value={option.value}>
+                      {option.label}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              {/* Schedule Preferences */}
+              <h3 className="font-semibold text-gray-300 mb-4 mt-6">
+                Daily Schedule
+              </h3>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-300 mb-2">
+                    Wake Up Time
+                  </label>
+                  <input
+                    type="time"
+                    value={wakeUpTime}
+                    onChange={e => setWakeUpTime(e.target.value)}
+                    className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg text-gray-300 focus:border-blue-500 focus:outline-none"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-300 mb-2">
+                    Sleep Time
+                  </label>
+                  <input
+                    type="time"
+                    value={sleepTime}
+                    onChange={e => setSleepTime(e.target.value)}
+                    className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg text-gray-300 focus:border-blue-500 focus:outline-none"
+                  />
+                </div>
               </div>
             </div>
 
-            {!showCustomForm && selectedHabit && (
-              <div className="mt-8 pt-6 border-t border-gray-800">
-                <p className="text-gray-300 font-semibold">
-                  Selected:{' '}
-                  <span className="text-blue-400 font-bold">
-                    {selectedHabit.emoji} {selectedHabit.longName}
-                  </span>
-                </p>
-                <div className="mt-4 text-gray-400 text-sm space-y-2">
-                  <p className="font-semibold text-gray-300">
-                    ⚙️ Customize (optional):
-                  </p>
-                  <ul>
-                    <li>
-                      • Reminder time:{' '}
-                      <span className="text-gray-200">9:00 AM</span>
-                    </li>
-                    <li>
-                      • Frequency:{' '}
-                      <span className="text-gray-200">Every day</span>
-                    </li>
-                  </ul>
-                </div>
-              </div>
-            )}
-
-            {showCustomForm && (
-              <div className="mt-8 pt-6 border-t border-gray-800">
-                <h3 className="font-semibold text-gray-300 mb-4">
-                  Create Custom Habit
+            {/* Setup Summary */}
+            <div className="space-y-6 bg-gray-800/30 p-6 rounded-xl">
+              <div>
+                <h3 className="font-semibold text-gray-300 mb-3">
+                  🎉 You&apos;re all set! Here&apos;s your setup:
                 </h3>
-                <div className="space-y-4">
-                  <input
-                    type="text"
-                    placeholder="Habit name (e.g., 'Drink more water')"
-                    className="w-full bg-gray-800/50 border border-gray-600 text-gray-200 rounded-xl px-4 py-3 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:bg-gray-800 transition-all duration-200"
-                  />
-                  <select className="w-full bg-gray-800/50 border border-gray-600 text-gray-200 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:bg-gray-800 transition-all duration-200 appearance-none">
-                    <option>Choose an emoji</option>
-                    <option>💧 Water</option>
-                    <option>🥗 Food</option>
-                    <option>🏃 Exercise</option>
-                    <option>📚 Learning</option>
-                    <option>😌 Mindfulness</option>
-                  </select>
-                </div>
+                <ul className="space-y-2 text-gray-400">
+                  <li className="flex items-center gap-2">
+                    ✓ <span className="text-gray-200">Timezone:</span>{' '}
+                    {timezoneOptions
+                      .find(opt => opt.value === timezone)
+                      ?.label?.split(' ')
+                      .slice(0, 2)
+                      .join(' ') || timezone}
+                  </li>
+                  <li className="flex items-center gap-2">
+                    ✓ <span className="text-gray-200">Language:</span>{' '}
+                    {languageOptions.find(opt => opt.value === language)
+                      ?.label || language}
+                  </li>
+                  <li className="flex items-center gap-2">
+                    ✓ <span className="text-gray-200">Schedule:</span>{' '}
+                    {wakeUpTime} - {sleepTime}
+                  </li>
+                  <li className="flex items-center gap-2">
+                    ✓ <span className="text-gray-200">First habit:</span> Ready
+                    to start
+                  </li>
+                </ul>
               </div>
-            )}
+              <div>
+                <h3 className="font-semibold text-gray-300 mb-3">
+                  🎯 Your next steps:
+                </h3>
+                <ul className="space-y-2 text-gray-400 list-decimal list-inside">
+                  <li>Complete your first habit today</li>
+                  <li>Write your first journal entry</li>
+                  <li>Explore the daily wisdom quotes</li>
+                </ul>
+              </div>
+            </div>
 
-            <Link
-              href="/onboarding/step4"
-              onClick={handleSubmit}
-              className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-4 rounded-lg transition-all duration-300 transform hover:scale-105 mt-10 block text-center"
-            >
-              Create Habit
-            </Link>
+            <div className="mt-8">
+              <button
+                onClick={handleGoToDashboard}
+                className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-4 rounded-lg transition-all duration-300 transform hover:scale-105"
+              >
+                Complete Setup & Go to Dashboard
+              </button>
+            </div>
           </div>
         </div>
 
-        {/* Right Column: Popular Habits List */}
+        {/* Right Column: Dashboard Preview & Tips */}
         <div className="lg:col-span-2 flex flex-col gap-6 h-full justify-start">
-          <h3 className="text-xl font-bold text-gray-200">
-            Popular Starter Habits
-          </h3>
-          <div className="flex flex-col gap-4">
-            {defaultHabits.map(habit => (
-              <div
-                key={`large-${habit.id}`}
-                onClick={() => handleHabitSelect(habit.id)}
-                className={`bg-white/[0.03] border border-white/10 backdrop-blur-sm p-4 rounded-xl cursor-pointer flex items-center justify-between transition-all duration-200 hover:border-blue-500/50 ${
-                  selectedHabitId === habit.id
-                    ? 'border-blue-500 shadow-lg shadow-blue-500/20'
-                    : ''
-                }`}
-              >
+          <div className="text-center">
+            <h3 className="text-xl font-bold text-gray-200">Almost Ready!</h3>
+            <p className="text-2xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-indigo-500">
+              Your Journey Awaits
+            </p>
+          </div>
+
+          <div className="bg-white/[0.03] border border-blue-500/30 backdrop-blur-sm p-6 rounded-xl">
+            <h4 className="font-bold text-gray-200 mb-4">
+              🎛️ Personalization Benefits
+            </h4>
+            <div className="space-y-4">
+              <div className="flex items-start gap-3">
+                <Clock className="w-5 h-5 text-blue-400 mt-1 flex-shrink-0" />
                 <div>
-                  <h4 className="font-bold text-gray-200">
-                    {habit.emoji} {habit.longName}
-                  </h4>
-                  <p className="text-sm text-gray-400">{habit.longDesc}</p>
+                  <p className="font-semibold text-gray-300 text-sm">
+                    Smart Scheduling
+                  </p>
+                  <p className="text-xs text-gray-400">
+                    Habits and reminders aligned with your timezone and sleep
+                    schedule
+                  </p>
                 </div>
-                <button className="text-sm font-semibold text-blue-400 whitespace-nowrap ml-4">
-                  Select This Habit
-                </button>
               </div>
-            ))}
+
+              <div className="flex items-start gap-3">
+                <Globe className="w-5 h-5 text-green-400 mt-1 flex-shrink-0" />
+                <div>
+                  <p className="font-semibold text-gray-300 text-sm">
+                    Localized Experience
+                  </p>
+                  <p className="text-xs text-gray-400">
+                    Interface and content in your preferred language
+                  </p>
+                </div>
+              </div>
+
+              <div className="flex items-start gap-3">
+                <span className="text-purple-400 text-lg mt-0 flex-shrink-0">
+                  🎯
+                </span>
+                <div>
+                  <p className="font-semibold text-gray-300 text-sm">
+                    Optimal Timing
+                  </p>
+                  <p className="text-xs text-gray-400">
+                    Habit reminders based on your daily routine
+                  </p>
+                </div>
+              </div>
+
+              <div className="flex items-start gap-3">
+                <span className="text-orange-400 text-lg mt-0 flex-shrink-0">
+                  📊
+                </span>
+                <div>
+                  <p className="font-semibold text-gray-300 text-sm">
+                    Better Analytics
+                  </p>
+                  <p className="text-xs text-gray-400">
+                    Progress tracking adjusted to your local time
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div className="space-y-4 text-sm">
+            <div className="bg-gray-800/50 p-4 rounded-xl text-center">
+              <p className="text-gray-400">
+                <span className="font-bold text-gray-200">🎁 Pro Tip:</span> Try
+                journaling after completing habits to reflect on your progress!
+              </p>
+            </div>
+            <div className="bg-gray-800/50 p-4 rounded-xl text-center">
+              <p className="text-gray-400">
+                <span className="font-bold text-gray-200">🔔 Reminder:</span>{' '}
+                We&apos;ll send gentle reminders to help you stay on track.
+              </p>
+            </div>
           </div>
         </div>
       </div>

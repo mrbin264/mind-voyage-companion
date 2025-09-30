@@ -6,6 +6,7 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { signIn } from 'next-auth/react'
+import { timezoneOptions } from '@/hooks/useSettings'
 
 const registerSchema = z
   .object({
@@ -14,7 +15,11 @@ const registerSchema = z
     email: z.string().email({ message: 'Invalid email address' }),
     password: z
       .string()
-      .min(8, { message: 'Password must be at least 8 characters' }),
+      .min(8, { message: 'Password must be at least 8 characters' })
+      .max(128, { message: 'Password too long' })
+      .regex(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/, {
+        message: 'Password must contain uppercase, lowercase, and number',
+      }),
     confirmPassword: z.string(),
     timezone: z.string().min(1, { message: 'Timezone is required' }),
     termsAccepted: z
@@ -40,7 +45,7 @@ export default function RegisterForm() {
   } = useForm<RegisterFormValues>({
     resolver: zodResolver(registerSchema),
     defaultValues: {
-      timezone: 'America/New_York',
+      timezone: '(GMT-8) Pacific Time',
       termsAccepted: false,
       updatesOptIn: false,
     },
@@ -51,10 +56,19 @@ export default function RegisterForm() {
     setError(null)
     try {
       // First, register the user
+      const registrationData = {
+        email: data.email,
+        password: data.password,
+        confirmPassword: data.confirmPassword,
+        firstName: data.firstName,
+        lastName: data.lastName,
+        timezone: data.timezone,
+      }
+
       const res = await fetch('/api/auth/register', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(data),
+        body: JSON.stringify(registrationData),
       })
       if (!res.ok) {
         const result = await res.json()
@@ -112,12 +126,12 @@ export default function RegisterForm() {
                   type="text"
                   id="firstName"
                   placeholder="First Name"
-                  className="form-input pr-10"
+                  className="form-input pr-12"
                   {...register('firstName')}
                 />
-                <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+                <div className="absolute inset-y-0 right-0 pr-4 flex items-center pointer-events-none">
                   <svg
-                    className="w-5 h-5 text-gray-500"
+                    className="w-5 h-5 text-gray-400"
                     xmlns="http://www.w3.org/2000/svg"
                     viewBox="0 0 20 20"
                     fill="currentColor"
@@ -146,12 +160,12 @@ export default function RegisterForm() {
                   type="text"
                   id="lastName"
                   placeholder="Last Name"
-                  className="form-input pr-10"
+                  className="form-input pr-12"
                   {...register('lastName')}
                 />
-                <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+                <div className="absolute inset-y-0 right-0 pr-4 flex items-center pointer-events-none">
                   <svg
-                    className="w-5 h-5 text-gray-500"
+                    className="w-5 h-5 text-gray-400"
                     xmlns="http://www.w3.org/2000/svg"
                     viewBox="0 0 20 20"
                     fill="currentColor"
@@ -181,12 +195,12 @@ export default function RegisterForm() {
                 type="email"
                 id="email"
                 placeholder="Email Address"
-                className="form-input pr-10"
+                className="form-input pr-12"
                 {...register('email')}
               />
-              <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+              <div className="absolute inset-y-0 right-0 pr-4 flex items-center pointer-events-none">
                 <svg
-                  className="w-5 h-5 text-gray-500"
+                  className="w-5 h-5 text-gray-400"
                   xmlns="http://www.w3.org/2000/svg"
                   viewBox="0 0 20 20"
                   fill="currentColor"
@@ -211,7 +225,7 @@ export default function RegisterForm() {
               <input
                 type="password"
                 id="password"
-                placeholder="Password (8+ characters)"
+                placeholder="Password (8+ chars, 1 upper, 1 lower, 1 number)"
                 className="form-input pl-10"
                 {...register('password')}
               />
@@ -281,20 +295,11 @@ export default function RegisterForm() {
                 className="form-input appearance-none pl-10"
                 {...register('timezone')}
               >
-                <option value="America/New_York">
-                  Timezone: America/New_York
-                </option>
-                <option value="Europe/London">Timezone: Europe/London</option>
-                <option value="Asia/Tokyo">Timezone: Asia/Tokyo</option>
-                <option value="America/Los_Angeles">
-                  Timezone: America/Los_Angeles
-                </option>
-                <option value="America/Chicago">
-                  Timezone: America/Chicago
-                </option>
-                <option value="Australia/Sydney">
-                  Timezone: Australia/Sydney
-                </option>
+                {timezoneOptions.map(option => (
+                  <option key={option.value} value={option.value}>
+                    {option.label}
+                  </option>
+                ))}
               </select>
               <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
                 <svg

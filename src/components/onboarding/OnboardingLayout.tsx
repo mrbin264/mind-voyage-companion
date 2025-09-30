@@ -13,15 +13,14 @@ interface OnboardingLayoutProps {
 
 const steps = [
   { number: 1, path: '/onboarding/step1', title: 'Welcome' },
-  { number: 2, path: '/onboarding/step2', title: 'Profile' },
-  { number: 3, path: '/onboarding/step3', title: 'Habits' },
-  { number: 4, path: '/onboarding/step4', title: 'Complete' },
+  { number: 2, path: '/onboarding/step2', title: 'Habits' },
+  { number: 3, path: '/onboarding/step3', title: 'Complete' },
 ]
 
 export function OnboardingLayout({
   children,
   currentStep = 1,
-  totalSteps = 4,
+  totalSteps = 3,
 }: OnboardingLayoutProps) {
   const pathname = usePathname()
 

@@ -3,6 +3,7 @@ import { Inter } from 'next/font/google'
 import './globals.css'
 import { ThemeProvider } from '@/contexts/ThemeContext'
 import SessionProvider from '@/components/providers/SessionProvider'
+import AuthDebug from '@/components/debug/AuthDebug'
 
 const inter = Inter({ subsets: ['latin'] })
 
@@ -46,6 +47,7 @@ export default function RootLayout({
             <div className="min-h-screen bg-[var(--mv-color-bg)] text-[var(--mv-color-text)]">
               {children}
             </div>
+            <AuthDebug />
           </ThemeProvider>
         </SessionProvider>
       </body>

@@ -1,21 +1,14 @@
 import { AuthLayout } from '@/components/auth/AuthLayout'
 import LoginForm from '@/components/auth/LoginForm'
 import { redirect } from 'next/navigation'
-// TODO: Replace with actual Auth.js session util when available
-// import { getServerSession } from "next-auth";
-
-// Placeholder async session check (replace with real session logic)
-async function getSession() {
-  // TODO: Use Auth.js getServerSession or custom session util
-  return null
-}
+import { auth } from '@/lib/auth'
 
 export default async function LoginPage() {
-  const session = await getSession()
-  if (session) {
-    // Redirect authenticated users to onboarding or dashboard
-    // TODO: Uncomment when /onboarding route is implemented
-    // redirect("/onboarding");
+  const session = await auth()
+
+  if (session?.user) {
+    // Redirect authenticated users to dashboard
+    redirect('/dashboard')
   }
   return (
     <AuthLayout type="login">

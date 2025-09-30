@@ -21,6 +21,14 @@ export const POST = secureEndpoint.custom(
 
     const { profile, habit } = validatedBody
 
+    // Get current user to preserve firstName/lastName
+    const currentUser = await User.findById(session.user.id)
+    if (!currentUser) {
+      return NextResponse.json(
+        { success: false, message: 'User not found' },
+        { status: 404 }
+      )
+    }
     // Create habit data structure
     const habitData = habit.habitId
       ? {
@@ -37,13 +45,10 @@ export const POST = secureEndpoint.custom(
           frequency: habit.frequency,
         }
 
-    // Update user with complete onboarding data
+    // Update user with complete onboarding data (preserve existing name)
     const updatedUser = await User.findByIdAndUpdate(
       session.user.id,
       {
-        firstName: profile.firstName,
-        lastName: profile.lastName,
-        name: `${profile.firstName} ${profile.lastName}`,
         timezone: profile.timezone,
         'preferences.language': profile.language,
         'preferences.wakeUpTime': profile.wakeUpTime,

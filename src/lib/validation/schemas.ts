@@ -255,8 +255,25 @@ export const onboardingHabitSchema = z.object({
   frequency: z.string().max(20, 'Frequency too long').default('daily'),
 })
 
+// Onboarding completion schema (firstName/lastName already exist from registration)
+export const onboardingCompletionProfileSchema = z.object({
+  timezone: z
+    .string()
+    .min(1, 'Timezone is required')
+    .max(50, 'Timezone too long'),
+  language: z.enum(['en-US', 'vi-VN']),
+  wakeUpTime: z
+    .string()
+    .min(1, 'Wake up time is required')
+    .regex(/^([01]?[0-9]|2[0-3]):[0-5][0-9]$/, 'Invalid wake up time format'),
+  sleepTime: z
+    .string()
+    .min(1, 'Sleep time is required')
+    .regex(/^([01]?[0-9]|2[0-3]):[0-5][0-9]$/, 'Invalid sleep time format'),
+})
+
 export const completeOnboardingSchema = z.object({
-  profile: onboardingProfileSchema,
+  profile: onboardingCompletionProfileSchema,
   habit: onboardingHabitSchema,
 })
 
