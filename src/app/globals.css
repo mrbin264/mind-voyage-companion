@@ -150,12 +150,12 @@
     --mv-form-input-text: var(--mv-color-text);
     --mv-form-input-placeholder: #94a3b8;
     --mv-form-input-border: var(--mv-color-border);
-    
+
     /* Dashboard specific colors */
     --mv-dashboard-bg: #0a0a0a;
     --mv-sidebar-bg: #101010;
     --mv-card-bg: #18181b;
-    
+
     /* Legacy compatibility */
     --background: 222.2 84% 4.9%;
     --foreground: 210 40% 98%;
@@ -163,7 +163,7 @@
     --primary-foreground: 222.2 84% 4.9%;
     --border: 217.2 32.6% 17.5%;
     --input: 217.2 32.6% 17.5%;
-    
+
     /* Shadows */
     --mv-shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.3);
     --mv-shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.4);
@@ -178,7 +178,7 @@
     --mv-color-surface: #ffffff; /* Clean white for widget cards */
     --mv-color-surface-secondary: #f1f5f9;
     --mv-color-surface-tertiary: #e2e8f0;
-    
+
     /* Light Mode Text System */
     --mv-color-text-primary: #0f172a;
     --mv-color-text-secondary: #334155;
@@ -186,35 +186,35 @@
     --mv-color-text-muted: #94a3b8;
     --mv-color-text: #0f172a;
     --mv-color-text-subtle: #334155;
-    
+
     /* Light Mode Border System */
     --mv-color-border-subtle: #e2e8f0;
     --mv-color-border-default: #cbd5e1;
     --mv-color-border-emphasis: #94a3b8;
     --mv-color-border: #e2e8f0;
-    
+
     /* Interactive Elements */
     --mv-color-cta: #6366f1;
     --mv-color-cta-hover: #5b5ae6;
     --mv-color-cta-text: #ffffff;
-    
+
     /* Form Elements */
     --mv-form-input-bg: #ffffff;
     --mv-form-input-text: #0f172a;
     --mv-form-input-placeholder: #64748b;
     --mv-form-input-border: #cbd5e1;
-    
+
     /* Dashboard specific colors */
     --mv-dashboard-bg: #f8fafc; /* Professional gray-50 equivalent */
     --mv-sidebar-bg: #ffffff; /* Clean white sidebar */
     --mv-card-bg: #ffffff;
-    
+
     /* Light Mode Shadows */
     --mv-shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
     --mv-shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1);
     --mv-shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1);
     --mv-shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.1);
-    
+
     /* Legacy compatibility */
     --background: 0 0% 100%;
     --foreground: 222.2 84% 4.9%;
@@ -441,7 +441,9 @@
   .dashboard-layout {
     background-color: var(--mv-dashboard-bg);
     color: var(--mv-color-text-primary);
-    transition: background-color 0.2s ease-in-out, color 0.2s ease-in-out;
+    transition:
+      background-color 0.2s ease-in-out,
+      color 0.2s ease-in-out;
   }
 
   .sidebar {
@@ -460,12 +462,16 @@
   .light .widget-card {
     background-color: #ffffff;
     border: 1px solid #e2e8f0;
-    box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
+    box-shadow:
+      0 1px 3px 0 rgb(0 0 0 / 0.1),
+      0 1px 2px -1px rgb(0 0 0 / 0.1);
   }
 
   .light .widget-card:hover {
     border-color: #cbd5e1;
-    box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+    box-shadow:
+      0 4px 6px -1px rgb(0 0 0 / 0.1),
+      0 2px 4px -2px rgb(0 0 0 / 0.1);
     transform: translateY(-1px);
   }
 
@@ -558,7 +564,7 @@
   }
 
   /* ===== REFINED LIGHT MODE OVERRIDES ===== */
-  
+
   /* 1. Global Background System - Clean & Professional */
   .light body {
     background-color: #f8fafc !important; /* bg-slate-50 */
@@ -579,7 +585,7 @@
   /* 3. SIDEBAR LINKS - NO BORDERS (Clean Text Links) */
   .light .sidebar a,
   .light .nav-item,
-  .light .sidebar button:not(.btn-primary):not([class*="bg-blue"]) {
+  .light .sidebar button:not(.btn-primary):not([class*='bg-blue']) {
     background-color: transparent !important;
     border: none !important; /* Remove all borders */
     color: #64748b !important; /* text-slate-500 */
@@ -604,9 +610,9 @@
   .light .user-profile-button,
   .light .profile-dropdown,
   .light .avatar-button,
-  .light [class*="profile"] button,
-  .light [data-component="user-profile"],
-  .light button[aria-haspopup="true"] {
+  .light [class*='profile'] button,
+  .light [data-component='user-profile'],
+  .light button[aria-haspopup='true'] {
     background-color: transparent !important;
     border: none !important; /* Remove all borders */
     box-shadow: none !important;
@@ -615,116 +621,116 @@
 
   .light .user-profile-button:hover,
   .light .avatar-button:hover,
-  .light button[aria-haspopup="true"]:hover {
+  .light button[aria-haspopup='true']:hover {
     background-color: #f1f5f9 !important; /* subtle hover */
     border: none !important;
     outline: none !important;
   }
 
   /* Remove any focus borders from profile buttons */
-  .light button[aria-haspopup="true"]:focus,
-  .light button[aria-haspopup="true"]:focus-visible {
+  .light button[aria-haspopup='true']:focus,
+  .light button[aria-haspopup='true']:focus-visible {
     border: none !important;
     outline: none !important;
     box-shadow: none !important;
   }
 
   /* Additional User Profile Border Removal - Comprehensive Fix */
-  .light div:has(button[aria-haspopup="true"]),
-  .light [class*="relative"]:has(button[aria-haspopup="true"]),
-  .light header div:has(button[aria-haspopup="true"]) {
+  .light div:has(button[aria-haspopup='true']),
+  .light [class*='relative']:has(button[aria-haspopup='true']),
+  .light header div:has(button[aria-haspopup='true']) {
     border: none !important;
     outline: none !important;
   }
 
   /* Target any element containing user profile */
-  .light *[class*="user"],
-  .light *[class*="profile"],
-  .light *[class*="avatar"] {
+  .light *[class*='user'],
+  .light *[class*='profile'],
+  .light *[class*='avatar'] {
     border: none !important;
     outline: none !important;
   }
 
   /* CRITICAL FIX: Force User Profile Dropdown Text Colors in Light Mode */
-  .light button[aria-haspopup="true"] .font-semibold {
+  .light button[aria-haspopup='true'] .font-semibold {
     color: #1e293b !important; /* slate-800 */
   }
 
-  .light button[aria-haspopup="true"] .text-sm {
+  .light button[aria-haspopup='true'] .text-sm {
     color: #1e293b !important; /* slate-800 */
   }
 
-  .light div[class*="absolute"] .font-medium {
+  .light div[class*='absolute'] .font-medium {
     color: #1e293b !important; /* slate-800 for user name */
   }
 
-  .light div[class*="absolute"] .text-sm {
+  .light div[class*='absolute'] .text-sm {
     color: #64748b !important; /* slate-500 for user email */
   }
 
   /* Force Settings link text color */
-  .light a[href*="settings"] {
+  .light a[href*='settings'] {
     color: #334155 !important; /* slate-700 */
   }
 
   /* ULTRA AGGRESSIVE USER PROFILE DROPDOWN TEXT OVERRIDE */
-  .light button[aria-haspopup="true"] * {
+  .light button[aria-haspopup='true'] * {
     color: #1e293b !important; /* Force ALL text in profile button to be dark */
   }
 
-  .light div[class*="absolute"] {
+  .light div[class*='absolute'] {
     background-color: #ffffff !important; /* Force white background */
     border: 1px solid #e2e8f0 !important; /* Force slate border */
     box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1) !important; /* Force shadow */
   }
 
-  .light div[class*="absolute"] * {
+  .light div[class*='absolute'] * {
     color: #1e293b !important; /* Force ALL dropdown text to be dark */
   }
 
-  .light div[class*="absolute"] .font-medium {
+  .light div[class*='absolute'] .font-medium {
     color: #1e293b !important; /* User name - slate-800 */
   }
 
-  .light div[class*="absolute"] .text-sm {
+  .light div[class*='absolute'] .text-sm {
     color: #64748b !important; /* User email - slate-500 */
   }
 
-  .light div[class*="absolute"] a {
+  .light div[class*='absolute'] a {
     color: #334155 !important; /* Settings link - slate-700 */
   }
 
-  .light div[class*="absolute"] button {
+  .light div[class*='absolute'] button {
     color: #dc2626 !important; /* Logout button - red-600 */
   }
 
   /* Force hover states */
-  .light div[class*="absolute"] a:hover {
+  .light div[class*='absolute'] a:hover {
     background-color: #f1f5f9 !important; /* slate-100 hover */
     color: #1e293b !important; /* Maintain dark text on hover */
   }
 
   /* Hide divider in light mode */
-  .light div[class*="absolute"] .h-px {
+  .light div[class*='absolute'] .h-px {
     background-color: #e2e8f0 !important; /* Light divider */
     border-color: transparent !important;
   }
 
   /* NUCLEAR OPTION - Force every possible text element in user dropdown */
-  .light [role="menu"],
-  .light [class*="z-50"] {
+  .light [role='menu'],
+  .light [class*='z-50'] {
     background-color: #ffffff !important;
     border: 1px solid #e2e8f0 !important;
   }
 
-  .light [role="menu"] *,
-  .light [class*="z-50"] *,
-  .light [class*="w-56"] *,
-  .light [class*="mt-2"] * {
+  .light [role='menu'] *,
+  .light [class*='z-50'] *,
+  .light [class*='w-56'] *,
+  .light [class*='mt-2'] * {
     color: #1e293b !important; /* Force dark text everywhere */
   }
 
-  .light [class*="w-56"] .text-sm {
+  .light [class*='w-56'] .text-sm {
     color: #64748b !important; /* Email specifically */
   }
 
@@ -740,7 +746,9 @@
   /* Remove borders specifically from user profile and navigation elements */
   .light header *,
   .light nav *,
-  .light .sidebar *:not(input):not(textarea):not(select):not(.widget-card):not(.card) {
+  .light
+    .sidebar
+    *:not(input):not(textarea):not(select):not(.widget-card):not(.card) {
     border: none !important;
     outline: none !important;
   }
@@ -776,10 +784,10 @@
   .light .bg-gray-900,
   .light .bg-zinc-800,
   .light .bg-zinc-900,
-  .light [class*="bg-gray-8"],
-  .light [class*="bg-gray-9"],
-  .light [class*="bg-zinc-8"],
-  .light [class*="bg-zinc-9"] {
+  .light [class*='bg-gray-8'],
+  .light [class*='bg-gray-9'],
+  .light [class*='bg-zinc-8'],
+  .light [class*='bg-zinc-9'] {
     background-color: #ffffff !important; /* bg-white */
     border: 1px solid #e2e8f0 !important; /* border-slate-200 */
     box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.05) !important; /* shadow-sm */
@@ -795,8 +803,9 @@
   /* 6. GHOST/TEXT LINKS - NO BORDERS (Simple Text Links) */
   .light .text-blue-400,
   .light .text-blue-300,
-  .light a:not([class*="bg-"]):not(.btn):not(.button),
-  .light button:not([class*="bg-"]):not(.btn):not(.filter-button):not(.tab-button) {
+  .light a:not([class*='bg-']):not(.btn):not(.button),
+  .light
+    button:not([class*='bg-']):not(.btn):not(.filter-button):not(.tab-button) {
     color: #2563eb !important; /* text-blue-600 */
     background-color: transparent !important;
     border: none !important; /* Remove all borders */
@@ -804,7 +813,7 @@
     text-decoration: none !important;
   }
 
-  .light a:not([class*="bg-"]):not(.btn):hover {
+  .light a:not([class*='bg-']):not(.btn):hover {
     color: #1d4ed8 !important; /* hover:text-blue-700 */
     text-decoration: underline !important;
     background-color: transparent !important;
@@ -838,8 +847,8 @@
   .light .filter-button,
   .light .tab-button,
   .light .btn-secondary,
-  .light button[class*="bg-gray"],
-  .light button[class*="bg-zinc"],
+  .light button[class*='bg-gray'],
+  .light button[class*='bg-zinc'],
   .light .category-button {
     background-color: #f1f5f9 !important; /* bg-slate-100 */
     color: #334155 !important; /* text-slate-700 */
@@ -870,8 +879,8 @@
   .light .journal-entry,
   .light .entry-card,
   .light .habit-card,
-  .light [data-component="journal-entry"],
-  .light [data-component="habit-item"] {
+  .light [data-component='journal-entry'],
+  .light [data-component='habit-item'] {
     background-color: #ffffff !important; /* bg-white */
     border: 1px solid #e2e8f0 !important; /* border-slate-200 */
     box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.05) !important; /* shadow-sm */
@@ -895,7 +904,12 @@
   }
 
   /* 12. Typography Hierarchy - Clean Text */
-  .light h1, .light h2, .light h3, .light h4, .light h5, .light h6,
+  .light h1,
+  .light h2,
+  .light h3,
+  .light h4,
+  .light h5,
+  .light h6,
   .light .text-white,
   .light .text-gray-100,
   .light .text-gray-200,
@@ -909,7 +923,7 @@
   .light .text-zinc-300,
   .light .text-zinc-400,
   .light p,
-  .light span:not([class*="text-"]) {
+  .light span:not([class*='text-']) {
     color: #475569 !important; /* text-slate-600 for body */
   }
 
@@ -922,8 +936,8 @@
 
   /* 13. Button Hierarchy */
   .light .btn-primary,
-  .light button[class*="bg-blue"],
-  .light button[class*="bg-green"],
+  .light button[class*='bg-blue'],
+  .light button[class*='bg-green'],
   .light .primary-button {
     background-color: #2563eb !important; /* bg-blue-600 */
     color: #ffffff !important; /* text-white */
@@ -935,7 +949,7 @@
   }
 
   /* 14. Remove Borders from Dark Background Overrides */
-  .light [class*="bg-[#"],
+  .light [class*='bg-[#'],
   .light .bg-slate-800,
   .light .bg-slate-900 {
     background-color: #f8fafc !important; /* bg-slate-50 */
@@ -958,15 +972,15 @@
   .text-heading {
     color: #0f172a; /* Primary headings - charcoal */
   }
-  
+
   .text-body {
     color: #334155; /* Body text - secondary gray */
   }
-  
+
   .text-muted {
     color: #64748b; /* Tertiary/muted text */
   }
-  
+
   .text-subtle {
     color: #94a3b8; /* Subtle text like placeholders */
   }
@@ -975,15 +989,15 @@
   .dark .text-heading {
     color: #f1f5f9;
   }
-  
+
   .dark .text-body {
     color: #cbd5e1;
   }
-  
+
   .dark .text-muted {
     color: #94a3b8;
   }
-  
+
   .dark .text-subtle {
     color: #64748b;
   }

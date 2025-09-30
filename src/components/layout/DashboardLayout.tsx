@@ -88,7 +88,9 @@ export function DashboardLayout({
         <div className="flex items-center justify-between mb-10">
           <div className="flex items-center gap-3">
             <span className="text-3xl">🧠</span>
-            <h1 className="text-xl font-bold text-gray-200 dark:text-gray-200 light:text-slate-800">Mind Voyage</h1>
+            <h1 className="text-xl font-bold text-gray-200 dark:text-gray-200 light:text-slate-800">
+              Mind Voyage
+            </h1>
           </div>
           {/* Mobile Close Button */}
           <button

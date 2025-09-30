@@ -163,7 +163,9 @@ export function HabitCard({
           <h3 className="text-lg font-bold text-slate-900 dark:text-white flex items-center gap-2">
             {isCompleted && '✅'} {habit.emoji || '📋'} {habit.title}
           </h3>
-          <p className="text-sm text-slate-600 dark:text-gray-400 mt-1">{habit.description}</p>
+          <p className="text-sm text-slate-600 dark:text-gray-400 mt-1">
+            {habit.description}
+          </p>
           <p className="text-xs text-slate-500 dark:text-gray-500 mt-2">
             {formatScheduleInfo(habit, todayLog)}
           </p>
@@ -174,7 +176,9 @@ export function HabitCard({
           <div className={statusInfo.badgeClass}>{statusInfo.badge}</div>
         ) : isInProgress && habit.target.type !== 'boolean' ? (
           <div className="text-right">
-            <p className="text-sm font-semibold text-blue-600 dark:text-blue-400">Progress</p>
+            <p className="text-sm font-semibold text-blue-600 dark:text-blue-400">
+              Progress
+            </p>
             <div className="w-24 mt-1 bg-slate-200 dark:bg-white/10 rounded-full h-2">
               <div
                 className="bg-blue-500 h-2 rounded-full"

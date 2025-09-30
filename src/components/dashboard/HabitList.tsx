@@ -115,7 +115,9 @@ export function HabitList({
       {/* Header with Page Title and Add Button */}
       <div className="flex flex-wrap justify-between items-center gap-4">
         <div>
-          <h2 className="text-3xl font-bold text-slate-900 dark:text-gray-100">📈 My Habits</h2>
+          <h2 className="text-3xl font-bold text-slate-900 dark:text-gray-100">
+            📈 My Habits
+          </h2>
         </div>
         <div className="flex items-center gap-2">
           {onAddHabit && (

@@ -66,8 +66,12 @@ export function UserProfileDropdown({ user }: UserProfileDropdownProps) {
           {user.name.charAt(0).toUpperCase()}
         </div>
         <div className="hidden sm:block text-left">
-          <div className="font-semibold light:!text-slate-800 dark:text-gray-100">{user.name}</div>
-          <div className="text-sm light:!text-slate-800 dark:text-gray-400">{user.email}</div>
+          <div className="font-semibold light:!text-slate-800 dark:text-gray-100">
+            {user.name}
+          </div>
+          <div className="text-sm light:!text-slate-800 dark:text-gray-400">
+            {user.email}
+          </div>
         </div>
         <ChevronDown
           className={`w-4 h-4 light:!text-slate-800 dark:text-gray-400 transition-transform ${
@@ -82,8 +86,12 @@ export function UserProfileDropdown({ user }: UserProfileDropdownProps) {
           <div className="py-2">
             {/* User Info Section */}
             <div className="px-4 py-2 border-b light:border-slate-200 dark:border-gray-700">
-              <div className="font-medium light:!text-slate-800 dark:text-gray-100">{user.name}</div>
-              <div className="text-sm light:!text-slate-500 dark:text-gray-400">{user.email}</div>
+              <div className="font-medium light:!text-slate-800 dark:text-gray-100">
+                {user.name}
+              </div>
+              <div className="text-sm light:!text-slate-500 dark:text-gray-400">
+                {user.email}
+              </div>
             </div>
 
             {/* Menu Items */}
