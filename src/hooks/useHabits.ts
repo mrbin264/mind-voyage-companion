@@ -81,7 +81,7 @@ export function useHabits(
         }
 
         const data = await response.json()
-        setHabits(data.habits || [])
+        setHabits(data.data || [])
       } catch (err) {
         handleError(err, 'Failed to fetch habits')
       } finally {
@@ -134,7 +134,7 @@ export function useHabits(
         // Refresh habits and summary
         await Promise.all([fetchHabits(), fetchSummary()])
 
-        return data.habit
+        return data.data
       } catch (err) {
         handleError(err, 'Failed to create habit')
         return null
@@ -169,7 +169,7 @@ export function useHabits(
         // Refresh habits
         await fetchHabits()
 
-        return data.habit
+        return data.data
       } catch (err) {
         handleError(err, 'Failed to update habit')
         return null
