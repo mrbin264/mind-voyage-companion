@@ -19,8 +19,9 @@ export const POST = secureEndpoint.custom(
     await connectDB()
 
     // Use validated body from security middleware
-    const { email, password, firstName, lastName, timezone } = context.validatedBody!
-    
+    const { email, password, firstName, lastName, timezone } =
+      context.validatedBody!
+
     // Combine firstName and lastName into name for user creation
     const name = `${firstName} ${lastName}`.trim()
 

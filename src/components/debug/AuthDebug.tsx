@@ -18,13 +18,13 @@ export default function AuthDebug() {
         setDebugInfo({
           status: response.status,
           data,
-          url: '/api/auth/session'
+          url: '/api/auth/session',
         })
       } catch (error) {
         console.error('Session fetch error:', error)
         setDebugInfo({
           error: error instanceof Error ? error.message : 'Unknown error',
-          url: '/api/auth/session'
+          url: '/api/auth/session',
         })
       }
     }

@@ -17,10 +17,9 @@ const registerSchema = z
       .string()
       .min(8, { message: 'Password must be at least 8 characters' })
       .max(128, { message: 'Password too long' })
-      .regex(
-        /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/,
-        { message: 'Password must contain uppercase, lowercase, and number' }
-      ),
+      .regex(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/, {
+        message: 'Password must contain uppercase, lowercase, and number',
+      }),
     confirmPassword: z.string(),
     timezone: z.string().min(1, { message: 'Timezone is required' }),
     termsAccepted: z
@@ -65,7 +64,7 @@ export default function RegisterForm() {
         lastName: data.lastName,
         timezone: data.timezone,
       }
-      
+
       const res = await fetch('/api/auth/register', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -296,7 +295,7 @@ export default function RegisterForm() {
                 className="form-input appearance-none pl-10"
                 {...register('timezone')}
               >
-                {timezoneOptions.map((option) => (
+                {timezoneOptions.map(option => (
                   <option key={option.value} value={option.value}>
                     {option.label}
                   </option>

@@ -57,11 +57,10 @@ export default function OnboardingStep3() {
         {/* Left Column: Preferences Setup */}
         <div className="lg:col-span-3">
           <div className="max-w-xl mx-auto">
-            <h2 className="text-4xl font-bold text-gray-100">
-              Final Setup
-            </h2>
+            <h2 className="text-4xl font-bold text-gray-100">Final Setup</h2>
             <p className="text-gray-400 mt-3 mb-8">
-              Let&apos;s personalize your experience with your timezone, language, and schedule preferences.
+              Let&apos;s personalize your experience with your timezone,
+              language, and schedule preferences.
             </p>
 
             {/* Preferences Form */}
@@ -69,7 +68,7 @@ export default function OnboardingStep3() {
               <h3 className="font-semibold text-gray-300 mb-4">
                 Regional Preferences
               </h3>
-              
+
               {/* Timezone Selection */}
               <div>
                 <label className="block text-sm font-medium text-gray-300 mb-2">
@@ -78,10 +77,10 @@ export default function OnboardingStep3() {
                 </label>
                 <select
                   value={timezone}
-                  onChange={(e) => setTimezone(e.target.value)}
+                  onChange={e => setTimezone(e.target.value)}
                   className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg text-gray-300 focus:border-blue-500 focus:outline-none"
                 >
-                  {timezoneOptions.map((option) => (
+                  {timezoneOptions.map(option => (
                     <option key={option.value} value={option.value}>
                       {option.label}
                     </option>
@@ -97,10 +96,10 @@ export default function OnboardingStep3() {
                 </label>
                 <select
                   value={language}
-                  onChange={(e) => setLanguage(e.target.value)}
+                  onChange={e => setLanguage(e.target.value)}
                   className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg text-gray-300 focus:border-blue-500 focus:outline-none"
                 >
-                  {languageOptions.map((option) => (
+                  {languageOptions.map(option => (
                     <option key={option.value} value={option.value}>
                       {option.label}
                     </option>
@@ -112,7 +111,7 @@ export default function OnboardingStep3() {
               <h3 className="font-semibold text-gray-300 mb-4 mt-6">
                 Daily Schedule
               </h3>
-              
+
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <label className="block text-sm font-medium text-gray-300 mb-2">
@@ -121,11 +120,11 @@ export default function OnboardingStep3() {
                   <input
                     type="time"
                     value={wakeUpTime}
-                    onChange={(e) => setWakeUpTime(e.target.value)}
+                    onChange={e => setWakeUpTime(e.target.value)}
                     className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg text-gray-300 focus:border-blue-500 focus:outline-none"
                   />
                 </div>
-                
+
                 <div>
                   <label className="block text-sm font-medium text-gray-300 mb-2">
                     Sleep Time
@@ -133,7 +132,7 @@ export default function OnboardingStep3() {
                   <input
                     type="time"
                     value={sleepTime}
-                    onChange={(e) => setSleepTime(e.target.value)}
+                    onChange={e => setSleepTime(e.target.value)}
                     className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg text-gray-300 focus:border-blue-500 focus:outline-none"
                   />
                 </div>
@@ -148,16 +147,25 @@ export default function OnboardingStep3() {
                 </h3>
                 <ul className="space-y-2 text-gray-400">
                   <li className="flex items-center gap-2">
-                    ✓ <span className="text-gray-200">Timezone:</span> {timezoneOptions.find(opt => opt.value === timezone)?.label?.split(' ').slice(0, 2).join(' ') || timezone}
+                    ✓ <span className="text-gray-200">Timezone:</span>{' '}
+                    {timezoneOptions
+                      .find(opt => opt.value === timezone)
+                      ?.label?.split(' ')
+                      .slice(0, 2)
+                      .join(' ') || timezone}
                   </li>
                   <li className="flex items-center gap-2">
-                    ✓ <span className="text-gray-200">Language:</span> {languageOptions.find(opt => opt.value === language)?.label || language}
+                    ✓ <span className="text-gray-200">Language:</span>{' '}
+                    {languageOptions.find(opt => opt.value === language)
+                      ?.label || language}
                   </li>
                   <li className="flex items-center gap-2">
-                    ✓ <span className="text-gray-200">Schedule:</span> {wakeUpTime} - {sleepTime}
+                    ✓ <span className="text-gray-200">Schedule:</span>{' '}
+                    {wakeUpTime} - {sleepTime}
                   </li>
                   <li className="flex items-center gap-2">
-                    ✓ <span className="text-gray-200">First habit:</span> Ready to start
+                    ✓ <span className="text-gray-200">First habit:</span> Ready
+                    to start
                   </li>
                 </ul>
               </div>
@@ -187,9 +195,7 @@ export default function OnboardingStep3() {
         {/* Right Column: Dashboard Preview & Tips */}
         <div className="lg:col-span-2 flex flex-col gap-6 h-full justify-start">
           <div className="text-center">
-            <h3 className="text-xl font-bold text-gray-200">
-              Almost Ready!
-            </h3>
+            <h3 className="text-xl font-bold text-gray-200">Almost Ready!</h3>
             <p className="text-2xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-indigo-500">
               Your Journey Awaits
             </p>
@@ -203,32 +209,53 @@ export default function OnboardingStep3() {
               <div className="flex items-start gap-3">
                 <Clock className="w-5 h-5 text-blue-400 mt-1 flex-shrink-0" />
                 <div>
-                  <p className="font-semibold text-gray-300 text-sm">Smart Scheduling</p>
-                  <p className="text-xs text-gray-400">Habits and reminders aligned with your timezone and sleep schedule</p>
+                  <p className="font-semibold text-gray-300 text-sm">
+                    Smart Scheduling
+                  </p>
+                  <p className="text-xs text-gray-400">
+                    Habits and reminders aligned with your timezone and sleep
+                    schedule
+                  </p>
                 </div>
               </div>
-              
+
               <div className="flex items-start gap-3">
                 <Globe className="w-5 h-5 text-green-400 mt-1 flex-shrink-0" />
                 <div>
-                  <p className="font-semibold text-gray-300 text-sm">Localized Experience</p>
-                  <p className="text-xs text-gray-400">Interface and content in your preferred language</p>
+                  <p className="font-semibold text-gray-300 text-sm">
+                    Localized Experience
+                  </p>
+                  <p className="text-xs text-gray-400">
+                    Interface and content in your preferred language
+                  </p>
                 </div>
               </div>
-              
+
               <div className="flex items-start gap-3">
-                <span className="text-purple-400 text-lg mt-0 flex-shrink-0">🎯</span>
+                <span className="text-purple-400 text-lg mt-0 flex-shrink-0">
+                  🎯
+                </span>
                 <div>
-                  <p className="font-semibold text-gray-300 text-sm">Optimal Timing</p>
-                  <p className="text-xs text-gray-400">Habit reminders based on your daily routine</p>
+                  <p className="font-semibold text-gray-300 text-sm">
+                    Optimal Timing
+                  </p>
+                  <p className="text-xs text-gray-400">
+                    Habit reminders based on your daily routine
+                  </p>
                 </div>
               </div>
-              
+
               <div className="flex items-start gap-3">
-                <span className="text-orange-400 text-lg mt-0 flex-shrink-0">📊</span>
+                <span className="text-orange-400 text-lg mt-0 flex-shrink-0">
+                  📊
+                </span>
                 <div>
-                  <p className="font-semibold text-gray-300 text-sm">Better Analytics</p>
-                  <p className="text-xs text-gray-400">Progress tracking adjusted to your local time</p>
+                  <p className="font-semibold text-gray-300 text-sm">
+                    Better Analytics
+                  </p>
+                  <p className="text-xs text-gray-400">
+                    Progress tracking adjusted to your local time
+                  </p>
                 </div>
               </div>
             </div>
