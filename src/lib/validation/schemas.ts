@@ -291,14 +291,22 @@ export const habitTargetSchema = z.object({
 })
 
 export const createHabitSchema = z.object({
-  title: z.string().min(1, 'Title is required').max(100, 'Title too long').transform(sanitizeHtml),
+  title: z
+    .string()
+    .min(1, 'Title is required')
+    .max(100, 'Title too long')
+    .transform(sanitizeHtml),
   description: z
     .string()
     .max(500, 'Description too long')
     .transform(sanitizeHtml)
     .optional(),
   emoji: z.string().max(10, 'Emoji too long').optional(),
-  category: z.string().max(50, 'Category too long').transform(sanitizeHtml).optional(),
+  category: z
+    .string()
+    .max(50, 'Category too long')
+    .transform(sanitizeHtml)
+    .optional(),
   frequency: habitFrequencySchema,
   target: habitTargetSchema,
   color: colorSchema.default('#3B82F6'),
@@ -306,7 +314,7 @@ export const createHabitSchema = z.object({
   reminderTime: z
     .string()
     .optional()
-    .transform(val => val === '' ? undefined : val)
+    .transform(val => (val === '' ? undefined : val))
     .refine(
       val => val === undefined || /^([01]?[0-9]|2[0-3]):[0-5][0-9]$/.test(val),
       'Invalid time format (HH:MM)'
