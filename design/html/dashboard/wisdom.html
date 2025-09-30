@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Wisdom - Mind Voyage Companion</title>
+    
+    <!-- Tailwind CSS for styling -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Google Fonts: Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <!-- Feather Icons for UI -->
+    <script src="https://unpkg.com/feather-icons"></script>
+
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #0A0A0A;
+        }
+        .sidebar {
+            background-color: #101010;
+        }
+        .widget-card {
+            background-color: #18181B; /* zinc-900 */
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .filter-btn.active {
+            background-color: #1d4ed8; /* blue-700 */
+            color: white;
+        }
+    </style>
+</head>
+<body class="bg-gray-900 text-white antialiased">
+
+    <div class="flex h-screen">
+        <!-- Sidebar -->
+        <aside class="w-64 sidebar text-gray-300 p-6 flex flex-col">
+            <div class="flex items-center gap-3 mb-10">
+                <span class="text-3xl">🧠</span>
+                <h1 class="text-xl font-bold text-gray-200">Mind Voyage</h1>
+            </div>
+            <nav class="flex-grow space-y-2">
+                <a href="./dashboard.html" class="flex items-center gap-3 px-4 py-2 rounded-lg hover:bg-gray-700/50 transition-colors">
+                    <i data-feather="home" class="w-5 h-5"></i> Dashboard
+                </a>
+                <a href="./habits.html" class="flex items-center gap-3 px-4 py-2 rounded-lg hover:bg-gray-700/50 transition-colors">
+                    <i data-feather="trending-up" class="w-5 h-5"></i> Habits
+                </a>
+                <a href="./journal.html" class="flex items-center gap-3 px-4 py-2 rounded-lg hover:bg-gray-700/50 transition-colors">
+                    <i data-feather="edit-3" class="w-5 h-5"></i> Journal
+                </a>
+                <a href="./analytics.html" class="flex items-center gap-3 px-4 py-2 rounded-lg hover:bg-gray-700/50 transition-colors">
+                    <i data-feather="bar-chart-2" class="w-5 h-5"></i> Analytics
+                </a>
+                <a href="#" class="flex items-center gap-3 px-4 py-2 rounded-lg bg-blue-600/20 text-white font-semibold">
+                    <i data-feather="shield" class="w-5 h-5"></i> Wisdom
+                </a>
+                <a href="./settings.html" class="flex items-center gap-3 px-4 py-2 rounded-lg hover:bg-gray-700/50 transition-colors">
+                    <i data-feather="settings" class="w-5 h-5"></i> Settings
+                </a>
+            </nav>
+            <div class="mt-auto">
+                 <button class="w-full flex items-center justify-center gap-3 bg-gradient-to-r from-purple-500 to-indigo-600 text-white font-semibold py-3 px-4 rounded-lg hover:opacity-90 transition-opacity">
+                    <i data-feather="star" class="w-5 h-5"></i> Upgrade Pro
+                </button>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="flex-1 overflow-y-auto p-6 lg:p-10">
+            <!-- Top Header -->
+            <header class="flex flex-wrap justify-between items-center gap-4 mb-8">
+                <div>
+                    <h2 class="text-3xl font-bold text-gray-100">🏛️ Daily Wisdom</h2>
+                </div>
+                <div class="flex items-center gap-2">
+                    <button class="text-sm bg-gray-800 border border-gray-700 hover:bg-gray-700 text-gray-300 font-semibold py-2 px-4 rounded-lg transition-colors flex items-center gap-2">
+                        <i data-feather="refresh-cw" class="w-4 h-4"></i> Generate
+                    </button>
+                    <button class="text-sm bg-gray-800 border border-gray-700 hover:bg-gray-700 text-gray-300 font-semibold py-2 px-4 rounded-lg transition-colors flex items-center gap-2">
+                        <i data-feather="star" class="w-4 h-4"></i> Favorites
+                    </button>
+                </div>
+            </header>
+
+            <!-- Wisdom Content -->
+            <div class="space-y-6">
+                <!-- Today's Quote -->
+                <div class="widget-card rounded-xl p-8 text-center">
+                    <blockquote class="text-2xl lg:text-3xl text-gray-200 italic leading-relaxed">"The best time to plant a tree was 20 years ago. The second best time is now."</blockquote>
+                    <cite class="block mt-4 text-gray-500">— Chinese Proverb</cite>
+                    <div class="flex justify-center flex-wrap gap-4 mt-8">
+                        <button class="bg-blue-600/20 hover:bg-blue-600/40 text-blue-300 font-semibold py-2 px-4 rounded-lg transition-colors flex items-center gap-2">
+                            <i data-feather="refresh-cw" class="w-4 h-4"></i> New Quote
+                        </button>
+                        <button class="bg-pink-600/20 hover:bg-pink-600/40 text-pink-300 font-semibold py-2 px-4 rounded-lg transition-colors flex items-center gap-2">
+                           <i data-feather="heart" class="w-4 h-4"></i> Save to Favorites
+                        </button>
+                         <button class="bg-gray-700/50 hover:bg-gray-700 text-gray-300 font-semibold py-2 px-4 rounded-lg transition-colors flex items-center gap-2">
+                           <i data-feather="share-2" class="w-4 h-4"></i> Share Quote
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Filters -->
+                <div class="flex flex-wrap gap-2">
+                    <button class="filter-btn active text-sm font-semibold py-2 px-4 rounded-lg transition-colors">Daily Quotes</button>
+                    <button class="filter-btn bg-gray-800 hover:bg-gray-700 text-gray-300 text-sm font-semibold py-2 px-4 rounded-lg transition-colors">Stoic (47)</button>
+                    <button class="filter-btn bg-gray-800 hover:bg-gray-700 text-gray-300 text-sm font-semibold py-2 px-4 rounded-lg transition-colors">Buddha (23)</button>
+                    <button class="filter-btn bg-gray-800 hover:bg-gray-700 text-gray-300 text-sm font-semibold py-2 px-4 rounded-lg transition-colors">Modern (15)</button>
+                </div>
+
+                <!-- Main Grid -->
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                    <!-- Left Column -->
+                    <div class="lg:col-span-2 space-y-6">
+                        <!-- Quote Categories -->
+                        <div class="widget-card rounded-xl p-6">
+                            <h3 class="font-bold text-lg mb-4">📚 Quote Categories</h3>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div class="bg-gray-800/50 p-4 rounded-lg">
+                                    <h4 class="font-bold text-gray-200">🏛️ Ancient Wisdom</h4>
+                                    <p class="text-xs text-gray-400 mt-1">Stoic • Buddhist • Taoist</p>
+                                    <p class="text-xs text-gray-500 my-2">47 quotes available</p>
+                                    <a href="#" class="text-sm font-semibold text-blue-400 hover:underline">Explore →</a>
+                                </div>
+                                 <div class="bg-gray-800/50 p-4 rounded-lg">
+                                    <h4 class="font-bold text-gray-200">💪 Personal Growth</h4>
+                                    <p class="text-xs text-gray-400 mt-1">Modern • Motivational</p>
+                                    <p class="text-xs text-gray-500 my-2">28 quotes available</p>
+                                    <a href="#" class="text-sm font-semibold text-blue-400 hover:underline">Explore →</a>
+                                </div>
+                                <div class="bg-gray-800/50 p-4 rounded-lg">
+                                    <h4 class="font-bold text-gray-200">🧘 Mindfulness & Peace</h4>
+                                    <p class="text-xs text-gray-400 mt-1">Buddha • Zen • Meditation</p>
+                                    <p class="text-xs text-gray-500 my-2">35 quotes available</p>
+                                    <a href="#" class="text-sm font-semibold text-blue-400 hover:underline">Explore →</a>
+                                </div>
+                                 <div class="bg-gray-800/50 p-4 rounded-lg">
+                                    <h4 class="font-bold text-gray-200">🎯 Success & Achievement</h4>
+                                    <p class="text-xs text-gray-400 mt-1">Business • Leadership</p>
+                                    <p class="text-xs text-gray-500 my-2">19 quotes available</p>
+                                    <a href="#" class="text-sm font-semibold text-blue-400 hover:underline">Explore →</a>
+                                </div>
+                            </div>
+                             <button class="text-sm font-semibold text-blue-400 hover:underline mt-4">+ Create Custom Category</button>
+                        </div>
+
+                        <!-- Search & Discovery -->
+                        <div class="widget-card rounded-xl p-6">
+                             <h3 class="font-bold text-lg mb-4">🔍 Quote Search & Discovery</h3>
+                             <div class="relative">
+                                 <i data-feather="search" class="w-5 h-5 text-gray-500 absolute top-1/2 left-3 -translate-y-1/2"></i>
+                                 <input type="search" placeholder="Search quotes by keyword..." class="w-full bg-gray-800 border border-gray-700 rounded-lg pl-10 pr-4 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none">
+                             </div>
+                             <p class="text-xs text-gray-500 mt-4">Popular searches:</p>
+                             <div class="flex flex-wrap gap-2 mt-2 text-xs">
+                                 <span class="bg-gray-700/50 px-2 py-1 rounded">#courage</span>
+                                 <span class="bg-gray-700/50 px-2 py-1 rounded">#wisdom</span>
+                                 <span class="bg-gray-700/50 px-2 py-1 rounded">#love</span>
+                                 <span class="bg-gray-700/50 px-2 py-1 rounded">#success</span>
+                                 <span class="bg-gray-700/50 px-2 py-1 rounded">#growth</span>
+                             </div>
+                             <div class="mt-6 border-t border-gray-700 pt-4">
+                                <h4 class="font-semibold text-purple-300">🔮 AI-Powered Recommendations (Pro)</h4>
+                                <p class="text-sm text-gray-400 mt-2">Based on your habits and mood, we suggest quotes about patience and persistence.</p>
+                                <button class="text-sm font-semibold text-purple-400 hover:underline mt-3">✨ Get Personalized Quotes</button>
+                             </div>
+                        </div>
+
+                    </div>
+                    <!-- Right Column -->
+                    <div class="space-y-6">
+                        <!-- Favorites -->
+                        <div class="widget-card rounded-xl p-6">
+                            <h3 class="font-bold text-lg mb-4">⭐ Your Favorites</h3>
+                            <div class="space-y-4">
+                                <div class="bg-gray-800/50 p-3 rounded-lg text-sm">
+                                    <p class="text-gray-300">"The unexamined life is not worth living."</p>
+                                    <p class="text-xs text-gray-500 mt-1">— Socrates</p>
+                                </div>
+                                <div class="bg-gray-800/50 p-3 rounded-lg text-sm">
+                                    <p class="text-gray-300">"Yesterday is history, tomorrow is a mystery..."</p>
+                                    <p class="text-xs text-gray-500 mt-1">— Master Oogway</p>
+                                </div>
+                            </div>
+                            <button class="text-xs font-semibold text-blue-400 hover:underline mt-4">View All Favorites</button>
+                        </div>
+                        <!-- Wisdom Analytics -->
+                        <div class="widget-card rounded-xl p-6">
+                            <h3 class="font-bold text-lg mb-4">📊 Wisdom Analytics</h3>
+                            <ul class="text-sm text-gray-400 space-y-2">
+                                <li>Quotes viewed: <span class="font-semibold text-gray-200">127</span></li>
+                                <li>Favorites saved: <span class="font-semibold text-gray-200">12</span></li>
+                                <li>Daily streak: <span class="font-semibold text-gray-200">🔥 8 days</span></li>
+                                <li>Most viewed: <span class="font-semibold text-gray-200">Ancient Wisdom (43%)</span></li>
+                                <li>Your wisdom score: <span class="font-semibold text-green-400">A+</span></li>
+                            </ul>
+                            <button class="text-xs font-semibold text-blue-400 hover:underline mt-4">View Detailed Stats</button>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </main>
+    </div>
+
+    <script>
+        // Initialize Feather Icons
+        feather.replace();
+    </script>
+</body>
+</html>
