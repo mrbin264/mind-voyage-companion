@@ -2,13 +2,22 @@ import { z } from 'zod'
 
 // Profile validation schema
 export const settingsProfileSchema = z.object({
-  firstName: z.string().min(1, 'First name is required').max(30, 'First name must be 30 characters or less'),
-  lastName: z.string().min(1, 'Last name is required').max(30, 'Last name must be 30 characters or less'),
+  firstName: z
+    .string()
+    .min(1, 'First name is required')
+    .max(30, 'First name must be 30 characters or less'),
+  lastName: z
+    .string()
+    .min(1, 'Last name is required')
+    .max(30, 'Last name must be 30 characters or less'),
   email: z.string().email('Invalid email address'),
   profilePhoto: z.string().optional(),
   dateOfBirth: z.string().optional(),
   bio: z.string().max(500, 'Bio must be 500 characters or less').optional(),
-  location: z.string().max(100, 'Location must be 100 characters or less').optional(),
+  location: z
+    .string()
+    .max(100, 'Location must be 100 characters or less')
+    .optional(),
   timezone: z.string().min(1, 'Timezone is required'),
   website: z.string().url('Invalid website URL').optional().or(z.literal('')),
   socialLinks: z
@@ -54,8 +63,12 @@ export const settingsNotificationSchema = z.object({
     tips: z.boolean(),
   }),
   reminderTimes: z.object({
-    morning: z.string().regex(/^([01]?[0-9]|2[0-3]):[0-5][0-9]$/, 'Invalid time format'),
-    evening: z.string().regex(/^([01]?[0-9]|2[0-3]):[0-5][0-9]$/, 'Invalid time format'),
+    morning: z
+      .string()
+      .regex(/^([01]?[0-9]|2[0-3]):[0-5][0-9]$/, 'Invalid time format'),
+    evening: z
+      .string()
+      .regex(/^([01]?[0-9]|2[0-3]):[0-5][0-9]$/, 'Invalid time format'),
   }),
 })
 
@@ -115,16 +128,19 @@ export const passwordChangeSchema = z
 // Account deletion validation schema
 export const accountDeletionSchema = z.object({
   password: z.string().min(1, 'Password is required to delete account'),
-  confirmDeletion: z.literal('DELETE').refine(
-    (val) => val === 'DELETE',
-    { message: 'Please type DELETE to confirm' }
-  ),
+  confirmDeletion: z
+    .literal('DELETE')
+    .refine(val => val === 'DELETE', {
+      message: 'Please type DELETE to confirm',
+    }),
   reason: z.string().optional(),
 })
 
 // Data export request validation schema
 export const dataExportSchema = z.object({
-  dataTypes: z.array(z.enum(['habits', 'journal', 'analytics', 'profile', 'all'])).min(1, 'Select at least one data type'),
+  dataTypes: z
+    .array(z.enum(['habits', 'journal', 'analytics', 'profile', 'all']))
+    .min(1, 'Select at least one data type'),
   format: z.enum(['json', 'csv', 'pdf']),
   dateRange: z
     .object({

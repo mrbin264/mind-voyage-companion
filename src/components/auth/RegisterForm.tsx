@@ -131,7 +131,9 @@ export default function RegisterForm() {
                 </div>
               </div>
               {errors.firstName && (
-                <p className="text-red-400 text-sm mt-2">{errors.firstName.message}</p>
+                <p className="text-red-400 text-sm mt-2">
+                  {errors.firstName.message}
+                </p>
               )}
             </div>
 
@@ -163,7 +165,9 @@ export default function RegisterForm() {
                 </div>
               </div>
               {errors.lastName && (
-                <p className="text-red-400 text-sm mt-2">{errors.lastName.message}</p>
+                <p className="text-red-400 text-sm mt-2">
+                  {errors.lastName.message}
+                </p>
               )}
             </div>
           </div>

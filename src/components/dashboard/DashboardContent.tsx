@@ -23,7 +23,9 @@ interface DashboardContentProps {
 export function DashboardContent({ user }: DashboardContentProps) {
   const [showCreateForm, setShowCreateForm] = useState(false)
   const [selectedMood, setSelectedMood] = useState('😊')
-  const [wisdomActionLoading, setWisdomActionLoading] = useState<string | null>(null)
+  const [wisdomActionLoading, setWisdomActionLoading] = useState<string | null>(
+    null
+  )
   const [journalContent, setJournalContent] = useState('')
   const [journalSaving, setJournalSaving] = useState(false)
   const [journalSaved, setJournalSaved] = useState(false)
@@ -106,7 +108,9 @@ export function DashboardContent({ user }: DashboardContentProps) {
 
   const handleQuickJournal = () => {
     // Scroll to journal section and focus textarea
-    const journalSection = document.querySelector('textarea[placeholder*="How are you feeling"]') as HTMLTextAreaElement
+    const journalSection = document.querySelector(
+      'textarea[placeholder*="How are you feeling"]'
+    ) as HTMLTextAreaElement
     if (journalSection) {
       journalSection.scrollIntoView({ behavior: 'smooth', block: 'center' })
       setTimeout(() => {
@@ -117,7 +121,9 @@ export function DashboardContent({ user }: DashboardContentProps) {
 
   const handleSaveJournalEntry = async () => {
     if (!journalContent.trim()) {
-      setJournalError('Please write something before saving your journal entry!')
+      setJournalError(
+        'Please write something before saving your journal entry!'
+      )
       setTimeout(() => setJournalError(null), 3000)
       return
     }
@@ -128,10 +134,10 @@ export function DashboardContent({ user }: DashboardContentProps) {
       // Convert mood emoji to number (1-5 scale)
       const moodMap: { [key: string]: number } = {
         '😔': 1,
-        '😐': 2, 
+        '😐': 2,
         '😊': 3,
         '😄': 4,
-        '🤗': 5
+        '🤗': 5,
       }
 
       const response = await fetch('/api/journal', {
@@ -150,7 +156,9 @@ export function DashboardContent({ user }: DashboardContentProps) {
 
       if (!response.ok) {
         if (response.status === 409) {
-          setJournalError('You already have a journal entry for today! You can edit it from the Journal page.')
+          setJournalError(
+            'You already have a journal entry for today! You can edit it from the Journal page.'
+          )
         } else {
           setJournalError(result.error || 'Failed to save journal entry')
         }
@@ -162,12 +170,11 @@ export function DashboardContent({ user }: DashboardContentProps) {
       setJournalContent('')
       setSelectedMood('😊')
       setJournalSaved(true)
-      
+
       // Auto-hide success message after 3 seconds
       setTimeout(() => {
         setJournalSaved(false)
       }, 3000)
-
     } catch (error) {
       console.error('Error saving journal entry:', error)
       setJournalError('Failed to save journal entry. Please try again.')
@@ -202,8 +209,8 @@ export function DashboardContent({ user }: DashboardContentProps) {
             ) : (
               <>
                 <blockquote className="text-xl text-gray-300 italic mb-2">
-                  &ldquo;The best time to plant a tree was 20 years ago. The second
-                  best time is now.&rdquo;
+                  &ldquo;The best time to plant a tree was 20 years ago. The
+                  second best time is now.&rdquo;
                 </blockquote>
                 <cite className="block text-right text-gray-500 mb-4">
                   — Chinese Proverb
@@ -239,13 +246,17 @@ export function DashboardContent({ user }: DashboardContentProps) {
                 ) : (
                   <Heart
                     className={`w-4 h-4 mr-2 ${
-                      currentQuote && isFavorited(currentQuote.id) ? 'fill-current' : ''
+                      currentQuote && isFavorited(currentQuote.id)
+                        ? 'fill-current'
+                        : ''
                     }`}
                   />
                 )}
-                {currentQuote && isFavorited(currentQuote.id) ? 'Favorited' : 'Save to Favorites'}
+                {currentQuote && isFavorited(currentQuote.id)
+                  ? 'Favorited'
+                  : 'Save to Favorites'}
               </Button>
-              <Link 
+              <Link
                 href="/dashboard/wisdom"
                 className="text-xs text-blue-400 hover:underline ml-2 flex items-center"
               >
@@ -380,10 +391,10 @@ export function DashboardContent({ user }: DashboardContentProps) {
                 📝 Quick Journal Entry
               </h3>
               <div className="text-xs text-gray-500">
-                {new Date().toLocaleDateString('en-US', { 
-                  weekday: 'long', 
-                  month: 'short', 
-                  day: 'numeric' 
+                {new Date().toLocaleDateString('en-US', {
+                  weekday: 'long',
+                  month: 'short',
+                  day: 'numeric',
                 })}
               </div>
             </div>
@@ -407,7 +418,8 @@ export function DashboardContent({ user }: DashboardContentProps) {
             </div>
             {journalSaved && (
               <div className="mb-3 p-2 bg-green-600/20 border border-green-600/30 rounded-lg text-green-300 text-sm flex items-center gap-2">
-                ✅ Journal entry saved successfully! Your thoughts have been recorded.
+                ✅ Journal entry saved successfully! Your thoughts have been
+                recorded.
               </div>
             )}
             {journalError && (
@@ -417,7 +429,7 @@ export function DashboardContent({ user }: DashboardContentProps) {
             )}
             <textarea
               value={journalContent}
-              onChange={(e) => setJournalContent(e.target.value)}
+              onChange={e => setJournalContent(e.target.value)}
               placeholder="How are you feeling? What happened today? Any thoughts or reflections..."
               maxLength={5000}
               className="w-full bg-gray-800 border border-gray-700 rounded-lg p-3 text-sm h-24 resize-none focus:ring-2 focus:ring-blue-500 focus:outline-none text-white placeholder-gray-500"
@@ -432,10 +444,13 @@ export function DashboardContent({ user }: DashboardContentProps) {
                 </span>
               </div>
               <div className="flex items-center gap-2">
-                <Link href="/journal" className="text-xs text-blue-400 hover:underline">
+                <Link
+                  href="/journal"
+                  className="text-xs text-blue-400 hover:underline"
+                >
                   View All →
                 </Link>
-                <Button 
+                <Button
                   onClick={handleSaveJournalEntry}
                   disabled={journalSaving || !journalContent.trim()}
                   className="text-sm bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 disabled:opacity-50"
@@ -446,9 +461,7 @@ export function DashboardContent({ user }: DashboardContentProps) {
                       Saving...
                     </>
                   ) : (
-                    <>
-                      💾 Save Entry
-                    </>
+                    <>💾 Save Entry</>
                   )}
                 </Button>
               </div>
@@ -531,14 +544,14 @@ export function DashboardContent({ user }: DashboardContentProps) {
               ⚡ Quick Actions
             </h3>
             <div className="grid grid-cols-2 gap-4">
-              <button 
+              <button
                 onClick={handleQuickJournal}
                 className="p-4 bg-[#18181B] border border-white/10 rounded-lg hover:border-blue-500 text-left transition-colors w-full"
               >
                 <h4 className="font-bold text-gray-200">📝 Journal</h4>
                 <p className="text-sm text-gray-400">Quick Entry</p>
               </button>
-              <button 
+              <button
                 onClick={handleGenerateWisdomQuote}
                 disabled={wisdomActionLoading === 'generate'}
                 className="p-4 bg-[#18181B] border border-white/10 rounded-lg hover:border-blue-500 text-left transition-colors w-full disabled:opacity-50"
@@ -552,7 +565,9 @@ export function DashboardContent({ user }: DashboardContentProps) {
                   Get Daily Wisdom
                 </h4>
                 <p className="text-sm text-gray-400">
-                  {wisdomActionLoading === 'generate' ? 'Generating...' : 'New Quote'}
+                  {wisdomActionLoading === 'generate'
+                    ? 'Generating...'
+                    : 'New Quote'}
                 </p>
               </button>
               <Link href="/dashboard/analytics" className="block">

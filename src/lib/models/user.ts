@@ -27,14 +27,14 @@ export interface IUserPreferences {
   dateFormat?: 'MM/DD/YYYY' | 'DD/MM/YYYY' | 'YYYY-MM-DD'
   timeFormat?: '12h' | '24h'
   weekStartsOn?: 'sunday' | 'monday'
-  
+
   // Language and localization
   language?: 'en-US' | 'vi-VN'
-  
+
   // Daily rhythm preferences
   wakeUpTime?: string
   sleepTime?: string
-  
+
   // Notification preferences
   notifications?: {
     email?: boolean
@@ -43,17 +43,17 @@ export interface IUserPreferences {
     journalReminders?: boolean
     weeklyReports?: boolean
   }
-  
+
   // Privacy settings
   privacy?: {
     publicProfile?: boolean
     shareStats?: boolean
   }
-  
+
   // Onboarding tracking
   onboardingCompleted?: boolean
   onboardingStep?: number
-  
+
   // Dashboard preferences
   dashboard?: {
     showWeather?: boolean
@@ -69,14 +69,14 @@ export interface IUser extends Document {
   lastName?: string
   email: string
   password?: string // bcrypt hash, optional for OAuth
-  
+
   // Computed display name (firstName + lastName or fallback)
   name?: string
-  
+
   // Account status
   emailVerified?: Date
   verified?: boolean
-  
+
   // Profile information
   profilePhoto?: string // Primary profile photo field (NextAuth compatible as 'image')
   dateOfBirth?: string
@@ -84,7 +84,7 @@ export interface IUser extends Document {
   location?: string
   timezone: string
   website?: string
-  
+
   // Social media links
   socialLinks?: {
     twitter?: string
@@ -92,7 +92,7 @@ export interface IUser extends Document {
     github?: string
     instagram?: string
   }
-  
+
   // Wisdom/Quotes related fields
   wisdomFavorites?: Array<{
     quoteId: string
@@ -108,10 +108,10 @@ export interface IUser extends Document {
     categoriesExplored: Record<string, number>
     lastVisit?: Date
   }
-  
+
   // Structured user preferences
   preferences: IUserPreferences
-  
+
   createdAt: Date
   updatedAt: Date
 }
@@ -152,14 +152,14 @@ const UserSchema = new Schema<IUser>(
     lastName: String,
     email: { type: String, required: true, unique: true },
     password: { type: String, select: false }, // bcrypt hash, optional for OAuth, excluded by default
-    
+
     // Computed display name (virtual or stored)
     name: String,
-    
+
     // Account status
     emailVerified: Date,
     verified: { type: Boolean, default: false },
-    
+
     // Profile information
     profilePhoto: String, // Primary profile photo field
     dateOfBirth: String,
@@ -167,7 +167,7 @@ const UserSchema = new Schema<IUser>(
     location: String,
     timezone: { type: String, default: 'UTC' },
     website: String,
-    
+
     // Social media links
     socialLinks: {
       twitter: String,
@@ -175,7 +175,7 @@ const UserSchema = new Schema<IUser>(
       github: String,
       instagram: String,
     },
-    
+
     // Wisdom/Quotes related fields
     wisdomFavorites: [
       {
@@ -193,23 +193,35 @@ const UserSchema = new Schema<IUser>(
       categoriesExplored: { type: Schema.Types.Mixed, default: {} },
       lastVisit: Date,
     },
-    
+
     // Structured user preferences
     preferences: {
       type: {
         // Theme and display preferences
-        theme: { type: String, enum: ['light', 'dark', 'system'], default: 'system' },
-        dateFormat: { type: String, enum: ['MM/DD/YYYY', 'DD/MM/YYYY', 'YYYY-MM-DD'], default: 'MM/DD/YYYY' },
+        theme: {
+          type: String,
+          enum: ['light', 'dark', 'system'],
+          default: 'system',
+        },
+        dateFormat: {
+          type: String,
+          enum: ['MM/DD/YYYY', 'DD/MM/YYYY', 'YYYY-MM-DD'],
+          default: 'MM/DD/YYYY',
+        },
         timeFormat: { type: String, enum: ['12h', '24h'], default: '12h' },
-        weekStartsOn: { type: String, enum: ['sunday', 'monday'], default: 'sunday' },
-        
+        weekStartsOn: {
+          type: String,
+          enum: ['sunday', 'monday'],
+          default: 'sunday',
+        },
+
         // Language and localization
         language: { type: String, default: 'en-US' },
-        
+
         // Daily rhythm preferences
         wakeUpTime: String,
         sleepTime: String,
-        
+
         // Notification preferences
         notifications: {
           email: { type: Boolean, default: true },
@@ -218,23 +230,27 @@ const UserSchema = new Schema<IUser>(
           journalReminders: { type: Boolean, default: true },
           weeklyReports: { type: Boolean, default: true },
         },
-        
+
         // Privacy settings
         privacy: {
           publicProfile: { type: Boolean, default: false },
           shareStats: { type: Boolean, default: false },
         },
-        
+
         // Onboarding tracking
         onboardingCompleted: { type: Boolean, default: false },
         onboardingStep: { type: Number, default: 0 },
-        
+
         // Dashboard preferences
         dashboard: {
           showWeather: { type: Boolean, default: true },
           showQuote: { type: Boolean, default: true },
           showStreak: { type: Boolean, default: true },
-          defaultView: { type: String, enum: ['grid', 'list'], default: 'grid' },
+          defaultView: {
+            type: String,
+            enum: ['grid', 'list'],
+            default: 'grid',
+          },
         },
       },
       default: () => ({
@@ -277,18 +293,19 @@ const VerificationTokenSchema = new Schema<IVerificationToken>({
 })
 
 // Virtual field for NextAuth compatibility (maps profilePhoto to image)
-UserSchema.virtual('image').get(function() {
+UserSchema.virtual('image').get(function () {
   return this.profilePhoto
 })
 
-UserSchema.virtual('image').set(function(value: string) {
+UserSchema.virtual('image').set(function (value: string) {
   this.profilePhoto = value
 })
 
 // Virtual field to compute full name if name is not set
-UserSchema.virtual('displayName').get(function() {
+UserSchema.virtual('displayName').get(function () {
   if (this.name) return this.name
-  if (this.firstName && this.lastName) return `${this.firstName} ${this.lastName}`
+  if (this.firstName && this.lastName)
+    return `${this.firstName} ${this.lastName}`
   if (this.firstName) return this.firstName
   if (this.lastName) return this.lastName
   return 'User'

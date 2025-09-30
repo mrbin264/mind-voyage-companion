@@ -1,18 +1,9 @@
 'use client'
 
 import React, { useState } from 'react'
-import {
-  BarChart3,
-  Download,
-  RefreshCw,
-  Filter,
-  Calendar,
-} from 'lucide-react'
+import { BarChart3, Download, RefreshCw, Filter, Calendar } from 'lucide-react'
 import { useAnalytics } from '@/hooks/useAnalytics'
-import type {
-  AnalyticsFilters,
-  AnalyticsTimeframe,
-} from '@/types/analytics'
+import type { AnalyticsFilters, AnalyticsTimeframe } from '@/types/analytics'
 import {
   OverviewWidget,
   StreakWidget,
@@ -262,16 +253,16 @@ export function AnalyticsPageContent({ user }: AnalyticsPageContentProps) {
               {overview.overallCompletionRate < 80 && (
                 <div className="p-3 bg-yellow-900/20 border border-yellow-800 rounded">
                   <p className="text-yellow-400 text-sm">
-                    Consider reducing your habit load or adjusting difficulty
-                    to maintain consistency
+                    Consider reducing your habit load or adjusting difficulty to
+                    maintain consistency
                   </p>
                 </div>
               )}
               {overview.activeStreaks.length === 0 && (
                 <div className="p-3 bg-blue-900/20 border border-blue-800 rounded">
                   <p className="text-blue-400 text-sm">
-                    Focus on building streaks by completing habits
-                    consistently for 3+ days
+                    Focus on building streaks by completing habits consistently
+                    for 3+ days
                   </p>
                 </div>
               )}

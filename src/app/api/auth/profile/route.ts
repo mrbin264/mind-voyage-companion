@@ -94,13 +94,16 @@ export async function PATCH(req: NextRequest) {
     if (parsed.data.firstName && parsed.data.lastName) {
       updateData.name = `${parsed.data.firstName} ${parsed.data.lastName}`
     }
-    if (parsed.data.profilePhoto) updateData.profilePhoto = parsed.data.profilePhoto
-    if (parsed.data.dateOfBirth) updateData.dateOfBirth = parsed.data.dateOfBirth
+    if (parsed.data.profilePhoto)
+      updateData.profilePhoto = parsed.data.profilePhoto
+    if (parsed.data.dateOfBirth)
+      updateData.dateOfBirth = parsed.data.dateOfBirth
     if (parsed.data.bio) updateData.bio = parsed.data.bio
     if (parsed.data.location) updateData.location = parsed.data.location
     if (parsed.data.timezone) updateData.timezone = parsed.data.timezone
     if (parsed.data.website) updateData.website = parsed.data.website
-    if (parsed.data.socialLinks) updateData.socialLinks = parsed.data.socialLinks
+    if (parsed.data.socialLinks)
+      updateData.socialLinks = parsed.data.socialLinks
     if (parsed.data.preferences) {
       updateData.$set = {}
       if (parsed.data.preferences.theme) {

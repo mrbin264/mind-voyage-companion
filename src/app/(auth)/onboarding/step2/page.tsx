@@ -230,7 +230,8 @@ export default function OnboardingStep2() {
               <div>
                 <dt className="font-semibold text-gray-200">👤 Name</dt>
                 <dd className="text-sm text-gray-400">
-                  This is how you&apos;ll appear in your journal entries and dashboard.
+                  This is how you&apos;ll appear in your journal entries and
+                  dashboard.
                 </dd>
               </div>
               <div>
