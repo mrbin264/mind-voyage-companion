@@ -10,11 +10,11 @@ interface AvatarUploadProps {
   disabled?: boolean
 }
 
-export function AvatarUpload({ 
-  currentAvatar, 
-  userName, 
+export function AvatarUpload({
+  currentAvatar,
+  userName,
   onAvatarChange,
-  disabled = false 
+  disabled = false,
 }: AvatarUploadProps) {
   const [uploading, setUploading] = useState(false)
   const [dragOver, setDragOver] = useState(false)
@@ -87,7 +87,7 @@ export function AvatarUpload({
   const handleDrop = (e: React.DragEvent) => {
     e.preventDefault()
     setDragOver(false)
-    
+
     if (disabled) return
 
     const files = Array.from(e.dataTransfer.files)
@@ -143,8 +143,8 @@ export function AvatarUpload({
           disabled
             ? 'border-gray-600 cursor-not-allowed'
             : dragOver
-            ? 'border-blue-500 bg-blue-500/10 cursor-pointer'
-            : 'border-gray-600 hover:border-blue-500 cursor-pointer'
+              ? 'border-blue-500 bg-blue-500/10 cursor-pointer'
+              : 'border-gray-600 hover:border-blue-500 cursor-pointer'
         }`}
       >
         {currentAvatar ? (
@@ -161,9 +161,13 @@ export function AvatarUpload({
 
         {/* Upload Overlay */}
         {!disabled && (
-          <div className={`absolute inset-0 bg-black/50 flex items-center justify-center transition-opacity duration-200 ${
-            dragOver || uploading ? 'opacity-100' : 'opacity-0 hover:opacity-100'
-          }`}>
+          <div
+            className={`absolute inset-0 bg-black/50 flex items-center justify-center transition-opacity duration-200 ${
+              dragOver || uploading
+                ? 'opacity-100'
+                : 'opacity-0 hover:opacity-100'
+            }`}
+          >
             {uploading ? (
               <div className="w-6 h-6 border-2 border-white border-t-transparent rounded-full animate-spin" />
             ) : dragOver ? (
@@ -178,7 +182,7 @@ export function AvatarUpload({
       {/* Remove Avatar Button */}
       {currentAvatar && !disabled && !uploading && (
         <button
-          onClick={(e) => {
+          onClick={e => {
             e.stopPropagation()
             removeAvatar()
           }}

@@ -30,13 +30,15 @@ export async function GET(request: NextRequest) {
     const recentHabits = await HabitModel.find({ userId: session.user.id })
       .populate('logs')
       .limit(10)
-    
-    let currentStreak = 0
+
+    const currentStreak = 0
     // This is a simplified streak calculation
     // You should implement proper streak calculation based on your habit log structure
-    
+
     // Calculate total login days (simplified)
-    const totalLoginDays = Math.floor((Date.now() - user.createdAt.getTime()) / (1000 * 60 * 60 * 24))
+    const totalLoginDays = Math.floor(
+      (Date.now() - user.createdAt.getTime()) / (1000 * 60 * 60 * 24)
+    )
 
     const profileData = {
       firstName: user.firstName || '',
@@ -107,14 +109,14 @@ export async function PUT(request: NextRequest) {
       return NextResponse.json({ error: 'User not found' }, { status: 404 })
     }
 
-    return NextResponse.json({ 
+    return NextResponse.json({
       message: 'Profile updated successfully',
       user: {
         firstName: updatedUser.firstName,
         lastName: updatedUser.lastName,
         email: updatedUser.email,
         timezone: updatedUser.timezone,
-      }
+      },
     })
   } catch (error) {
     console.error('Profile PUT error:', error)

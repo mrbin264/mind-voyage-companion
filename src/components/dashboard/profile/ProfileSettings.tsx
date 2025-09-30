@@ -56,14 +56,15 @@ export function ProfileSettings({ user }: ProfileSettingsProps) {
       if (response.ok) {
         const data = await response.json()
         setProfileData(data)
-        
+
         // Parse name into first and last name
         const nameParts = user.name.split(' ')
         setFormData({
           firstName: nameParts[0] || '',
           lastName: nameParts.slice(1).join(' ') || '',
           email: user.email,
-          timezone: data.timezone || Intl.DateTimeFormat().resolvedOptions().timeZone,
+          timezone:
+            data.timezone || Intl.DateTimeFormat().resolvedOptions().timeZone,
         })
       }
     } catch (error) {
@@ -110,7 +111,9 @@ export function ProfileSettings({ user }: ProfileSettingsProps) {
         firstName: nameParts[0] || '',
         lastName: nameParts.slice(1).join(' ') || '',
         email: user.email,
-        timezone: profileData.timezone || Intl.DateTimeFormat().resolvedOptions().timeZone,
+        timezone:
+          profileData.timezone ||
+          Intl.DateTimeFormat().resolvedOptions().timeZone,
       })
     }
     setIsEditing(false)
@@ -171,11 +174,15 @@ export function ProfileSettings({ user }: ProfileSettingsProps) {
                   <input
                     type="text"
                     value={formData.firstName}
-                    onChange={(e) => setFormData({ ...formData, firstName: e.target.value })}
+                    onChange={e =>
+                      setFormData({ ...formData, firstName: e.target.value })
+                    }
                     className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-white focus:ring-2 focus:ring-blue-500 focus:outline-none"
                   />
                 ) : (
-                  <p className="text-gray-100">{formData.firstName || 'Not set'}</p>
+                  <p className="text-gray-100">
+                    {formData.firstName || 'Not set'}
+                  </p>
                 )}
               </div>
 
@@ -187,11 +194,15 @@ export function ProfileSettings({ user }: ProfileSettingsProps) {
                   <input
                     type="text"
                     value={formData.lastName}
-                    onChange={(e) => setFormData({ ...formData, lastName: e.target.value })}
+                    onChange={e =>
+                      setFormData({ ...formData, lastName: e.target.value })
+                    }
                     className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-white focus:ring-2 focus:ring-blue-500 focus:outline-none"
                   />
                 ) : (
-                  <p className="text-gray-100">{formData.lastName || 'Not set'}</p>
+                  <p className="text-gray-100">
+                    {formData.lastName || 'Not set'}
+                  </p>
                 )}
               </div>
             </div>
@@ -215,7 +226,9 @@ export function ProfileSettings({ user }: ProfileSettingsProps) {
               {isEditing ? (
                 <select
                   value={formData.timezone}
-                  onChange={(e) => setFormData({ ...formData, timezone: e.target.value })}
+                  onChange={e =>
+                    setFormData({ ...formData, timezone: e.target.value })
+                  }
                   className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-white focus:ring-2 focus:ring-blue-500 focus:outline-none"
                 >
                   <option value="America/New_York">Eastern Time (ET)</option>
@@ -318,11 +331,14 @@ export function ProfileSettings({ user }: ProfileSettingsProps) {
               <div className="flex justify-between">
                 <span className="text-gray-400">Last login:</span>
                 <span className="text-gray-100">
-                  {new Date(profileData.lastLoginAt).toLocaleDateString('en-US', {
-                    year: 'numeric',
-                    month: 'short',
-                    day: 'numeric',
-                  })}
+                  {new Date(profileData.lastLoginAt).toLocaleDateString(
+                    'en-US',
+                    {
+                      year: 'numeric',
+                      month: 'short',
+                      day: 'numeric',
+                    }
+                  )}
                 </span>
               </div>
             </>
