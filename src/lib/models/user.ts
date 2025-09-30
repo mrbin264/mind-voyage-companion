@@ -42,6 +42,21 @@ export interface IUser extends Document {
     github?: string
     instagram?: string
   }
+  // Wisdom/Quotes related fields
+  wisdomFavorites?: Array<{
+    quoteId: string
+    text: string
+    author: string
+    category: string
+    addedAt: Date
+  }>
+  wisdomStats?: {
+    quotesViewed: number
+    dailyStreak: number
+    totalFavorites: number
+    categoriesExplored: Record<string, number>
+    lastVisit?: Date
+  }
   createdAt: Date
   updatedAt: Date
   preferences: Record<string, any>
@@ -98,6 +113,23 @@ const UserSchema = new Schema<IUser>(
       linkedin: String,
       github: String,
       instagram: String,
+    },
+    // Wisdom/Quotes related fields
+    wisdomFavorites: [
+      {
+        quoteId: { type: String, required: true },
+        text: { type: String, required: true },
+        author: { type: String, required: true },
+        category: { type: String, default: 'uncategorized' },
+        addedAt: { type: Date, default: Date.now },
+      },
+    ],
+    wisdomStats: {
+      quotesViewed: { type: Number, default: 0 },
+      dailyStreak: { type: Number, default: 0 },
+      totalFavorites: { type: Number, default: 0 },
+      categoriesExplored: { type: Schema.Types.Mixed, default: {} },
+      lastVisit: Date,
     },
     preferences: { type: Schema.Types.Mixed, default: {} },
   },

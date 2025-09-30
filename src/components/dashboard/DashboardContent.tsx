@@ -86,18 +86,22 @@ export function DashboardContent({ user }: DashboardContentProps) {
               — Chinese Proverb
             </cite>
             <div className="flex gap-2">
-              <Button
-                size="sm"
-                className="text-sm bg-blue-600/20 hover:bg-blue-600/40 text-blue-300 font-semibold"
-              >
-                💫 Generate New Quote
-              </Button>
-              <Button
-                size="sm"
-                className="text-sm bg-pink-600/20 hover:bg-pink-600/40 text-pink-300 font-semibold"
-              >
-                ❤️ Save
-              </Button>
+              <Link href="/dashboard/wisdom">
+                <Button
+                  size="sm"
+                  className="text-sm bg-blue-600/20 hover:bg-blue-600/40 text-blue-300 font-semibold"
+                >
+                  💫 Generate New Quote
+                </Button>
+              </Link>
+              <Link href="/dashboard/wisdom">
+                <Button
+                  size="sm"
+                  className="text-sm bg-pink-600/20 hover:bg-pink-600/40 text-pink-300 font-semibold"
+                >
+                  ❤️ Save
+                </Button>
+              </Link>
             </div>
           </WidgetCard>
 
@@ -154,9 +158,9 @@ export function DashboardContent({ user }: DashboardContentProps) {
                 {todaysHabits.map(habitProgress => (
                   <WidgetCard
                     key={habitProgress.habit._id}
-                    className={`p-4 border-l-4 \${
-                      habitProgress.todayLog?.completed 
-                        ? 'border-green-500' 
+                    className={`p-4 border-l-4 ${
+                      habitProgress.todayLog?.completed
+                        ? 'border-green-500'
                         : 'border-gray-500'
                     }`}
                   >
@@ -251,9 +255,11 @@ export function DashboardContent({ user }: DashboardContentProps) {
               <button className="text-xs bg-gray-700/80 hover:bg-gray-700 text-gray-300 font-semibold py-1 px-3 rounded-md transition-colors">
                 🔒 Private
               </button>
-              <Button className="text-sm bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4">
-                💾 Save Entry
-              </Button>
+              <Link href="/journal">
+                <Button className="text-sm bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4">
+                  💾 Save Entry
+                </Button>
+              </Link>
             </div>
           </WidgetCard>
 
@@ -333,22 +339,27 @@ export function DashboardContent({ user }: DashboardContentProps) {
               ⚡ Quick Actions
             </h3>
             <div className="grid grid-cols-2 gap-4">
-              <button
-                className="p-4 bg-[#18181B] border border-white/10 rounded-lg hover:border-blue-500 text-left transition-colors"
-                onClick={() => setShowCreateForm(true)}
-              >
-                <h4 className="font-bold text-gray-200">📝 Journal</h4>
-                <p className="text-sm text-gray-400">Quick Entry</p>
-              </button>
-              <button className="p-4 bg-[#18181B] border border-white/10 rounded-lg hover:border-blue-500 text-left transition-colors">
-                <h4 className="font-bold text-gray-200">🏛️ Get Daily Wisdom</h4>
-                <p className="text-sm text-gray-400">New Quote</p>
-              </button>
-              <button className="p-4 bg-[#18181B] border border-white/10 rounded-lg hover:border-blue-500 text-left transition-colors">
-                <h4 className="font-bold text-gray-200">📊 Analytics</h4>
-                <p className="text-sm text-gray-400">View Reports</p>
-              </button>
-              <Link href="/dashboard/habits" className="block">
+              <Link href="/journal" className="block">
+                <button className="p-4 bg-[#18181B] border border-white/10 rounded-lg hover:border-blue-500 text-left transition-colors w-full">
+                  <h4 className="font-bold text-gray-200">📝 Journal</h4>
+                  <p className="text-sm text-gray-400">Quick Entry</p>
+                </button>
+              </Link>
+              <Link href="/dashboard/wisdom" className="block">
+                <button className="p-4 bg-[#18181B] border border-white/10 rounded-lg hover:border-blue-500 text-left transition-colors w-full">
+                  <h4 className="font-bold text-gray-200">
+                    🏛️ Get Daily Wisdom
+                  </h4>
+                  <p className="text-sm text-gray-400">New Quote</p>
+                </button>
+              </Link>
+              <Link href="/dashboard/analytics" className="block">
+                <button className="p-4 bg-[#18181B] border border-white/10 rounded-lg hover:border-blue-500 text-left transition-colors w-full">
+                  <h4 className="font-bold text-gray-200">📊 Analytics</h4>
+                  <p className="text-sm text-gray-400">View Reports</p>
+                </button>
+              </Link>
+              <Link href="/dashboard/settings" className="block">
                 <button className="p-4 bg-[#18181B] border border-white/10 rounded-lg hover:border-blue-500 text-left transition-colors w-full">
                   <h4 className="font-bold text-gray-200">⚙️ Settings</h4>
                   <p className="text-sm text-gray-400">Preferences</p>
