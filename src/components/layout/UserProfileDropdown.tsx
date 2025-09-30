@@ -57,19 +57,24 @@ export function UserProfileDropdown({ user }: UserProfileDropdownProps) {
       {/* Profile Button */}
       <button
         onClick={handleToggleDropdown}
-        className="flex items-center gap-3 p-2 rounded-lg hover:bg-gray-800/50 transition-colors"
+        className="flex items-center gap-3 p-2 rounded-lg light:bg-slate-100 light:hover:bg-slate-200 light:text-slate-800 dark:hover:bg-gray-800/50 transition-colors focus:outline-none focus:ring-0 focus:border-transparent border-0"
         aria-expanded={isOpen}
         aria-haspopup="true"
+        style={{ border: 'none', outline: 'none' }}
       >
         <div className="w-10 h-10 bg-purple-600 rounded-full flex items-center justify-center text-white font-semibold">
           {user.name.charAt(0).toUpperCase()}
         </div>
         <div className="hidden sm:block text-left">
-          <div className="font-semibold text-gray-100">{user.name}</div>
-          <div className="text-sm text-gray-400">{user.email}</div>
+          <div className="font-semibold light:!text-slate-800 dark:text-gray-100">
+            {user.name}
+          </div>
+          <div className="text-sm light:!text-slate-800 dark:text-gray-400">
+            {user.email}
+          </div>
         </div>
         <ChevronDown
-          className={`w-4 h-4 text-gray-400 transition-transform ${
+          className={`w-4 h-4 light:!text-slate-800 dark:text-gray-400 transition-transform ${
             isOpen ? 'rotate-180' : ''
           }`}
         />
@@ -77,12 +82,16 @@ export function UserProfileDropdown({ user }: UserProfileDropdownProps) {
 
       {/* Dropdown Menu */}
       {isOpen && (
-        <div className="absolute right-0 mt-2 w-56 bg-gray-900 border border-gray-700 rounded-lg shadow-lg z-50">
+        <div className="absolute right-0 mt-2 w-56 light:bg-white dark:bg-gray-900 light:border light:border-slate-200 dark:border-gray-700 rounded-lg light:shadow-md dark:shadow-lg z-50">
           <div className="py-2">
             {/* User Info Section */}
-            <div className="px-4 py-2 border-b border-gray-700">
-              <div className="font-medium text-gray-100">{user.name}</div>
-              <div className="text-sm text-gray-400">{user.email}</div>
+            <div className="px-4 py-2 border-b light:border-slate-200 dark:border-gray-700">
+              <div className="font-medium light:!text-slate-800 dark:text-gray-100">
+                {user.name}
+              </div>
+              <div className="text-sm light:!text-slate-500 dark:text-gray-400">
+                {user.email}
+              </div>
             </div>
 
             {/* Menu Items */}
@@ -90,21 +99,21 @@ export function UserProfileDropdown({ user }: UserProfileDropdownProps) {
               <Link
                 href={'/dashboard/settings' as any}
                 onClick={handleCloseDropdown}
-                className="flex items-center gap-3 px-4 py-2 text-gray-300 hover:bg-gray-800 hover:text-white transition-colors"
+                className="flex items-center gap-3 px-4 py-2 light:!text-slate-700 dark:text-gray-300 light:hover:bg-slate-100 dark:hover:bg-gray-800 light:hover:!text-slate-900 dark:hover:text-white transition-colors"
               >
                 <Settings className="h-4 w-4" />
                 Settings
               </Link>
 
               {/* Divider */}
-              <div className="h-px bg-gray-700 my-1" />
+              <div className="h-px light:bg-slate-200 light:border-t-transparent dark:bg-gray-700 my-1" />
 
               {/* Logout Button */}
               <div className="px-2 py-1">
                 <LogoutButton
                   variant="ghost"
                   size="sm"
-                  className="w-full justify-start text-red-400 hover:text-red-300 hover:bg-red-500/10"
+                  className="w-full justify-start light:!text-red-600 dark:text-red-400 light:hover:!text-red-700 dark:hover:text-red-300 light:hover:bg-red-50 dark:hover:bg-red-500/10"
                   showIcon={true}
                 >
                   Logout

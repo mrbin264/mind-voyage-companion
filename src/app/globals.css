@@ -129,38 +129,93 @@
   }
 
   .dark {
+    /* Enhanced Dark Mode Colors */
     --mv-color-bg: #0a0a0a;
-    --mv-color-surface: var(--mv-neutral-900);
+    --mv-color-surface: #18181b;
+    --mv-color-surface-secondary: #27272a;
+    --mv-color-surface-tertiary: #3f3f46;
+    --mv-color-text-primary: #f4f4f5;
+    --mv-color-text-secondary: #d4d4d8;
+    --mv-color-text-tertiary: #a1a1aa;
+    --mv-color-text-muted: #71717a;
     --mv-color-text: #e5e7eb;
     --mv-color-text-subtle: #cbd5e1;
     --mv-color-border: #1f2937;
+    --mv-color-border-subtle: rgba(255, 255, 255, 0.1);
+    --mv-color-border-default: #374151;
+    --mv-color-border-emphasis: #6b7280;
     --mv-color-cta: var(--mv-brand-primary-600);
     --mv-color-cta-text: #ffffff;
-    --mv-form-input-bg: var(--mv-neutral-900);
+    --mv-form-input-bg: rgba(0, 0, 0, 0.2);
     --mv-form-input-text: var(--mv-color-text);
     --mv-form-input-placeholder: #94a3b8;
     --mv-form-input-border: var(--mv-color-border);
+
+    /* Dashboard specific colors */
+    --mv-dashboard-bg: #0a0a0a;
+    --mv-sidebar-bg: #101010;
+    --mv-card-bg: #18181b;
+
+    /* Legacy compatibility */
     --background: 222.2 84% 4.9%;
     --foreground: 210 40% 98%;
     --primary: 217.2 91.2% 59.8%;
     --primary-foreground: 222.2 84% 4.9%;
     --border: 217.2 32.6% 17.5%;
     --input: 217.2 32.6% 17.5%;
+
+    /* Shadows */
+    --mv-shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.3);
+    --mv-shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.4);
+    --mv-shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.5);
+    --mv-shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.6);
   }
 
-  /* Light theme overrides */
+  /* Enhanced Light theme */
   .light {
-    --mv-color-bg: var(--mv-neutral-50);
-    --mv-color-surface: #ffffff;
-    --mv-color-text: var(--mv-neutral-900);
-    --mv-color-text-subtle: var(--mv-neutral-700);
-    --mv-color-border: var(--mv-neutral-200);
-    --mv-color-cta: var(--mv-brand-primary);
+    /* Light Mode Background System - Professional & Clean */
+    --mv-color-bg: #f8fafc; /* Soft off-white to reduce eye strain */
+    --mv-color-surface: #ffffff; /* Clean white for widget cards */
+    --mv-color-surface-secondary: #f1f5f9;
+    --mv-color-surface-tertiary: #e2e8f0;
+
+    /* Light Mode Text System */
+    --mv-color-text-primary: #0f172a;
+    --mv-color-text-secondary: #334155;
+    --mv-color-text-tertiary: #64748b;
+    --mv-color-text-muted: #94a3b8;
+    --mv-color-text: #0f172a;
+    --mv-color-text-subtle: #334155;
+
+    /* Light Mode Border System */
+    --mv-color-border-subtle: #e2e8f0;
+    --mv-color-border-default: #cbd5e1;
+    --mv-color-border-emphasis: #94a3b8;
+    --mv-color-border: #e2e8f0;
+
+    /* Interactive Elements */
+    --mv-color-cta: #6366f1;
+    --mv-color-cta-hover: #5b5ae6;
     --mv-color-cta-text: #ffffff;
+
+    /* Form Elements */
     --mv-form-input-bg: #ffffff;
-    --mv-form-input-text: var(--mv-color-text);
-    --mv-form-input-placeholder: var(--mv-neutral-500);
-    --mv-form-input-border: var(--mv-color-border);
+    --mv-form-input-text: #0f172a;
+    --mv-form-input-placeholder: #64748b;
+    --mv-form-input-border: #cbd5e1;
+
+    /* Dashboard specific colors */
+    --mv-dashboard-bg: #f8fafc; /* Professional gray-50 equivalent */
+    --mv-sidebar-bg: #ffffff; /* Clean white sidebar */
+    --mv-card-bg: #ffffff;
+
+    /* Light Mode Shadows */
+    --mv-shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+    --mv-shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+    --mv-shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1);
+    --mv-shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.1);
+
+    /* Legacy compatibility */
     --background: 0 0% 100%;
     --foreground: 222.2 84% 4.9%;
     --primary: 250.5 91.2% 62.7%;
@@ -380,5 +435,579 @@
     );
     -webkit-background-clip: text;
     color: transparent;
+  }
+
+  /* Theme-Aware Component Classes */
+  .dashboard-layout {
+    background-color: var(--mv-dashboard-bg);
+    color: var(--mv-color-text-primary);
+    transition:
+      background-color 0.2s ease-in-out,
+      color 0.2s ease-in-out;
+  }
+
+  .sidebar {
+    background-color: var(--mv-sidebar-bg);
+    color: var(--mv-color-text-secondary);
+  }
+
+  .widget-card {
+    background-color: var(--mv-card-bg);
+    border-color: var(--mv-color-border-subtle);
+    box-shadow: var(--mv-shadow-sm);
+    transition: all 0.2s ease-in-out;
+  }
+
+  /* Enhanced widget card styling for professional light mode */
+  .light .widget-card {
+    background-color: #ffffff;
+    border: 1px solid #e2e8f0;
+    box-shadow:
+      0 1px 3px 0 rgb(0 0 0 / 0.1),
+      0 1px 2px -1px rgb(0 0 0 / 0.1);
+  }
+
+  .light .widget-card:hover {
+    border-color: #cbd5e1;
+    box-shadow:
+      0 4px 6px -1px rgb(0 0 0 / 0.1),
+      0 2px 4px -2px rgb(0 0 0 / 0.1);
+    transform: translateY(-1px);
+  }
+
+  .widget-card:hover {
+    border-color: var(--mv-color-border-default);
+    box-shadow: var(--mv-shadow-md);
+  }
+
+  .nav-item {
+    color: var(--mv-color-text-tertiary);
+    transition: all 0.2s ease-in-out;
+  }
+
+  .nav-item:hover {
+    color: var(--mv-color-text-primary);
+    background-color: var(--mv-color-surface-secondary);
+  }
+
+  .nav-item-active {
+    color: var(--mv-color-cta);
+    background-color: var(--mv-color-surface-secondary);
+    border-color: var(--mv-color-cta);
+  }
+
+  .btn-primary {
+    background-color: var(--mv-color-cta);
+    color: var(--mv-color-cta-text);
+    border: none;
+  }
+
+  .btn-primary:hover {
+    background-color: var(--mv-color-cta-hover, var(--mv-color-cta));
+    transform: translateY(-1px);
+    box-shadow: var(--mv-shadow-md);
+  }
+
+  .btn-secondary {
+    background-color: var(--mv-color-surface-secondary);
+    color: var(--mv-color-text-primary);
+    border: 1px solid var(--mv-color-border-default);
+  }
+
+  /* Professional secondary button styling for light mode */
+  .light .btn-secondary {
+    background-color: #f1f5f9; /* Light gray background */
+    color: #1e293b; /* Dark charcoal text */
+    border: 1px solid #cbd5e1;
+  }
+
+  .light .btn-secondary:hover {
+    background-color: #e2e8f0; /* Slightly darker on hover */
+    transform: translateY(-1px);
+  }
+
+  .btn-secondary:hover {
+    background-color: var(--mv-color-surface-tertiary);
+    transform: translateY(-1px);
+  }
+
+  .theme-input {
+    background-color: var(--mv-form-input-bg);
+    color: var(--mv-form-input-text);
+    border: 1px solid var(--mv-form-input-border);
+  }
+
+  .theme-input::placeholder {
+    color: var(--mv-form-input-placeholder);
+  }
+
+  .theme-input:focus {
+    outline: none;
+    border-color: var(--mv-color-cta);
+    box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+  }
+
+  /* Professional input styling for light mode */
+  .light .theme-input {
+    background-color: #ffffff;
+    color: #0f172a; /* Dark charcoal text */
+    border: 1px solid #cbd5e1;
+  }
+
+  .light .theme-input::placeholder {
+    color: #64748b; /* Medium gray placeholder */
+  }
+
+  .light .theme-input:focus {
+    border-color: #3b82f6; /* Blue focus border */
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+  }
+
+  /* ===== REFINED LIGHT MODE OVERRIDES ===== */
+
+  /* 1. Global Background System - Clean & Professional */
+  .light body {
+    background-color: #f8fafc !important; /* bg-slate-50 */
+  }
+
+  .light .dashboard-layout,
+  .light main,
+  .light .main-content {
+    background-color: #f8fafc !important; /* bg-slate-50 */
+  }
+
+  /* 2. Sidebar System - Clean White Background */
+  .light .sidebar {
+    background-color: #ffffff !important; /* bg-white */
+    border-right: 1px solid #e2e8f0 !important; /* border-slate-200 */
+  }
+
+  /* 3. SIDEBAR LINKS - NO BORDERS (Clean Text Links) */
+  .light .sidebar a,
+  .light .nav-item,
+  .light .sidebar button:not(.btn-primary):not([class*='bg-blue']) {
+    background-color: transparent !important;
+    border: none !important; /* Remove all borders */
+    color: #64748b !important; /* text-slate-500 */
+    box-shadow: none !important;
+  }
+
+  .light .sidebar a:hover,
+  .light .nav-item:hover {
+    background-color: #f1f5f9 !important; /* hover:bg-slate-100 */
+    border: none !important; /* Maintain no borders on hover */
+    color: #334155 !important; /* hover:text-slate-700 */
+  }
+
+  .light .nav-item-active,
+  .light .sidebar a.active {
+    background-color: #2563eb !important; /* bg-blue-600 */
+    color: #ffffff !important; /* text-white */
+    border: none !important; /* No border even for active state */
+  }
+
+  /* 4. USER PROFILE DROPDOWN - NO BORDERS */
+  .light .user-profile-button,
+  .light .profile-dropdown,
+  .light .avatar-button,
+  .light [class*='profile'] button,
+  .light [data-component='user-profile'],
+  .light button[aria-haspopup='true'] {
+    background-color: transparent !important;
+    border: none !important; /* Remove all borders */
+    box-shadow: none !important;
+    outline: none !important;
+  }
+
+  .light .user-profile-button:hover,
+  .light .avatar-button:hover,
+  .light button[aria-haspopup='true']:hover {
+    background-color: #f1f5f9 !important; /* subtle hover */
+    border: none !important;
+    outline: none !important;
+  }
+
+  /* Remove any focus borders from profile buttons */
+  .light button[aria-haspopup='true']:focus,
+  .light button[aria-haspopup='true']:focus-visible {
+    border: none !important;
+    outline: none !important;
+    box-shadow: none !important;
+  }
+
+  /* Additional User Profile Border Removal - Comprehensive Fix */
+  .light div:has(button[aria-haspopup='true']),
+  .light [class*='relative']:has(button[aria-haspopup='true']),
+  .light header div:has(button[aria-haspopup='true']) {
+    border: none !important;
+    outline: none !important;
+  }
+
+  /* Target any element containing user profile */
+  .light *[class*='user'],
+  .light *[class*='profile'],
+  .light *[class*='avatar'] {
+    border: none !important;
+    outline: none !important;
+  }
+
+  /* CRITICAL FIX: Force User Profile Dropdown Text Colors in Light Mode */
+  .light button[aria-haspopup='true'] .font-semibold {
+    color: #1e293b !important; /* slate-800 */
+  }
+
+  .light button[aria-haspopup='true'] .text-sm {
+    color: #1e293b !important; /* slate-800 */
+  }
+
+  .light div[class*='absolute'] .font-medium {
+    color: #1e293b !important; /* slate-800 for user name */
+  }
+
+  .light div[class*='absolute'] .text-sm {
+    color: #64748b !important; /* slate-500 for user email */
+  }
+
+  /* Force Settings link text color */
+  .light a[href*='settings'] {
+    color: #334155 !important; /* slate-700 */
+  }
+
+  /* ULTRA AGGRESSIVE USER PROFILE DROPDOWN TEXT OVERRIDE */
+  .light button[aria-haspopup='true'] * {
+    color: #1e293b !important; /* Force ALL text in profile button to be dark */
+  }
+
+  .light div[class*='absolute'] {
+    background-color: #ffffff !important; /* Force white background */
+    border: 1px solid #e2e8f0 !important; /* Force slate border */
+    box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1) !important; /* Force shadow */
+  }
+
+  .light div[class*='absolute'] * {
+    color: #1e293b !important; /* Force ALL dropdown text to be dark */
+  }
+
+  .light div[class*='absolute'] .font-medium {
+    color: #1e293b !important; /* User name - slate-800 */
+  }
+
+  .light div[class*='absolute'] .text-sm {
+    color: #64748b !important; /* User email - slate-500 */
+  }
+
+  .light div[class*='absolute'] a {
+    color: #334155 !important; /* Settings link - slate-700 */
+  }
+
+  .light div[class*='absolute'] button {
+    color: #dc2626 !important; /* Logout button - red-600 */
+  }
+
+  /* Force hover states */
+  .light div[class*='absolute'] a:hover {
+    background-color: #f1f5f9 !important; /* slate-100 hover */
+    color: #1e293b !important; /* Maintain dark text on hover */
+  }
+
+  /* Hide divider in light mode */
+  .light div[class*='absolute'] .h-px {
+    background-color: #e2e8f0 !important; /* Light divider */
+    border-color: transparent !important;
+  }
+
+  /* NUCLEAR OPTION - Force every possible text element in user dropdown */
+  .light [role='menu'],
+  .light [class*='z-50'] {
+    background-color: #ffffff !important;
+    border: 1px solid #e2e8f0 !important;
+  }
+
+  .light [role='menu'] *,
+  .light [class*='z-50'] *,
+  .light [class*='w-56'] *,
+  .light [class*='mt-2'] * {
+    color: #1e293b !important; /* Force dark text everywhere */
+  }
+
+  .light [class*='w-56'] .text-sm {
+    color: #64748b !important; /* Email specifically */
+  }
+
+  /* Profile button text override */
+  .light header button[aria-haspopup] .font-semibold {
+    color: #1e293b !important;
+  }
+
+  .light header button[aria-haspopup] .text-sm {
+    color: #1e293b !important;
+  }
+
+  /* Remove borders specifically from user profile and navigation elements */
+  .light header *,
+  .light nav *,
+  .light
+    .sidebar
+    *:not(input):not(textarea):not(select):not(.widget-card):not(.card) {
+    border: none !important;
+    outline: none !important;
+  }
+
+  /* Force remove any pink/red debugging borders */
+  .light * {
+    border-color: transparent !important;
+    outline-color: transparent !important;
+  }
+
+  /* Restore only essential borders */
+  .light .widget-card,
+  .light .card {
+    border: 1px solid #e2e8f0 !important;
+  }
+
+  .light input,
+  .light textarea,
+  .light select {
+    border: 1px solid #cbd5e1 !important;
+  }
+
+  .light .btn-secondary,
+  .light .filter-button,
+  .light .tab-button {
+    border: 1px solid #cbd5e1 !important;
+  }
+
+  /* 5. Widget Cards - BORDERS ALLOWED (Main Content Areas) */
+  .light .widget-card,
+  .light .card,
+  .light .bg-gray-800,
+  .light .bg-gray-900,
+  .light .bg-zinc-800,
+  .light .bg-zinc-900,
+  .light [class*='bg-gray-8'],
+  .light [class*='bg-gray-9'],
+  .light [class*='bg-zinc-8'],
+  .light [class*='bg-zinc-9'] {
+    background-color: #ffffff !important; /* bg-white */
+    border: 1px solid #e2e8f0 !important; /* border-slate-200 */
+    box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.05) !important; /* shadow-sm */
+    color: #0f172a !important; /* text-slate-900 */
+  }
+
+  .light .widget-card:hover,
+  .light .card:hover {
+    border-color: #cbd5e1 !important; /* hover:border-slate-300 */
+    box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1) !important;
+  }
+
+  /* 6. GHOST/TEXT LINKS - NO BORDERS (Simple Text Links) */
+  .light .text-blue-400,
+  .light .text-blue-300,
+  .light a:not([class*='bg-']):not(.btn):not(.button),
+  .light
+    button:not([class*='bg-']):not(.btn):not(.filter-button):not(.tab-button) {
+    color: #2563eb !important; /* text-blue-600 */
+    background-color: transparent !important;
+    border: none !important; /* Remove all borders */
+    box-shadow: none !important;
+    text-decoration: none !important;
+  }
+
+  .light a:not([class*='bg-']):not(.btn):hover {
+    color: #1d4ed8 !important; /* hover:text-blue-700 */
+    text-decoration: underline !important;
+    background-color: transparent !important;
+    border: none !important;
+  }
+
+  /* 7. FORM INPUTS & TEXT AREAS - BORDERS ALLOWED */
+  .light input,
+  .light textarea,
+  .light select,
+  .light .form-input,
+  .light .theme-input {
+    background-color: #ffffff !important; /* bg-white */
+    color: #0f172a !important; /* text-slate-900 */
+    border: 1px solid #cbd5e1 !important; /* border-slate-300 */
+  }
+
+  .light input::placeholder,
+  .light textarea::placeholder {
+    color: #94a3b8 !important; /* placeholder-slate-400 */
+  }
+
+  .light input:focus,
+  .light textarea:focus,
+  .light select:focus {
+    border-color: #3b82f6 !important; /* focus:border-blue-500 */
+    box-shadow: 0 0 0 3px rgb(59 130 246 / 0.1) !important; /* focus:ring-blue-500 */
+  }
+
+  /* 8. FILTER/SECONDARY BUTTONS - BORDERS ALLOWED */
+  .light .filter-button,
+  .light .tab-button,
+  .light .btn-secondary,
+  .light button[class*='bg-gray'],
+  .light button[class*='bg-zinc'],
+  .light .category-button {
+    background-color: #f1f5f9 !important; /* bg-slate-100 */
+    color: #334155 !important; /* text-slate-700 */
+    border: 1px solid #cbd5e1 !important; /* border-slate-300 */
+  }
+
+  .light .filter-button:hover,
+  .light .tab-button:hover,
+  .light .btn-secondary:hover {
+    background-color: #e2e8f0 !important; /* hover:bg-slate-200 */
+  }
+
+  /* 9. LIST ITEMS - NO EXCESSIVE BORDERS (Clean List Styling) */
+  .light .recommendations li,
+  .light .habit-list li,
+  .light ul > li:not(.widget-card):not(.card),
+  .light ol > li:not(.widget-card):not(.card),
+  .light .space-y-2 > li,
+  .light .space-y-3 > li,
+  .light .space-y-4 > li {
+    background-color: transparent !important;
+    border: none !important; /* Remove borders from list items */
+    box-shadow: none !important;
+    color: #64748b !important; /* text-slate-500 */
+  }
+
+  /* 10. JOURNAL ENTRY CARDS - BORDERS ALLOWED (They act as cards) */
+  .light .journal-entry,
+  .light .entry-card,
+  .light .habit-card,
+  .light [data-component='journal-entry'],
+  .light [data-component='habit-item'] {
+    background-color: #ffffff !important; /* bg-white */
+    border: 1px solid #e2e8f0 !important; /* border-slate-200 */
+    box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.05) !important; /* shadow-sm */
+  }
+
+  .light .journal-entry:hover,
+  .light .entry-card:hover,
+  .light .habit-card:hover {
+    background-color: #f8fafc !important; /* hover:bg-slate-50 */
+    border-color: #cbd5e1 !important; /* hover:border-slate-300 */
+  }
+
+  /* 11. PROGRESS BARS - NO BORDERS */
+  .light .progress-bar,
+  .light .progress-container,
+  .light .bg-white\/10,
+  .light .bg-white\/20 {
+    background-color: #e2e8f0 !important; /* bg-slate-200 */
+    border: none !important; /* Remove borders from progress elements */
+    box-shadow: none !important;
+  }
+
+  /* 12. Typography Hierarchy - Clean Text */
+  .light h1,
+  .light h2,
+  .light h3,
+  .light h4,
+  .light h5,
+  .light h6,
+  .light .text-white,
+  .light .text-gray-100,
+  .light .text-gray-200,
+  .light .text-zinc-100,
+  .light .text-zinc-200 {
+    color: #0f172a !important; /* text-slate-900 for headings */
+  }
+
+  .light .text-gray-300,
+  .light .text-gray-400,
+  .light .text-zinc-300,
+  .light .text-zinc-400,
+  .light p,
+  .light span:not([class*='text-']) {
+    color: #475569 !important; /* text-slate-600 for body */
+  }
+
+  .light .text-gray-500,
+  .light .text-gray-600,
+  .light .text-zinc-500,
+  .light .text-zinc-600 {
+    color: #94a3b8 !important; /* text-slate-400 for muted */
+  }
+
+  /* 13. Button Hierarchy */
+  .light .btn-primary,
+  .light button[class*='bg-blue'],
+  .light button[class*='bg-green'],
+  .light .primary-button {
+    background-color: #2563eb !important; /* bg-blue-600 */
+    color: #ffffff !important; /* text-white */
+    border: none !important; /* Primary buttons don't need borders */
+  }
+
+  .light .btn-primary:hover {
+    background-color: #1d4ed8 !important; /* hover:bg-blue-700 */
+  }
+
+  /* 14. Remove Borders from Dark Background Overrides */
+  .light [class*='bg-[#'],
+  .light .bg-slate-800,
+  .light .bg-slate-900 {
+    background-color: #f8fafc !important; /* bg-slate-50 */
+    border: none !important; /* Remove borders from converted backgrounds */
+  }
+
+  /* 15. Clean Border System */
+  .light .border-gray-700,
+  .light .border-gray-800,
+  .light .border-zinc-700,
+  .light .border-zinc-800 {
+    border-color: #e2e8f0 !important; /* border-slate-200 */
+  }
+
+  .light .theme-input:focus {
+    box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+  }
+
+  /* Professional text color hierarchy for light mode */
+  .text-heading {
+    color: #0f172a; /* Primary headings - charcoal */
+  }
+
+  .text-body {
+    color: #334155; /* Body text - secondary gray */
+  }
+
+  .text-muted {
+    color: #64748b; /* Tertiary/muted text */
+  }
+
+  .text-subtle {
+    color: #94a3b8; /* Subtle text like placeholders */
+  }
+
+  /* Dark mode text colors */
+  .dark .text-heading {
+    color: #f1f5f9;
+  }
+
+  .dark .text-body {
+    color: #cbd5e1;
+  }
+
+  .dark .text-muted {
+    color: #94a3b8;
+  }
+
+  .dark .text-subtle {
+    color: #64748b;
+  }
+
+  /* Professional border colors */
+  .border-light {
+    border-color: #e2e8f0;
+  }
+
+  .dark .border-light {
+    border-color: #334155;
   }
 }

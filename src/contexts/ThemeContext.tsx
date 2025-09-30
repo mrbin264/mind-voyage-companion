@@ -12,7 +12,7 @@ interface ThemeContextType {
 const ThemeContext = createContext<ThemeContextType | undefined>(undefined)
 
 export function ThemeProvider({ children }: { children: React.ReactNode }) {
-  const [theme, setTheme] = useState<Theme>('dark')
+  const [theme, setTheme] = useState<Theme>('light') // Default to light to match our focus
   const [mounted, setMounted] = useState(false)
 
   // Initialize theme from localStorage or detect current theme
@@ -29,7 +29,7 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
       ? 'dark'
       : htmlElement.classList.contains('light')
         ? 'light'
-        : 'dark' // fallback to dark
+        : systemTheme // Use system preference as fallback instead of hardcoded 'dark'
 
     const initialTheme = savedTheme || currentThemeFromDOM
 

@@ -18,6 +18,7 @@ import {
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
+import { ThemeToggle } from '@/components/ui/ThemeToggle'
 import { UserProfileDropdown } from './UserProfileDropdown'
 
 interface DashboardLayoutProps {
@@ -65,11 +66,11 @@ export function DashboardLayout({
   }
 
   return (
-    <div className="flex h-screen bg-[#0A0A0A] text-white antialiased">
+    <div className="dashboard-layout flex h-screen antialiased">
       {/* Mobile Menu Overlay */}
       {isMobileMenuOpen && (
         <div
-          className="fixed inset-0 bg-black/50 z-40 lg:hidden"
+          className="fixed inset-0 bg-black/50 dark:bg-black/50 light:bg-black/30 z-40 lg:hidden"
           onClick={() => setIsMobileMenuOpen(false)}
           aria-hidden="true"
         />
@@ -77,7 +78,7 @@ export function DashboardLayout({
 
       {/* Sidebar */}
       <aside
-        className={`w-64 bg-[#101010] text-gray-300 p-6 flex flex-col transition-transform duration-300 ease-in-out z-50 ${
+        className={`sidebar w-64 p-6 flex flex-col transition-all duration-300 ease-in-out z-50 border-r border-transparent dark:border-transparent light:border-slate-200 ${
           isMobileMenuOpen
             ? 'fixed inset-y-0 left-0 translate-x-0'
             : 'fixed inset-y-0 left-0 -translate-x-full lg:translate-x-0 lg:relative'
@@ -87,11 +88,13 @@ export function DashboardLayout({
         <div className="flex items-center justify-between mb-10">
           <div className="flex items-center gap-3">
             <span className="text-3xl">🧠</span>
-            <h1 className="text-xl font-bold text-gray-200">Mind Voyage</h1>
+            <h1 className="text-xl font-bold text-gray-200 dark:text-gray-200 light:text-slate-800">
+              Mind Voyage
+            </h1>
           </div>
           {/* Mobile Close Button */}
           <button
-            className="lg:hidden text-gray-400 hover:text-white"
+            className="lg:hidden text-gray-400 dark:text-gray-400 light:text-slate-500 hover:text-white dark:hover:text-white light:hover:text-slate-700"
             onClick={() => setIsMobileMenuOpen(false)}
           >
             <X className="w-6 h-6" />
@@ -110,10 +113,10 @@ export function DashboardLayout({
               <Link
                 key={item.href}
                 href={item.href as any}
-                className={`flex items-center gap-3 px-4 py-2 rounded-lg transition-colors ${
+                className={`nav-item flex items-center gap-3 px-4 py-2 rounded-lg transition-all ${
                   isActive
-                    ? 'bg-blue-600/20 text-white font-semibold'
-                    : 'hover:bg-gray-700/50'
+                    ? 'nav-item-active font-semibold border-l-4'
+                    : 'hover:bg-gray-700/50 dark:hover:bg-gray-700/50 light:hover:bg-slate-100'
                 }`}
                 onClick={() => setIsMobileMenuOpen(false)}
               >
@@ -127,7 +130,7 @@ export function DashboardLayout({
         {/* Upgrade Pro Button */}
         <div className="mt-auto">
           <Button
-            className="w-full flex items-center justify-center gap-3 bg-gradient-to-r from-purple-500 to-indigo-600 text-white font-semibold py-3 px-4 rounded-lg hover:opacity-90 transition-opacity"
+            className="btn-primary w-full flex items-center justify-center gap-3 font-semibold py-3 px-4 rounded-lg transition-all duration-200"
             onClick={() =>
               alert(
                 '🌟 Pro features coming soon! Stay tuned for advanced analytics, AI insights, and premium habit templates.'
@@ -149,26 +152,26 @@ export function DashboardLayout({
               <div className="flex items-center gap-4 mb-2">
                 {/* Mobile Menu Toggle */}
                 <button
-                  className="lg:hidden text-gray-400 hover:text-white"
+                  className="lg:hidden text-gray-400 dark:text-gray-400 light:text-slate-500 hover:text-white dark:hover:text-white light:hover:text-slate-700"
                   onClick={() => setIsMobileMenuOpen(true)}
                 >
                   <Menu className="w-6 h-6" />
                 </button>
-                <h2 className="text-3xl font-bold text-gray-100">
+                <h2 className="text-3xl font-bold text-gray-100 dark:text-gray-100 light:text-slate-900">
                   {getGreeting()}, {user.name}! ☀️
                 </h2>
               </div>
-              <p className="text-gray-400 lg:ml-0 ml-10">
+              <p className="text-gray-400 dark:text-gray-400 light:text-slate-600 lg:ml-0 ml-10">
                 {getFormattedDate()}
               </p>
             </div>
             <div className="flex items-center gap-4 w-full lg:w-auto">
               <div className="relative flex-grow">
-                <Search className="w-5 h-5 text-gray-500 absolute top-1/2 left-3 -translate-y-1/2" />
+                <Search className="w-5 h-5 text-gray-500 dark:text-gray-500 light:text-slate-500 absolute top-1/2 left-3 -translate-y-1/2" />
                 <Input
                   type="search"
                   placeholder="Search habits, journal entries, wisdom..."
-                  className="w-full bg-gray-800 border-gray-700 rounded-lg pl-10 pr-4 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none text-white placeholder-gray-500"
+                  className="theme-input w-full rounded-lg pl-10 pr-4 py-2 transition-all duration-200"
                   onKeyDown={e => {
                     if (e.key === 'Enter') {
                       alert(
@@ -179,7 +182,7 @@ export function DashboardLayout({
                 />
               </div>
               <button
-                className="relative text-gray-400 hover:text-white p-2"
+                className="relative text-gray-400 dark:text-gray-400 light:text-slate-500 hover:text-white dark:hover:text-white light:hover:text-slate-700 p-2 transition-colors"
                 onClick={() =>
                   alert(
                     "🔔 Notifications coming soon! You'll get reminders for habits, journal prompts, and achievements."
@@ -187,8 +190,9 @@ export function DashboardLayout({
                 }
               >
                 <Bell className="w-6 h-6" />
-                <span className="absolute top-1 right-1 w-3 h-3 bg-red-500 rounded-full border-2 border-gray-900"></span>
+                <span className="absolute top-1 right-1 w-3 h-3 bg-red-500 rounded-full border-2 border-gray-900 dark:border-gray-900 light:border-white"></span>
               </button>
+              <ThemeToggle />
               <UserProfileDropdown user={user} />
             </div>
           </header>

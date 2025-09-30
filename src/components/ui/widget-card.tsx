@@ -8,7 +8,7 @@ interface WidgetCardProps {
 export function WidgetCard({ children, className = '' }: WidgetCardProps) {
   return (
     <div
-      className={`bg-[#18181B] border border-white/10 rounded-xl transition-all duration-200 hover:border-white/20 ${className}`}
+      className={`widget-card rounded-xl transition-all duration-200 ${className}`}
     >
       {children}
     </div>

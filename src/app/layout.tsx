@@ -18,7 +18,7 @@ export default function RootLayout({
   children: React.ReactNode
 }>) {
   return (
-    <html lang="en" className={`${inter.className} dark`}>
+    <html lang="en" className={inter.className}>
       <head>
         <script
           dangerouslySetInnerHTML={{
@@ -29,13 +29,11 @@ export default function RootLayout({
                   var systemTheme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
                   var initialTheme = theme || systemTheme;
                   
-                  // Remove the default server-rendered theme and apply the correct one
-                  document.documentElement.classList.remove('light', 'dark');
+                  // Apply the correct theme immediately
                   document.documentElement.classList.add(initialTheme);
                 } catch (e) {
-                  // Fallback: ensure dark theme is applied if script fails
-                  document.documentElement.classList.remove('light', 'dark');
-                  document.documentElement.classList.add('dark');
+                  // Fallback: ensure light theme is applied if script fails (matching our light mode focus)
+                  document.documentElement.classList.add('light');
                 }
               })();
             `,

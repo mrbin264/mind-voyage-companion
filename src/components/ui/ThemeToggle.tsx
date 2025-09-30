@@ -13,9 +13,10 @@ export function ThemeToggle() {
         console.log('Toggle button clicked')
         toggleTheme()
       }}
-      className="relative inline-flex items-center justify-center w-10 h-10 rounded-lg bg-white/10 hover:bg-white/20 dark:bg-gray-800/50 dark:hover:bg-gray-700/70 light:bg-gray-200 light:hover:bg-gray-300 transition-all duration-200 backdrop-blur-sm border border-white/10 dark:border-gray-700 light:border-gray-300"
+      className="relative inline-flex items-center justify-center w-10 h-10 rounded-lg light:bg-slate-100 light:hover:bg-slate-200 dark:bg-gray-800/50 dark:hover:bg-gray-700/70 transition-all duration-200"
       aria-label={`Switch to ${theme === 'light' ? 'dark' : 'light'} mode`}
       title={`Current theme: ${theme}. Click to switch.`}
+      style={{ border: 'none', outline: 'none' }}
     >
       {/* Sun icon for light mode */}
       <svg

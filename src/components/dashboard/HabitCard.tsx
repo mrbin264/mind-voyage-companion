@@ -37,25 +37,25 @@ const getHabitStatusInfo = (status: string, streak: number = 0) => {
       return {
         badge: `${streak > 0 ? `🔥 ${streak} day streak` : 'Completed'}`,
         badgeClass:
-          'bg-orange-500/10 text-orange-400 text-sm font-semibold px-3 py-1 rounded-full',
+          'bg-orange-500/10 text-orange-600 dark:text-orange-400 text-sm font-semibold px-3 py-1 rounded-full',
       }
     case 'in-progress':
       return {
         badge: 'In Progress',
         badgeClass:
-          'bg-yellow-500/10 text-yellow-400 text-sm font-semibold px-3 py-1 rounded-full',
+          'bg-yellow-500/10 text-yellow-600 dark:text-yellow-400 text-sm font-semibold px-3 py-1 rounded-full',
       }
     case 'paused':
       return {
         badge: 'Paused',
         badgeClass:
-          'bg-red-500/10 text-red-400 text-sm font-semibold px-3 py-1 rounded-full',
+          'bg-red-500/10 text-red-600 dark:text-red-400 text-sm font-semibold px-3 py-1 rounded-full',
       }
     default:
       return {
         badge: 'Not Started',
         badgeClass:
-          'bg-gray-700 text-gray-300 text-sm font-semibold px-3 py-1 rounded-full',
+          'bg-slate-100 text-slate-700 dark:bg-gray-700 dark:text-gray-300 text-sm font-semibold px-3 py-1 rounded-full',
       }
   }
 }
@@ -152,19 +152,21 @@ export function HabitCard({
     }
   }
 
-  // Dark theme habit card matching the HTML design
+  // Light/dark theme habit card
   return (
     <div
-      className={`bg-zinc-900 border border-white/10 rounded-xl p-6 ${isPaused ? 'opacity-60' : ''}`}
+      className={`bg-white dark:bg-zinc-900 border border-slate-200 dark:border-white/10 rounded-xl p-6 shadow-sm ${isPaused ? 'opacity-60' : ''}`}
     >
       {/* Header */}
       <div className="flex flex-wrap justify-between items-start gap-4">
         <div>
-          <h3 className="text-lg font-bold text-white flex items-center gap-2">
+          <h3 className="text-lg font-bold text-slate-900 dark:text-white flex items-center gap-2">
             {isCompleted && '✅'} {habit.emoji || '📋'} {habit.title}
           </h3>
-          <p className="text-sm text-gray-400 mt-1">{habit.description}</p>
-          <p className="text-xs text-gray-500 mt-2">
+          <p className="text-sm text-slate-600 dark:text-gray-400 mt-1">
+            {habit.description}
+          </p>
+          <p className="text-xs text-slate-500 dark:text-gray-500 mt-2">
             {formatScheduleInfo(habit, todayLog)}
           </p>
         </div>
@@ -174,14 +176,16 @@ export function HabitCard({
           <div className={statusInfo.badgeClass}>{statusInfo.badge}</div>
         ) : isInProgress && habit.target.type !== 'boolean' ? (
           <div className="text-right">
-            <p className="text-sm font-semibold text-blue-400">Progress</p>
-            <div className="w-24 mt-1 bg-white/10 rounded-full h-2">
+            <p className="text-sm font-semibold text-blue-600 dark:text-blue-400">
+              Progress
+            </p>
+            <div className="w-24 mt-1 bg-slate-200 dark:bg-white/10 rounded-full h-2">
               <div
                 className="bg-blue-500 h-2 rounded-full"
                 style={{ width: `${progressPercentage}%` }}
               ></div>
             </div>
-            <p className="text-xs text-gray-300 mt-1">
+            <p className="text-xs text-slate-600 dark:text-gray-300 mt-1">
               {formatProgress(habit, todayLog)}
             </p>
           </div>
@@ -191,10 +195,10 @@ export function HabitCard({
       </div>
 
       {/* Footer with Weekly Progress and Actions */}
-      <div className="mt-4 border-t border-gray-700 pt-4">
+      <div className="mt-4 border-t border-slate-200 dark:border-gray-700 pt-4">
         <div className="flex justify-between items-center text-sm">
           {/* Weekly Progress */}
-          <span className="text-gray-400">
+          <span className="text-slate-600 dark:text-gray-400">
             Weekly Progress: {'●'.repeat(weeklyProgress.completed)}
             {'○'.repeat(weeklyProgress.total - weeklyProgress.completed)}{' '}
             {weeklyProgress.percentage}% ({weeklyProgress.completed}/
@@ -206,18 +210,18 @@ export function HabitCard({
             {isCompleted ? (
               <>
                 <button
-                  className="text-xs font-semibold text-blue-400 hover:underline"
+                  className="text-xs font-semibold text-blue-600 dark:text-blue-400 hover:underline"
                   onClick={() => onViewDetails?.(habit._id!)}
                 >
                   View Details
                 </button>
                 <button
-                  className="text-xs font-semibold text-gray-400 hover:underline"
+                  className="text-xs font-semibold text-slate-600 dark:text-gray-400 hover:underline"
                   onClick={() => onEdit?.(habit._id!)}
                 >
                   Edit Habit
                 </button>
-                <button className="text-xs font-semibold text-gray-400 hover:underline">
+                <button className="text-xs font-semibold text-slate-600 dark:text-gray-400 hover:underline">
                   ⋮ More
                 </button>
               </>
@@ -241,19 +245,19 @@ export function HabitCard({
                     ? 'Continue Timer'
                     : 'Complete'}
                 </button>
-                <button className="text-xs font-semibold text-gray-400 hover:underline">
+                <button className="text-xs font-semibold text-slate-600 dark:text-gray-400 hover:underline">
                   Pause
                 </button>
                 <button
-                  className="text-xs font-semibold text-gray-400 hover:underline"
+                  className="text-xs font-semibold text-slate-600 dark:text-gray-400 hover:underline"
                   onClick={() => onViewDetails?.(habit._id!)}
                 >
                   View History
                 </button>
-                <button className="text-xs font-semibold text-gray-400 hover:underline">
+                <button className="text-xs font-semibold text-slate-600 dark:text-gray-400 hover:underline">
                   Edit
                 </button>
-                <button className="text-xs font-semibold text-gray-400 hover:underline">
+                <button className="text-xs font-semibold text-slate-600 dark:text-gray-400 hover:underline">
                   ⋮ More
                 </button>
               </>
@@ -262,16 +266,16 @@ export function HabitCard({
                 <button className="text-xs bg-purple-600 hover:bg-purple-700 text-white font-semibold py-1 px-3 rounded-md">
                   Resume Habit
                 </button>
-                <button className="text-xs font-semibold text-gray-400 hover:underline">
+                <button className="text-xs font-semibold text-slate-600 dark:text-gray-400 hover:underline">
                   Delete
                 </button>
                 <button
-                  className="text-xs font-semibold text-gray-400 hover:underline"
+                  className="text-xs font-semibold text-slate-600 dark:text-gray-400 hover:underline"
                   onClick={() => onViewDetails?.(habit._id!)}
                 >
                   View History
                 </button>
-                <button className="text-xs font-semibold text-gray-400 hover:underline">
+                <button className="text-xs font-semibold text-slate-600 dark:text-gray-400 hover:underline">
                   ⋮ More
                 </button>
               </>
@@ -286,18 +290,18 @@ export function HabitCard({
                     : 'Start'}
                 </button>
                 <button
-                  className="text-xs font-semibold text-gray-400 hover:underline"
+                  className="text-xs font-semibold text-slate-600 dark:text-gray-400 hover:underline"
                   onClick={() => onSkip?.(habit._id!)}
                 >
                   Skip Today
                 </button>
                 <button
-                  className="text-xs font-semibold text-gray-400 hover:underline"
+                  className="text-xs font-semibold text-slate-600 dark:text-gray-400 hover:underline"
                   onClick={() => onEdit?.(habit._id!)}
                 >
                   Edit Schedule
                 </button>
-                <button className="text-xs font-semibold text-gray-400 hover:underline">
+                <button className="text-xs font-semibold text-slate-600 dark:text-gray-400 hover:underline">
                   ⋮ More
                 </button>
               </>

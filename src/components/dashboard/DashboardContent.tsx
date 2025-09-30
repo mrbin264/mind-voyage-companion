@@ -194,25 +194,25 @@ export function DashboardContent({ user }: DashboardContentProps) {
         <div className="xl:col-span-3 grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* Daily Wisdom */}
           <WidgetCard className="p-6 lg:col-span-2">
-            <h3 className="font-bold text-lg flex items-center gap-2 mb-4 text-gray-100">
+            <h3 className="font-bold text-lg flex items-center gap-2 mb-4 text-heading">
               🏛️ Daily Wisdom
             </h3>
             {currentQuote ? (
               <>
-                <blockquote className="text-xl text-gray-300 italic mb-2">
+                <blockquote className="text-xl text-body italic mb-2">
                   &ldquo;{currentQuote.text}&rdquo;
                 </blockquote>
-                <cite className="block text-right text-gray-500 mb-4">
+                <cite className="block text-right text-muted mb-4">
                   — {currentQuote.author}
                 </cite>
               </>
             ) : (
               <>
-                <blockquote className="text-xl text-gray-300 italic mb-2">
+                <blockquote className="text-xl text-body italic mb-2">
                   &ldquo;The best time to plant a tree was 20 years ago. The
                   second best time is now.&rdquo;
                 </blockquote>
-                <cite className="block text-right text-gray-500 mb-4">
+                <cite className="block text-right text-muted mb-4">
                   — Chinese Proverb
                 </cite>
               </>
@@ -267,13 +267,13 @@ export function DashboardContent({ user }: DashboardContentProps) {
 
           {/* Today's Focus */}
           <WidgetCard className="p-6 flex flex-col justify-center">
-            <h3 className="font-bold text-lg flex items-center gap-2 mb-2 text-gray-100">
+            <h3 className="font-bold text-lg flex items-center gap-2 mb-2 text-heading">
               🎯 Today&apos;s Focus
             </h3>
-            <p className="text-gray-400 mb-4">
+            <p className="text-muted mb-4">
               Complete 3 habits to maintain your momentum.
             </p>
-            <p className="text-sm font-semibold text-gray-300 mb-1">
+            <p className="text-sm font-semibold text-body mb-1">
               Progress: {summary?.completedToday || 0}/
               {summary?.totalCompletedToday || 0}
             </p>
