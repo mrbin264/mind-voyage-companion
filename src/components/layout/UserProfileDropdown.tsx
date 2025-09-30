@@ -88,7 +88,7 @@ export function UserProfileDropdown({ user }: UserProfileDropdownProps) {
             {/* Menu Items */}
             <div className="py-1">
               <Link
-                href={'/dashboard/profile' as any}
+                href={'/dashboard/settings' as any}
                 onClick={handleCloseDropdown}
                 className="flex items-center gap-3 px-4 py-2 text-gray-300 hover:bg-gray-800 hover:text-white transition-colors"
               >

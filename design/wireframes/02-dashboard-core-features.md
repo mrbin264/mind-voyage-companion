@@ -1287,4 +1287,186 @@ Before:                After:
 └─────────────────────────┘
 ```
 
+## 6. Wisdom Page Interface
+
+### Desktop Wisdom Dashboard (1024px+) - Primary Design
+```
+┌────────────────────────────────────────────────────────────────────────────────────────────┐
+│ ┌─────────────────┐ Mind Voyage Companion                    🔍 [Search] 🔔 [3] 👤 Maya    │
+│ │ 🏠 Dashboard    │                                                                        │
+│ │ 📈 Habits       │ ┌────────────────────────────────────────────────────────────────────┐ │
+│ │ 📝 Journal      │ │ 🏛️ Daily Wisdom                        [💫 Generate] [⭐ Favorites] │ │
+│ │ 📊 Analytics    │ │                                                                    │ │
+│ │ 🏛️ Wisdom       │ │ ┌──────────────────────────────────────────────────────────────┐ │ │
+│ │ ⚙️  Settings    │ │ │ Today's Quote                                                │ │ │
+│ │                 │ │ │                                                              │ │ │
+│ │ 🌟 Upgrade Pro  │ │ │ "The best time to plant a tree was 20 years ago.            │ │ │
+│ └─────────────────┘ │ │ The second best time is now."                                │ │ │
+│                     │ │                                                              │ │ │
+│                     │ │ — Chinese Proverb                                            │ │ │
+│                     │ │                                                              │ │ │
+│                     │ │ ┌─────────────────┐ ┌─────────────────┐ ┌─────────────────┐ │ │ │
+│                     │ │ │ 💫 New Quote    │ │ ❤️ Save to      │ │ 🔗 Share Quote  │ │ │ │
+│                     │ │ │                 │ │    Favorites    │ │                 │ │ │ │
+│                     │ │ └─────────────────┘ └─────────────────┘ └─────────────────┘ │ │ │
+│                     │ └──────────────────────────────────────────────────────────────┘ │ │
+│                     │                                                                    │ │
+│                     │ ┌───────────────┐ ┌───────────────┐ ┌───────────────┐ ┌─────────┐ │ │
+│                     │ │ Daily Quotes  │ │ Stoic (47)    │ │ Buddha (23)   │ │ Modern  │ │ │
+│                     │ │ ●●●●●●●●●●    │ │ ●●●●●●●●●●    │ │ ●●●●●●●●○○    │ │ (15)    │ │ │
+│                     │ └───────────────┘ └───────────────┘ └───────────────┘ └─────────┘ │ │
+│                     │                                                                    │ │
+│                     │ ┌─────────────────────────────────────┐ ┌─────────────────────────┐ │ │
+│                     │ │ 📚 Quote Categories                 │ │ ⭐ Your Favorites        │ │ │
+│                     │ │                                     │ │                         │ │ │
+│                     │ │ ┌─────────────────────────────────┐ │ │ ┌─────────────────────┐ │ │ │
+│                     │ │ │ 🏛️ Ancient Wisdom               │ │ │ │ "The unexamined    │ │ │ │
+│                     │ │ │   Stoic • Buddhist • Taoist    │ │ │ │ life is not worth   │ │ │ │
+│                     │ │ │   47 quotes available          │ │ │ │ living."            │ │ │ │
+│                     │ │ │   [Explore →]                   │ │ │ │                     │ │ │ │
+│                     │ │ └─────────────────────────────────┘ │ │ │ — Socrates          │ │ │ │
+│                     │ │                                     │ │ │ Saved 3 days ago    │ │ │ │
+│                     │ │ ┌─────────────────────────────────┐ │ │ └─────────────────────┘ │ │ │
+│                     │ │ │ 💪 Personal Growth             │ │ │                         │ │ │ │
+│                     │ │ │   Modern • Motivational        │ │ │ ┌─────────────────────┐ │ │ │
+│                     │ │ │   28 quotes available          │ │ │ │ "Yesterday is      │ │ │ │
+│                     │ │ │   [Explore →]                   │ │ │ │ history, tomorrow  │ │ │ │
+│                     │ │ └─────────────────────────────────┘ │ │ │ is a mystery..."   │ │ │ │
+│                     │ │                                     │ │ │                     │ │ │ │
+│                     │ │ ┌─────────────────────────────────┐ │ │ │ — Master Oogway     │ │ │ │
+│                     │ │ │ 🧘 Mindfulness & Peace         │ │ │ │ Saved 1 week ago    │ │ │ │
+│                     │ │ │   Buddha • Zen • Meditation    │ │ │ └─────────────────────┘ │ │ │
+│                     │ │ │   35 quotes available          │ │ │                         │ │ │ │
+│                     │ │ │   [Explore →]                   │ │ │ [View All Favorites]    │ │ │ │
+│                     │ │ └─────────────────────────────────┘ │ └─────────────────────────┘ │ │
+│                     │ │                                     │                           │ │
+│                     │ │ ┌─────────────────────────────────┐ │ ┌─────────────────────────┐ │ │
+│                     │ │ │ 🎯 Success & Achievement       │ │ │ 📊 Wisdom Analytics     │ │ │ │
+│                     │ │ │   Business • Leadership        │ │ │                         │ │ │ │
+│                     │ │ │   19 quotes available          │ │ │ Quotes viewed: 127      │ │ │ │
+│                     │ │ │   [Explore →]                   │ │ │ Favorites saved: 12     │ │ │ │
+│                     │ │ └─────────────────────────────────┘ │ │ Daily streak: 🔥 8 days │ │ │ │
+│                     │ │                                     │ │                         │ │ │ │
+│                     │ │ [+ Create Custom Category]          │ │ Most viewed category:   │ │ │ │
+│                     │ └─────────────────────────────────────┘ │ Ancient Wisdom (43%)    │ │ │ │
+│                     │                                         │                         │ │ │ │
+│                     │ ┌─────────────────────────────────────┐ │ Your wisdom score: A+   │ │ │ │
+│                     │ │ 🔍 Quote Search & Discovery         │ │                         │ │ │ │
+│                     │ │                                     │ │ [View Detailed Stats]   │ │ │ │
+│                     │ │ ┌─────────────────────────────────┐ │ └─────────────────────────┘ │ │
+│                     │ │ │ Search quotes by keyword...     │ │                           │ │
+│                     │ │ └─────────────────────────────────┘ │                           │ │
+│                     │ │                                     │                           │ │
+│                     │ │ Popular searches:                   │                           │ │
+│                     │ │ #courage #wisdom #love #success     │                           │ │
+│                     │ │ #peace #growth #change #strength    │                           │ │
+│                     │ │                                     │                           │ │
+│                     │ │ 🔮 AI-Powered Recommendations (Pro) │                           │ │
+│                     │ │ Based on your habits and mood,      │                           │ │
+│                     │ │ we suggest quotes about patience    │                           │ │
+│                     │ │ and persistence.                    │                           │ │
+│                     │ │                                     │                           │ │
+│                     │ │ [✨ Get Personalized Quotes]        │                           │ │
+│                     │ └─────────────────────────────────────┘                           │ │
+│                     └────────────────────────────────────────────────────────────────────┘ │
+└────────────────────────────────────────────────────────────────────────────────────────────┘
+```
+
+### Desktop Quote Category View (1024px+)
+```
+┌────────────────────────────────────────────────────────────────────────────────────────────┐
+│ ┌─────────────────┐ Mind Voyage Companion                    🔍 [Search] 🔔 [3] 👤 Maya    │
+│ │ 🏠 Dashboard    │                                                                        │
+│ │ 📈 Habits       │ ┌────────────────────────────────────────────────────────────────────┐ │
+│ │ 📝 Journal      │ │ ← Back to Wisdom      🏛️ Ancient Wisdom Quotes    [🔍 Search Category] │ │
+│ │ 📊 Analytics    │ │                                                                    │ │
+│ │ 🏛️ Wisdom       │ │ ┌──────────────────────────────────────────────────────────────┐ │ │
+│ │ ⚙️  Settings    │ │ │ Stoic Philosophy • Buddhist Teachings • Taoist Wisdom        │ │ │
+│ │                 │ │ │ 47 quotes in this category • 12 favorited                    │ │ │
+│ │ 🌟 Upgrade Pro  │ │ └──────────────────────────────────────────────────────────────┘ │ │
+│ └─────────────────┘ │                                                                    │ │
+│                     │ ┌───────────────┐ ┌───────────────┐ ┌───────────────┐ ┌─────────┐ │ │
+│                     │ │ All Quotes    │ │ Stoic (23)    │ │ Buddhist (15) │ │ Taoist  │ │ │
+│                     │ │ ●●●●●●●●●●    │ │ ●●●●●●●●●●    │ │ ●●●●●●●●○○    │ │ (9)     │ │ │
+│                     │ └───────────────┘ └───────────────┘ └───────────────┘ └─────────┘ │ │
+│                     │                                                                    │ │
+│                     │ ┌──────────────────────────────────────────────────────────────┐ │ │
+│                     │ │ "The best time to plant a tree was 20 years ago. The second │ │ │
+│                     │ │ best time is now."                                           │ │ │
+│                     │ │                                                              │ │ │
+│                     │ │ — Chinese Proverb                                            │ │ │
+│                     │ │ Category: Ancient Wisdom • Sub: Taoist                       │ │ │
+│                     │ │                                                              │ │ │
+│                     │ │ [❤️ Save to Favorites] [🔗 Share] [📋 Copy] [💫 Similar]     │ │ │
+│                     │ └──────────────────────────────────────────────────────────────┘ │ │
+│                     │                                                                    │ │
+│                     │ ┌──────────────────────────────────────────────────────────────┐ │ │
+│                     │ │ "The unexamined life is not worth living."                   │ │ │
+│                     │ │                                                              │ │ │
+│                     │ │ — Socrates                                                   │ │ │
+│                     │ │ Category: Ancient Wisdom • Sub: Stoic                        │ │ │
+│                     │ │                                                              │ │ │
+│                     │ │ [❤️ Save to Favorites] [🔗 Share] [📋 Copy] [💫 Similar]     │ │ │
+│                     │ └──────────────────────────────────────────────────────────────┘ │ │
+│                     │                                                                    │ │
+│                     │ ┌──────────────────────────────────────────────────────────────┐ │ │
+│                     │ │ "Peace comes from within. Do not seek it without."           │ │ │
+│                     │ │                                                              │ │ │
+│                     │ │ — Buddha                                                     │ │ │
+│                     │ │ Category: Ancient Wisdom • Sub: Buddhist                     │ │ │
+│                     │ │                                                              │ │ │
+│                     │ │ [❤️ Save to Favorites] [🔗 Share] [📋 Copy] [💫 Similar]     │ │ │
+│                     │ └──────────────────────────────────────────────────────────────┘ │ │
+│                     │                                                                    │ │
+│                     │ [Load More Quotes...]                                             │ │
+│                     └────────────────────────────────────────────────────────────────────┘ │
+└────────────────────────────────────────────────────────────────────────────────────────────┘
+```
+
+### Mobile Wisdom Interface (320px - 767px)
+```
+┌─────────────────────────┐
+│ ← Back        💫 Generate│
+│                         │
+│ Daily Wisdom            │
+│                         │
+│ ┌─────────────────────┐ │
+│ │ "The best time to   │ │
+│ │ plant a tree was 20 │ │
+│ │ years ago. The      │ │
+│ │ second best time    │ │
+│ │ is now."            │ │
+│ │                     │ │
+│ │ — Chinese Proverb   │ │
+│ │                     │ │
+│ │ [❤️ Save] [🔗 Share] │ │
+│ └─────────────────────┘ │
+│                         │
+│ Categories              │
+│ ┌─────────────────────┐ │
+│ │ 🏛️ Ancient Wisdom   │ │
+│ │    47 quotes        │ │
+│ └─────────────────────┘ │
+│                         │
+│ ┌─────────────────────┐ │
+│ │ 💪 Personal Growth  │ │
+│ │    28 quotes        │ │
+│ └─────────────────────┘ │
+│                         │
+│ ┌─────────────────────┐ │
+│ │ 🧘 Mindfulness      │ │
+│ │    35 quotes        │ │
+│ └─────────────────────┘ │
+│                         │
+│ ⭐ Your Favorites       │
+│ ┌─────────────────────┐ │
+│ │ "The unexamined     │ │
+│ │ life is not worth   │ │
+│ │ living." - Socrates │ │
+│ └─────────────────────┘ │
+│                         │
+│ [View All Favorites]    │
+└─────────────────────────┘
+```
+
 This wireframe specification covers all core functionality with clear interaction patterns, proper responsive behavior, and consistent visual hierarchy for optimal user experience.
