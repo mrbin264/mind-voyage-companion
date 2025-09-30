@@ -29,7 +29,6 @@ export const POST = secureEndpoint.custom(
         { status: 404 }
       )
     }
-
     // Create habit data structure
     const habitData = habit.habitId
       ? {
