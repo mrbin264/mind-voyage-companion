@@ -150,40 +150,17 @@ export const GET = secureEndpoint.api(
 )
 
 // POST /api/habits - Create a new habit
-export const POST = secureEndpoint.mutation(
+export const POST = secureEndpoint.custom(
   async (
     request: NextRequest,
     context: SecurityContext
   ): Promise<NextResponse> => {
-    const { session } = context
+    const { session, validatedBody } = context
 
     await connectDB()
 
-    // Parse and validate request body
-    let body: CreateHabitRequest | undefined
-    try {
-      body = await request.json()
-    } catch (error) {
-      throwValidationError('Invalid JSON in request body')
-    }
-
-    if (!body) {
-      throwValidationError('No request body provided')
-    }
-
-    // Validate using schema
-    const validation = schemas.createHabit.safeParse(body)
-    if (!validation.success) {
-      throwValidationError('Invalid habit data', {
-        issues: validation.error.issues.map(issue => ({
-          field: issue.path.join('.'),
-          message: issue.message,
-          code: issue.code,
-        })),
-      })
-    }
-
-    const validatedData = validation.data!
+    // Use validated data from security middleware
+    const validatedData = validatedBody!
 
     // Additional business logic validation
     if (
@@ -191,8 +168,8 @@ export const POST = secureEndpoint.mutation(
       validatedData.frequency.type === 'custom'
     ) {
       if (
-        !validatedData.frequency.days ||
-        validatedData.frequency.days.length === 0
+        !validatedData.frequency.daysOfWeek ||
+        validatedData.frequency.daysOfWeek.length === 0
       ) {
         throwValidationError(
           'Weekly and custom habits must specify days of week'
@@ -218,18 +195,7 @@ export const POST = secureEndpoint.mutation(
       status: {
         active: true,
         archived: false,
-        createdAt: new Date(),
       },
-      analytics: {
-        totalCompletions: 0,
-        currentStreak: 0,
-        bestStreak: 0,
-        averagePerformance: 0,
-        lastCompletedAt: null,
-      },
-      // Security: Ensure these fields are controlled
-      createdAt: new Date(),
-      updatedAt: new Date(),
     })
 
     const savedHabit = await habit.save()
@@ -245,5 +211,12 @@ export const POST = secureEndpoint.mutation(
       },
       { status: 201 }
     )
+  },
+  {
+    rateLimit: { type: 'mutation' },
+    auth: { required: true },
+    validation: { body: schemas.createHabit },
+    sanitization: { sanitizeBody: true },
+    logging: { logRequests: true, logResponses: true },
   }
 )

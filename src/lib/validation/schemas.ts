@@ -280,45 +280,38 @@ export const completeOnboardingSchema = z.object({
 // Habit validation schemas
 export const habitFrequencySchema = z.object({
   type: z.enum(['daily', 'weekly', 'custom']),
-  value: z
-    .number()
-    .min(1, 'Frequency value must be positive')
-    .max(7, 'Max 7 times per week'),
-  days: z.array(z.number().min(0).max(6)).optional(), // 0-6 for days of week
+  daysOfWeek: z.array(z.number().min(0).max(6)).optional(), // 0-6 for days of week
+  interval: z.number().optional(), // For future use
+})
+
+export const habitTargetSchema = z.object({
+  type: z.enum(['boolean', 'count', 'duration', 'amount']),
+  value: z.number().min(0).optional(),
+  unit: z.string().max(20, 'Unit too long').optional(),
 })
 
 export const createHabitSchema = z.object({
-  name: nameSchema,
+  title: z.string().min(1, 'Title is required').max(100, 'Title too long').transform(sanitizeHtml),
   description: z
     .string()
     .max(500, 'Description too long')
     .transform(sanitizeHtml)
     .optional(),
-  category: z.string().max(50, 'Category too long').transform(sanitizeHtml),
+  emoji: z.string().max(10, 'Emoji too long').optional(),
+  category: z.string().max(50, 'Category too long').transform(sanitizeHtml).optional(),
   frequency: habitFrequencySchema,
-  target: z
-    .number()
-    .min(0, 'Target cannot be negative')
-    .max(1000, 'Target too high')
-    .optional(),
-  unit: z.string().max(20, 'Unit too long').optional(),
+  target: habitTargetSchema,
   color: colorSchema.default('#3B82F6'),
-  icon: z.string().max(50, 'Icon name too long').optional(),
-  reminders: z
-    .array(
-      z.object({
-        time: z
-          .string()
-          .regex(
-            /^([01]?[0-9]|2[0-3]):[0-5][0-9]$/,
-            'Invalid time format (HH:MM)'
-          ),
-        enabled: z.boolean().default(true),
-      })
-    )
-    .max(5, 'Maximum 5 reminders')
-    .optional(),
-  isPrivate: z.boolean().default(false),
+  priority: z.enum(['low', 'medium', 'high']).default('medium'),
+  reminderTime: z
+    .string()
+    .optional()
+    .transform(val => val === '' ? undefined : val)
+    .refine(
+      val => val === undefined || /^([01]?[0-9]|2[0-3]):[0-5][0-9]$/.test(val),
+      'Invalid time format (HH:MM)'
+    ),
+  notes: z.string().max(1000, 'Notes too long').optional(),
 })
 
 export const updateHabitSchema = createHabitSchema.partial()
