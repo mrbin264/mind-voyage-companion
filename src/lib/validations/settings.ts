@@ -128,11 +128,9 @@ export const passwordChangeSchema = z
 // Account deletion validation schema
 export const accountDeletionSchema = z.object({
   password: z.string().min(1, 'Password is required to delete account'),
-  confirmDeletion: z
-    .literal('DELETE')
-    .refine(val => val === 'DELETE', {
-      message: 'Please type DELETE to confirm',
-    }),
+  confirmDeletion: z.literal('DELETE').refine(val => val === 'DELETE', {
+    message: 'Please type DELETE to confirm',
+  }),
   reason: z.string().optional(),
 })
 
