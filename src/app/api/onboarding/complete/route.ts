@@ -53,16 +53,16 @@ export async function POST(req: NextRequest) {
     const updatedUser = await User.findByIdAndUpdate(
       session.user.id,
       {
-        name: profile.displayName,
+        firstName: profile.firstName,
+        lastName: profile.lastName,
+        name: `${profile.firstName} ${profile.lastName}`,
         timezone: profile.timezone,
-        preferences: {
-          language: profile.language,
-          wakeUpTime: profile.wakeUpTime,
-          sleepTime: profile.sleepTime,
-          onboardingCompleted: true,
-          onboardingCompletedAt: new Date(),
-          firstHabit: habitData,
-        },
+        'preferences.language': profile.language,
+        'preferences.wakeUpTime': profile.wakeUpTime,
+        'preferences.sleepTime': profile.sleepTime,
+        'preferences.onboardingCompleted': true,
+        'preferences.onboardingCompletedAt': new Date(),
+        'preferences.firstHabit': habitData,
       },
       { new: true, runValidators: true }
     )

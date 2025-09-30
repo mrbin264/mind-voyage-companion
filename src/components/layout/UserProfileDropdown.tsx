@@ -2,7 +2,7 @@
 
 import { useState, useRef, useEffect } from 'react'
 import Link from 'next/link'
-import { User, Settings, LogOut, ChevronDown } from 'lucide-react'
+import { Settings, LogOut, ChevronDown } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { LogoutButton } from '@/components/auth/LogoutButton'
 
@@ -87,15 +87,6 @@ export function UserProfileDropdown({ user }: UserProfileDropdownProps) {
 
             {/* Menu Items */}
             <div className="py-1">
-              <Link
-                href={'/dashboard/settings' as any}
-                onClick={handleCloseDropdown}
-                className="flex items-center gap-3 px-4 py-2 text-gray-300 hover:bg-gray-800 hover:text-white transition-colors"
-              >
-                <User className="h-4 w-4" />
-                Profile
-              </Link>
-
               <Link
                 href={'/dashboard/settings' as any}
                 onClick={handleCloseDropdown}

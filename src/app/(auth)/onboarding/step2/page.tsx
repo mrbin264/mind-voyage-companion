@@ -5,7 +5,8 @@ import Link from 'next/link'
 import { OnboardingLayout } from '@/components/onboarding/OnboardingLayout'
 
 interface ProfileFormData {
-  displayName: string
+  firstName: string
+  lastName: string
   timezone: string
   language: string
   wakeUpTime: string
@@ -14,9 +15,10 @@ interface ProfileFormData {
 
 export default function OnboardingStep2() {
   const [formData, setFormData] = useState<ProfileFormData>({
-    displayName: '',
+    firstName: '',
+    lastName: '',
     timezone: 'America/New_York',
-    language: 'english',
+    language: 'en-US',
     wakeUpTime: '7:00 AM',
     sleepTime: '11:00 PM',
   })
@@ -67,23 +69,45 @@ export default function OnboardingStep2() {
             </p>
 
             <form onSubmit={handleSubmit} className="space-y-6">
-              <div>
-                <label
-                  htmlFor="display-name"
-                  className="block text-sm font-medium text-gray-400 mb-2"
-                >
-                  Display Name
-                </label>
-                <input
-                  type="text"
-                  id="display-name"
-                  value={formData.displayName}
-                  onChange={e =>
-                    handleInputChange('displayName', e.target.value)
-                  }
-                  className="w-full bg-gray-800/50 border border-gray-600 text-gray-200 rounded-xl px-4 py-3 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:bg-gray-800 transition-all duration-200"
-                  placeholder="Enter your display name"
-                />
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label
+                    htmlFor="first-name"
+                    className="block text-sm font-medium text-gray-400 mb-2"
+                  >
+                    First Name
+                  </label>
+                  <input
+                    type="text"
+                    id="first-name"
+                    value={formData.firstName}
+                    onChange={e =>
+                      handleInputChange('firstName', e.target.value)
+                    }
+                    className="w-full bg-gray-800/50 border border-gray-600 text-gray-200 rounded-xl px-4 py-3 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:bg-gray-800 transition-all duration-200"
+                    placeholder="First name"
+                    required
+                  />
+                </div>
+                <div>
+                  <label
+                    htmlFor="last-name"
+                    className="block text-sm font-medium text-gray-400 mb-2"
+                  >
+                    Last Name
+                  </label>
+                  <input
+                    type="text"
+                    id="last-name"
+                    value={formData.lastName}
+                    onChange={e =>
+                      handleInputChange('lastName', e.target.value)
+                    }
+                    className="w-full bg-gray-800/50 border border-gray-600 text-gray-200 rounded-xl px-4 py-3 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:bg-gray-800 transition-all duration-200"
+                    placeholder="Last name"
+                    required
+                  />
+                </div>
               </div>
 
               <div>
@@ -119,9 +143,9 @@ export default function OnboardingStep2() {
                 <div className="space-y-2">
                   <button
                     type="button"
-                    onClick={() => handleInputChange('language', 'english')}
+                    onClick={() => handleInputChange('language', 'en-US')}
                     className={`w-full text-left overflow-hidden border-2 rounded-xl transition-all ${
-                      formData.language === 'english'
+                      formData.language === 'en-US'
                         ? 'border-blue-500 bg-blue-500/10'
                         : 'border-gray-600 bg-gray-800/50'
                     }`}
@@ -130,9 +154,9 @@ export default function OnboardingStep2() {
                   </button>
                   <button
                     type="button"
-                    onClick={() => handleInputChange('language', 'vietnamese')}
+                    onClick={() => handleInputChange('language', 'vi-VN')}
                     className={`w-full text-left overflow-hidden border-2 rounded-xl transition-all ${
-                      formData.language === 'vietnamese'
+                      formData.language === 'vi-VN'
                         ? 'border-blue-500 bg-blue-500/10'
                         : 'border-gray-600 bg-gray-800/50 hover:bg-gray-700/50'
                     }`}
@@ -204,9 +228,9 @@ export default function OnboardingStep2() {
             </h3>
             <dl className="space-y-4 text-gray-300">
               <div>
-                <dt className="font-semibold text-gray-200">👤 Display Name</dt>
+                <dt className="font-semibold text-gray-200">👤 Name</dt>
                 <dd className="text-sm text-gray-400">
-                  This is how you&apos;ll appear in your journal entries.
+                  This is how you&apos;ll appear in your journal entries and dashboard.
                 </dd>
               </div>
               <div>

@@ -54,9 +54,12 @@ export default function OnboardingStep1() {
               Let&apos;s Start{' '}
               <span className="font-normal text-blue-200">(2 minutes)</span>
             </Link>
-            <button className="bg-gray-700/50 hover:bg-gray-700 text-gray-300 font-semibold py-3 px-6 rounded-lg transition-colors">
-              Take the Tour
-            </button>
+            <Link
+              href="/dashboard"
+              className="bg-gray-700/50 hover:bg-gray-700 text-gray-300 font-semibold py-3 px-6 rounded-lg transition-colors inline-block"
+            >
+              Skip for Now
+            </Link>
           </div>
         </div>
 

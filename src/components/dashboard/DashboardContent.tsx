@@ -5,8 +5,9 @@ import { Button } from '@/components/ui/button'
 import { WidgetCard } from '@/components/ui/widget-card'
 import { HabitForm } from './HabitForm'
 import { useHabits } from '@/hooks/useHabits'
+import { useWisdom } from '@/hooks/useWisdom'
 import type { CreateHabitRequest } from '@/types/habit'
-import { Target, Plus } from 'lucide-react'
+import { Target, Plus, RefreshCw, Heart, Loader2 } from 'lucide-react'
 import Link from 'next/link'
 
 interface AuthUser {
@@ -22,6 +23,11 @@ interface DashboardContentProps {
 export function DashboardContent({ user }: DashboardContentProps) {
   const [showCreateForm, setShowCreateForm] = useState(false)
   const [selectedMood, setSelectedMood] = useState('😊')
+  const [wisdomActionLoading, setWisdomActionLoading] = useState<string | null>(null)
+  const [journalContent, setJournalContent] = useState('')
+  const [journalSaving, setJournalSaving] = useState(false)
+  const [journalSaved, setJournalSaved] = useState(false)
+  const [journalError, setJournalError] = useState<string | null>(null)
 
   const {
     habits,
@@ -36,6 +42,14 @@ export function DashboardContent({ user }: DashboardContentProps) {
     fetchHabits,
     fetchSummary,
   } = useHabits({ status: 'active' })
+
+  const {
+    currentQuote,
+    fetchRandomQuote,
+    addToFavorites,
+    removeFromFavorites,
+    isFavorited,
+  } = useWisdom()
 
   // Get today's habits only (first 4 for compact view)
   const todaysHabits = habits.slice(0, 4)
@@ -65,6 +79,104 @@ export function DashboardContent({ user }: DashboardContentProps) {
     }
   }
 
+  const handleGenerateWisdomQuote = async () => {
+    setWisdomActionLoading('generate')
+    try {
+      await fetchRandomQuote()
+    } finally {
+      setWisdomActionLoading(null)
+    }
+  }
+
+  const handleToggleWisdomFavorite = async () => {
+    if (!currentQuote) return
+
+    setWisdomActionLoading('favorite')
+    try {
+      const isCurrentlyFavorited = isFavorited(currentQuote.id)
+      if (isCurrentlyFavorited) {
+        await removeFromFavorites(currentQuote.id)
+      } else {
+        await addToFavorites(currentQuote)
+      }
+    } finally {
+      setWisdomActionLoading(null)
+    }
+  }
+
+  const handleQuickJournal = () => {
+    // Scroll to journal section and focus textarea
+    const journalSection = document.querySelector('textarea[placeholder*="How are you feeling"]') as HTMLTextAreaElement
+    if (journalSection) {
+      journalSection.scrollIntoView({ behavior: 'smooth', block: 'center' })
+      setTimeout(() => {
+        journalSection.focus()
+      }, 500)
+    }
+  }
+
+  const handleSaveJournalEntry = async () => {
+    if (!journalContent.trim()) {
+      setJournalError('Please write something before saving your journal entry!')
+      setTimeout(() => setJournalError(null), 3000)
+      return
+    }
+
+    setJournalSaving(true)
+    setJournalError(null)
+    try {
+      // Convert mood emoji to number (1-5 scale)
+      const moodMap: { [key: string]: number } = {
+        '😔': 1,
+        '😐': 2, 
+        '😊': 3,
+        '😄': 4,
+        '🤗': 5
+      }
+
+      const response = await fetch('/api/journal', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          content: journalContent.trim(),
+          mood: moodMap[selectedMood] || 3,
+          date: new Date().toISOString().split('T')[0], // Today's date
+        }),
+      })
+
+      const result = await response.json()
+
+      if (!response.ok) {
+        if (response.status === 409) {
+          setJournalError('You already have a journal entry for today! You can edit it from the Journal page.')
+        } else {
+          setJournalError(result.error || 'Failed to save journal entry')
+        }
+        setTimeout(() => setJournalError(null), 5000)
+        return
+      }
+
+      // Success! Clear the form and show feedback
+      setJournalContent('')
+      setSelectedMood('😊')
+      setJournalSaved(true)
+      
+      // Auto-hide success message after 3 seconds
+      setTimeout(() => {
+        setJournalSaved(false)
+      }, 3000)
+
+    } catch (error) {
+      console.error('Error saving journal entry:', error)
+      setJournalError('Failed to save journal entry. Please try again.')
+      setTimeout(() => setJournalError(null), 3000)
+    } finally {
+      setJournalSaving(false)
+    }
+  }
+
   const moods = ['😔', '😐', '😊', '😄', '🤗']
 
   return (
@@ -78,29 +190,66 @@ export function DashboardContent({ user }: DashboardContentProps) {
             <h3 className="font-bold text-lg flex items-center gap-2 mb-4 text-gray-100">
               🏛️ Daily Wisdom
             </h3>
-            <blockquote className="text-xl text-gray-300 italic mb-2">
-              &ldquo;The best time to plant a tree was 20 years ago. The second
-              best time is now.&rdquo;
-            </blockquote>
-            <cite className="block text-right text-gray-500 mb-4">
-              — Chinese Proverb
-            </cite>
+            {currentQuote ? (
+              <>
+                <blockquote className="text-xl text-gray-300 italic mb-2">
+                  &ldquo;{currentQuote.text}&rdquo;
+                </blockquote>
+                <cite className="block text-right text-gray-500 mb-4">
+                  — {currentQuote.author}
+                </cite>
+              </>
+            ) : (
+              <>
+                <blockquote className="text-xl text-gray-300 italic mb-2">
+                  &ldquo;The best time to plant a tree was 20 years ago. The second
+                  best time is now.&rdquo;
+                </blockquote>
+                <cite className="block text-right text-gray-500 mb-4">
+                  — Chinese Proverb
+                </cite>
+              </>
+            )}
             <div className="flex gap-2">
-              <Link href="/dashboard/wisdom">
-                <Button
-                  size="sm"
-                  className="text-sm bg-blue-600/20 hover:bg-blue-600/40 text-blue-300 font-semibold"
-                >
-                  💫 Generate New Quote
-                </Button>
-              </Link>
-              <Link href="/dashboard/wisdom">
-                <Button
-                  size="sm"
-                  className="text-sm bg-pink-600/20 hover:bg-pink-600/40 text-pink-300 font-semibold"
-                >
-                  ❤️ Save
-                </Button>
+              <Button
+                size="sm"
+                onClick={handleGenerateWisdomQuote}
+                disabled={wisdomActionLoading === 'generate'}
+                className="text-sm bg-blue-600/20 hover:bg-blue-600/40 text-blue-300 font-semibold"
+              >
+                {wisdomActionLoading === 'generate' ? (
+                  <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                ) : (
+                  <RefreshCw className="w-4 h-4 mr-2" />
+                )}
+                Generate New Quote
+              </Button>
+              <Button
+                size="sm"
+                onClick={handleToggleWisdomFavorite}
+                disabled={wisdomActionLoading === 'favorite' || !currentQuote}
+                className={`text-sm font-semibold ${
+                  currentQuote && isFavorited(currentQuote.id)
+                    ? 'bg-pink-600/40 text-pink-200'
+                    : 'bg-pink-600/20 text-pink-300'
+                } hover:bg-pink-600/40`}
+              >
+                {wisdomActionLoading === 'favorite' ? (
+                  <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                ) : (
+                  <Heart
+                    className={`w-4 h-4 mr-2 ${
+                      currentQuote && isFavorited(currentQuote.id) ? 'fill-current' : ''
+                    }`}
+                  />
+                )}
+                {currentQuote && isFavorited(currentQuote.id) ? 'Favorited' : 'Save to Favorites'}
+              </Button>
+              <Link 
+                href="/dashboard/wisdom"
+                className="text-xs text-blue-400 hover:underline ml-2 flex items-center"
+              >
+                Explore More →
               </Link>
             </div>
           </WidgetCard>
@@ -226,9 +375,18 @@ export function DashboardContent({ user }: DashboardContentProps) {
         <div className="xl:col-span-3 grid grid-cols-1 lg:grid-cols-5 gap-6">
           {/* Quick Journal Entry */}
           <WidgetCard className="p-6 lg:col-span-2">
-            <h3 className="font-bold text-lg mb-4 text-gray-100">
-              📝 Quick Journal Entry
-            </h3>
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="font-bold text-lg text-gray-100">
+                📝 Quick Journal Entry
+              </h3>
+              <div className="text-xs text-gray-500">
+                {new Date().toLocaleDateString('en-US', { 
+                  weekday: 'long', 
+                  month: 'short', 
+                  day: 'numeric' 
+                })}
+              </div>
+            </div>
             <label className="text-sm font-medium text-gray-400 mb-2 block">
               How are you feeling today?
             </label>
@@ -247,19 +405,53 @@ export function DashboardContent({ user }: DashboardContentProps) {
                 </button>
               ))}
             </div>
+            {journalSaved && (
+              <div className="mb-3 p-2 bg-green-600/20 border border-green-600/30 rounded-lg text-green-300 text-sm flex items-center gap-2">
+                ✅ Journal entry saved successfully! Your thoughts have been recorded.
+              </div>
+            )}
+            {journalError && (
+              <div className="mb-3 p-2 bg-red-600/20 border border-red-600/30 rounded-lg text-red-300 text-sm flex items-center gap-2">
+                ❌ {journalError}
+              </div>
+            )}
             <textarea
-              placeholder="What made today special?"
+              value={journalContent}
+              onChange={(e) => setJournalContent(e.target.value)}
+              placeholder="How are you feeling? What happened today? Any thoughts or reflections..."
+              maxLength={5000}
               className="w-full bg-gray-800 border border-gray-700 rounded-lg p-3 text-sm h-24 resize-none focus:ring-2 focus:ring-blue-500 focus:outline-none text-white placeholder-gray-500"
             />
             <div className="flex justify-between items-center mt-3">
-              <button className="text-xs bg-gray-700/80 hover:bg-gray-700 text-gray-300 font-semibold py-1 px-3 rounded-md transition-colors">
-                🔒 Private
-              </button>
-              <Link href="/journal">
-                <Button className="text-sm bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4">
-                  💾 Save Entry
+              <div className="flex items-center gap-2">
+                <button className="text-xs bg-gray-700/80 hover:bg-gray-700 text-gray-300 font-semibold py-1 px-3 rounded-md transition-colors">
+                  🔒 Private
+                </button>
+                <span className="text-xs text-gray-500">
+                  {journalContent.length}/5000
+                </span>
+              </div>
+              <div className="flex items-center gap-2">
+                <Link href="/journal" className="text-xs text-blue-400 hover:underline">
+                  View All →
+                </Link>
+                <Button 
+                  onClick={handleSaveJournalEntry}
+                  disabled={journalSaving || !journalContent.trim()}
+                  className="text-sm bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 disabled:opacity-50"
+                >
+                  {journalSaving ? (
+                    <>
+                      <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                      Saving...
+                    </>
+                  ) : (
+                    <>
+                      💾 Save Entry
+                    </>
+                  )}
                 </Button>
-              </Link>
+              </div>
             </div>
           </WidgetCard>
 
@@ -339,20 +531,30 @@ export function DashboardContent({ user }: DashboardContentProps) {
               ⚡ Quick Actions
             </h3>
             <div className="grid grid-cols-2 gap-4">
-              <Link href="/journal" className="block">
-                <button className="p-4 bg-[#18181B] border border-white/10 rounded-lg hover:border-blue-500 text-left transition-colors w-full">
-                  <h4 className="font-bold text-gray-200">📝 Journal</h4>
-                  <p className="text-sm text-gray-400">Quick Entry</p>
-                </button>
-              </Link>
-              <Link href="/dashboard/wisdom" className="block">
-                <button className="p-4 bg-[#18181B] border border-white/10 rounded-lg hover:border-blue-500 text-left transition-colors w-full">
-                  <h4 className="font-bold text-gray-200">
-                    🏛️ Get Daily Wisdom
-                  </h4>
-                  <p className="text-sm text-gray-400">New Quote</p>
-                </button>
-              </Link>
+              <button 
+                onClick={handleQuickJournal}
+                className="p-4 bg-[#18181B] border border-white/10 rounded-lg hover:border-blue-500 text-left transition-colors w-full"
+              >
+                <h4 className="font-bold text-gray-200">📝 Journal</h4>
+                <p className="text-sm text-gray-400">Quick Entry</p>
+              </button>
+              <button 
+                onClick={handleGenerateWisdomQuote}
+                disabled={wisdomActionLoading === 'generate'}
+                className="p-4 bg-[#18181B] border border-white/10 rounded-lg hover:border-blue-500 text-left transition-colors w-full disabled:opacity-50"
+              >
+                <h4 className="font-bold text-gray-200 flex items-center gap-2">
+                  {wisdomActionLoading === 'generate' ? (
+                    <Loader2 className="w-4 h-4 animate-spin" />
+                  ) : (
+                    '🏛️'
+                  )}
+                  Get Daily Wisdom
+                </h4>
+                <p className="text-sm text-gray-400">
+                  {wisdomActionLoading === 'generate' ? 'Generating...' : 'New Quote'}
+                </p>
+              </button>
               <Link href="/dashboard/analytics" className="block">
                 <button className="p-4 bg-[#18181B] border border-white/10 rounded-lg hover:border-blue-500 text-left transition-colors w-full">
                   <h4 className="font-bold text-gray-200">📊 Analytics</h4>

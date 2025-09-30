@@ -1,281 +1,29 @@
-'use client'
-
-import React, { useState } from 'react'
-import { BarChart3, Download, Calendar, Filter, RefreshCw } from 'lucide-react'
+import React from 'react'
 import { DashboardLayout } from '@/components/layout/DashboardLayout'
-import {
-  OverviewWidget,
-  StreakWidget,
-  MoodCorrelationWidget,
-  AIInsightsWidget,
-  WeeklyTrendsWidget,
-} from '@/components/dashboard/analytics/AnalyticsWidgets'
-import { WeeklyTrendsChart } from '@/components/dashboard/analytics/Charts'
-import { useAnalytics } from '@/hooks/useAnalytics'
-import type { AnalyticsTimeframe, AnalyticsFilters } from '@/types/analytics'
+import { AnalyticsPageContent } from '@/components/dashboard/AnalyticsPageContent'
+import { auth } from '@/lib/auth'
+import { redirect } from 'next/navigation'
 
-const timeframeOptions = [
-  { value: 'week', label: 'This Week' },
-  { value: 'month', label: 'This Month' },
-  { value: 'quarter', label: 'This Quarter' },
-  { value: 'year', label: 'This Year' },
-  { value: 'all', label: 'All Time' },
-] as const
+export default async function AnalyticsPage() {
+  const session = await auth()
 
-export default function AnalyticsPage() {
-  const [filters, setFilters] = useState<AnalyticsFilters>({
-    timeframe: { type: 'month' },
-    includeArchived: false,
-    includeJournal: true,
-  })
+  if (!session?.user) {
+    // This should be handled by middleware, but redirect as fallback
+    redirect('/login')
+  }
 
-  const { overview, loading, error, refreshData, exportAnalytics } =
-    useAnalytics(filters)
-
-  // TODO: Get user from auth context
   const user = {
-    name: 'User',
-    email: 'user@example.com',
-  }
-
-  const handleExport = async () => {
-    try {
-      await exportAnalytics('pdf')
-    } catch (error) {
-      console.error('Export failed:', error)
-    }
-  }
-
-  const handleTimeframeChange = (newTimeframe: AnalyticsTimeframe['type']) => {
-    setFilters({
-      ...filters,
-      timeframe: { type: newTimeframe },
-    })
-  }
-
-  if (loading && !overview) {
-    return (
-      <DashboardLayout user={user}>
-        <div className="min-h-screen bg-gray-900 p-6">
-          <div className="max-w-7xl mx-auto">
-            <div className="animate-pulse">
-              <div className="h-8 bg-gray-700 rounded w-48 mb-6"></div>
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-                {[...Array(4)].map((_, i) => (
-                  <div key={i} className="h-32 bg-gray-800 rounded-lg"></div>
-                ))}
-              </div>
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                {[...Array(4)].map((_, i) => (
-                  <div key={i} className="h-64 bg-gray-800 rounded-lg"></div>
-                ))}
-              </div>
-            </div>
-          </div>
-        </div>
-      </DashboardLayout>
-    )
-  }
-
-  if (error) {
-    return (
-      <DashboardLayout user={user}>
-        <div className="min-h-screen bg-gray-900 p-6">
-          <div className="max-w-7xl mx-auto">
-            <div className="bg-red-900/20 border border-red-800 rounded-lg p-6 text-center">
-              <h2 className="text-red-400 text-lg font-semibold mb-2">
-                Failed to Load Analytics
-              </h2>
-              <p className="text-gray-300 mb-4">{error}</p>
-              <button
-                onClick={refreshData}
-                className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg flex items-center gap-2 mx-auto transition-colors"
-              >
-                <RefreshCw className="w-4 h-4" />
-                Retry
-              </button>
-            </div>
-          </div>
-        </div>
-      </DashboardLayout>
-    )
-  }
-
-  if (!overview) {
-    return (
-      <DashboardLayout user={user}>
-        <div className="min-h-screen bg-gray-900 p-6">
-          <div className="max-w-7xl mx-auto">
-            <div className="text-center py-16">
-              <BarChart3 className="w-16 h-16 text-gray-600 mx-auto mb-4" />
-              <h2 className="text-xl font-semibold text-gray-400 mb-2">
-                No Analytics Data Available
-              </h2>
-              <p className="text-gray-500">
-                Complete some habits and journal entries to see your analytics
-              </p>
-            </div>
-          </div>
-        </div>
-      </DashboardLayout>
-    )
+    userId: session.user.id!,
+    email: session.user.email!,
+    name: session.user.name!,
   }
 
   return (
-    <DashboardLayout user={user}>
-      <div className="min-h-screen bg-gray-900 p-6">
-        <div className="max-w-7xl mx-auto space-y-6">
-          {/* Header */}
-          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-            <div>
-              <h1 className="text-2xl font-bold text-white flex items-center gap-3">
-                <BarChart3 className="w-8 h-8 text-blue-400" />
-                Analytics Dashboard
-              </h1>
-              <p className="text-gray-400 mt-1">
-                Track your progress and discover insights about your habits
-              </p>
-            </div>
-
-            <div className="flex items-center gap-3">
-              {/* Timeframe Filter */}
-              <div className="relative">
-                <select
-                  value={filters.timeframe.type}
-                  onChange={e =>
-                    handleTimeframeChange(
-                      e.target.value as AnalyticsTimeframe['type']
-                    )
-                  }
-                  className="bg-gray-800 border border-gray-700 text-white rounded-lg px-4 py-2 pr-10 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 appearance-none"
-                >
-                  {timeframeOptions.map(option => (
-                    <option key={option.value} value={option.value}>
-                      {option.label}
-                    </option>
-                  ))}
-                </select>
-                <Filter className="w-4 h-4 text-gray-400 absolute right-3 top-1/2 transform -translate-y-1/2 pointer-events-none" />
-              </div>
-
-              {/* Export Button */}
-              <button
-                onClick={handleExport}
-                disabled={loading}
-                className="bg-blue-600 hover:bg-blue-700 disabled:bg-gray-700 disabled:cursor-not-allowed text-white px-4 py-2 rounded-lg flex items-center gap-2 transition-colors"
-              >
-                <Download className="w-4 h-4" />
-                Export
-              </button>
-
-              {/* Refresh Button */}
-              <button
-                onClick={refreshData}
-                disabled={loading}
-                className="bg-gray-700 hover:bg-gray-600 disabled:cursor-not-allowed text-white px-4 py-2 rounded-lg flex items-center gap-2 transition-colors"
-              >
-                <RefreshCw
-                  className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`}
-                />
-                Refresh
-              </button>
-            </div>
-          </div>
-
-          {/* Overview Cards */}
-          <OverviewWidget overview={overview} />
-
-          {/* Weekly Trends Chart */}
-          <div className="bg-gray-800 rounded-lg p-6 border border-gray-700">
-            <div className="flex items-center gap-2 mb-6">
-              <Calendar className="w-5 h-5 text-blue-400" />
-              <h3 className="text-lg font-semibold text-white">
-                Weekly Progress Trends
-              </h3>
-            </div>
-            <WeeklyTrendsChart trends={overview.weeklyTrends} />
-          </div>
-
-          {/* Analytics Widgets Grid */}
-          <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6">
-            {/* Streaks Widget */}
-            <StreakWidget streaks={overview.activeStreaks} />
-
-            {/* Weekly Trends Summary */}
-            <WeeklyTrendsWidget trends={overview.weeklyTrends} />
-
-            {/* Mood Correlations */}
-            <MoodCorrelationWidget correlations={overview.moodCorrelations} />
-          </div>
-
-          {/* AI Insights (Pro Feature) */}
-          {overview.aiInsights && overview.aiInsights.length > 0 && (
-            <AIInsightsWidget insights={overview.aiInsights} />
-          )}
-
-          {/* Performance Highlights */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {/* Best Performance */}
-            <div className="bg-gray-800 rounded-lg p-6 border border-gray-700">
-              <h3 className="text-lg font-semibold text-white mb-4">
-                Best Performance
-              </h3>
-              <div className="space-y-3">
-                <div className="flex justify-between items-center">
-                  <span className="text-gray-300">Best Day</span>
-                  <span className="text-green-400 font-semibold">
-                    {overview.bestPerformingDay}
-                  </span>
-                </div>
-                <div className="flex justify-between items-center">
-                  <span className="text-gray-300">Best Month</span>
-                  <span className="text-green-400 font-semibold">
-                    {overview.bestMonth.month} (
-                    {overview.bestMonth.completionRate}%)
-                  </span>
-                </div>
-                <div className="flex justify-between items-center">
-                  <span className="text-gray-300">Longest Streak</span>
-                  <span className="text-yellow-400 font-semibold">
-                    {overview.longestStreak} days
-                  </span>
-                </div>
-              </div>
-            </div>
-
-            {/* Areas for Improvement */}
-            <div className="bg-gray-800 rounded-lg p-6 border border-gray-700">
-              <h3 className="text-lg font-semibold text-white mb-4">
-                Areas for Improvement
-              </h3>
-              <div className="space-y-3">
-                <div className="flex justify-between items-center">
-                  <span className="text-gray-300">Challenging Day</span>
-                  <span className="text-orange-400 font-semibold">
-                    {overview.challengingDay}
-                  </span>
-                </div>
-                {overview.overallCompletionRate < 80 && (
-                  <div className="p-3 bg-yellow-900/20 border border-yellow-800 rounded">
-                    <p className="text-yellow-400 text-sm">
-                      Consider reducing your habit load or adjusting difficulty
-                      to maintain consistency
-                    </p>
-                  </div>
-                )}
-                {overview.activeStreaks.length === 0 && (
-                  <div className="p-3 bg-blue-900/20 border border-blue-800 rounded">
-                    <p className="text-blue-400 text-sm">
-                      Focus on building streaks by completing habits
-                      consistently for 3+ days
-                    </p>
-                  </div>
-                )}
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
+    <DashboardLayout
+      user={{ name: user.name, email: user.email }}
+      showDefaultHeader={true}
+    >
+      <AnalyticsPageContent user={user} />
     </DashboardLayout>
   )
 }
