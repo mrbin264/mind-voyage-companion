@@ -509,18 +509,24 @@ function generateAchievements(
   return { recent: achievements, next: nextAchievement }
 }
 
-export const GET = secureEndpoint.api(async (
-  request: NextRequest,
-  context: SecurityContext
-): Promise<NextResponse> => {
-  const { session } = context
-  
-  await connectDB()
+export const GET = secureEndpoint.api(
+  async (
+    request: NextRequest,
+    context: SecurityContext
+  ): Promise<NextResponse> => {
+    const { session } = context
 
-  const { searchParams } = new URL(request.url)
-  const timeframe = (searchParams.get('timeframe') || 'month') as 'week' | 'month' | 'quarter' | 'year' | 'all'
-  
-  const { startDate, endDate } = getTimeframeDates(timeframe)
+    await connectDB()
+
+    const { searchParams } = new URL(request.url)
+    const timeframe = (searchParams.get('timeframe') || 'month') as
+      | 'week'
+      | 'month'
+      | 'quarter'
+      | 'year'
+      | 'all'
+
+    const { startDate, endDate } = getTimeframeDates(timeframe)
 
     // Fetch all analytics data
     const [weeklyTrends, streaks, correlations, journalAnalytics] =

@@ -19,13 +19,15 @@ export interface AuthSession {
   expires: string
 }
 
-export type AuthResult = {
-  success: true
-  session: AuthSession
-} | {
-  success: false
-  error: NextResponse
-}
+export type AuthResult =
+  | {
+      success: true
+      session: AuthSession
+    }
+  | {
+      success: false
+      error: NextResponse
+    }
 
 // Configuration for different authentication levels
 export interface AuthConfig {
@@ -46,7 +48,7 @@ export async function authenticateRequest(
   try {
     // Try to get session using NextAuth
     const session = await auth()
-    
+
     if (session?.user?.id) {
       const authSession: AuthSession = {
         user: {
@@ -54,29 +56,31 @@ export async function authenticateRequest(
           email: session.user.email || '',
           name: session.user.name || '',
           verified: (session.user as any).verified || false,
-          role: (session.user as any).role || 'user'
+          role: (session.user as any).role || 'user',
         },
-        expires: session.expires || new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString()
+        expires:
+          session.expires ||
+          new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString(),
       }
-      
+
       // Validate session requirements
       const validationResult = validateSession(authSession, config)
       if (!validationResult.success) {
         return validationResult
       }
-      
+
       return {
         success: true,
-        session: authSession
+        session: authSession,
       }
     }
-    
+
     // Try to get JWT from next-auth token
-    const nextAuthToken = await getToken({ 
+    const nextAuthToken = await getToken({
       req: request,
-      secret: process.env.NEXTAUTH_SECRET 
+      secret: process.env.NEXTAUTH_SECRET,
     })
-    
+
     if (nextAuthToken) {
       const tokenSession: AuthSession = {
         user: {
@@ -84,22 +88,22 @@ export async function authenticateRequest(
           email: nextAuthToken.email || '',
           name: nextAuthToken.name || '',
           verified: (nextAuthToken as any).verified || false,
-          role: (nextAuthToken as any).role || 'user'
+          role: (nextAuthToken as any).role || 'user',
         },
-        expires: new Date(nextAuthToken.exp! * 1000).toISOString()
+        expires: new Date(nextAuthToken.exp! * 1000).toISOString(),
       }
-      
+
       const validationResult = validateSession(tokenSession, config)
       if (!validationResult.success) {
         return validationResult
       }
-      
+
       return {
         success: true,
-        session: tokenSession
+        session: tokenSession,
       }
     }
-    
+
     // No valid authentication found
     if (!config.required) {
       // For optional authentication, return a guest session
@@ -111,42 +115,45 @@ export async function authenticateRequest(
             email: '',
             name: 'Guest',
             verified: false,
-            role: 'guest'
+            role: 'guest',
           },
-          expires: new Date(Date.now() + 60 * 60 * 1000).toISOString() // 1 hour
-        }
+          expires: new Date(Date.now() + 60 * 60 * 1000).toISOString(), // 1 hour
+        },
       }
     }
-    
+
     return {
       success: false,
-      error: NextResponse.json({
-        success: false,
-        error: 'Authentication required',
-        message: 'Please log in to access this resource'
-      }, { 
-        status: 401,
-        headers: {
-          'WWW-Authenticate': 'Bearer realm="API"'
+      error: NextResponse.json(
+        {
+          success: false,
+          error: 'Authentication required',
+          message: 'Please log in to access this resource',
+        },
+        {
+          status: 401,
+          headers: {
+            'WWW-Authenticate': 'Bearer realm="API"',
+          },
         }
-      })
+      ),
     }
-    
   } catch (error) {
     console.error('Authentication error:', error)
-    
+
     return {
       success: false,
-      error: NextResponse.json({
-        success: false,
-        error: 'Authentication failed',
-        message: 'Invalid or expired session'
-      }, { status: 401 })
+      error: NextResponse.json(
+        {
+          success: false,
+          error: 'Authentication failed',
+          message: 'Invalid or expired session',
+        },
+        { status: 401 }
+      ),
     }
   }
 }
-
-
 
 /**
  * Validate session against configuration requirements
@@ -154,63 +161,77 @@ export async function authenticateRequest(
 function validateSession(
   session: AuthSession,
   config: AuthConfig
-): { success: true; session: AuthSession } | { success: false; error: NextResponse } {
+):
+  | { success: true; session: AuthSession }
+  | { success: false; error: NextResponse } {
   // Check if user ID exists
   if (!session.user.id) {
     return {
       success: false,
-      error: NextResponse.json({
-        success: false,
-        error: 'Invalid session',
-        message: 'User session is incomplete'
-      }, { status: 401 })
+      error: NextResponse.json(
+        {
+          success: false,
+          error: 'Invalid session',
+          message: 'User session is incomplete',
+        },
+        { status: 401 }
+      ),
     }
   }
-  
+
   // Check email verification requirement
   if (config.verified && !session.user.verified) {
     return {
       success: false,
-      error: NextResponse.json({
-        success: false,
-        error: 'Email verification required',
-        message: 'Please verify your email address to access this resource'
-      }, { status: 403 })
+      error: NextResponse.json(
+        {
+          success: false,
+          error: 'Email verification required',
+          message: 'Please verify your email address to access this resource',
+        },
+        { status: 403 }
+      ),
     }
   }
-  
+
   // Check role requirements
   if (config.roles && config.roles.length > 0) {
     const userRole = session.user.role || 'user'
     if (!config.roles.includes(userRole)) {
       return {
         success: false,
-        error: NextResponse.json({
-          success: false,
-          error: 'Insufficient permissions',
-          message: 'You do not have permission to access this resource'
-        }, { status: 403 })
+        error: NextResponse.json(
+          {
+            success: false,
+            error: 'Insufficient permissions',
+            message: 'You do not have permission to access this resource',
+          },
+          { status: 403 }
+        ),
       }
     }
   }
-  
+
   // Check token expiration
   const now = new Date()
   const expires = new Date(session.expires)
   if (now >= expires) {
     return {
       success: false,
-      error: NextResponse.json({
-        success: false,
-        error: 'Session expired',
-        message: 'Please log in again'
-      }, { status: 401 })
+      error: NextResponse.json(
+        {
+          success: false,
+          error: 'Session expired',
+          message: 'Please log in again',
+        },
+        { status: 401 }
+      ),
     }
   }
-  
+
   return {
     success: true,
-    session
+    session,
   }
 }
 
@@ -219,56 +240,72 @@ function validateSession(
  */
 
 // Require authentication
-export const requireAuth = (config: Omit<AuthConfig, 'required'> = {}) =>
-  (request: NextRequest) => authenticateRequest(request, { ...config, required: true })
+export const requireAuth =
+  (config: Omit<AuthConfig, 'required'> = {}) =>
+  (request: NextRequest) =>
+    authenticateRequest(request, { ...config, required: true })
 
 // Optional authentication (sets session if available)
-export const optionalAuth = (config: Omit<AuthConfig, 'required'> = {}) =>
-  (request: NextRequest) => authenticateRequest(request, { ...config, required: false })
+export const optionalAuth =
+  (config: Omit<AuthConfig, 'required'> = {}) =>
+  (request: NextRequest) =>
+    authenticateRequest(request, { ...config, required: false })
 
 // Admin only
-export const requireAdmin = (config: Omit<AuthConfig, 'roles'> = {}) =>
-  (request: NextRequest) => authenticateRequest(request, { 
-    ...config, 
-    required: true, 
-    roles: ['admin', 'superuser'] 
-  })
+export const requireAdmin =
+  (config: Omit<AuthConfig, 'roles'> = {}) =>
+  (request: NextRequest) =>
+    authenticateRequest(request, {
+      ...config,
+      required: true,
+      roles: ['admin', 'superuser'],
+    })
 
 // Verified users only
-export const requireVerified = (config: Omit<AuthConfig, 'verified'> = {}) =>
-  (request: NextRequest) => authenticateRequest(request, { 
-    ...config, 
-    required: true, 
-    verified: true 
-  })
+export const requireVerified =
+  (config: Omit<AuthConfig, 'verified'> = {}) =>
+  (request: NextRequest) =>
+    authenticateRequest(request, {
+      ...config,
+      required: true,
+      verified: true,
+    })
 
 /**
  * Higher-order function to wrap API route handlers with authentication
  */
 export function withAuth<T extends any[]>(
-  handler: (request: NextRequest, session: AuthSession, ...args: T) => Promise<NextResponse>,
+  handler: (
+    request: NextRequest,
+    session: AuthSession,
+    ...args: T
+  ) => Promise<NextResponse>,
   config: AuthConfig = { required: true }
 ) {
   return async (request: NextRequest, ...args: T): Promise<NextResponse> => {
     const authResult = await authenticateRequest(request, config)
-    
+
     if (!authResult.success) {
       return authResult.error
     }
-    
+
     // Add session to request context (if supported by your setup)
     try {
       return await handler(request, authResult.session, ...args)
     } catch (error) {
       console.error('Handler error:', error)
-      
-      return NextResponse.json({
-        success: false,
-        error: 'Internal server error',
-        message: process.env.NODE_ENV === 'development' 
-          ? (error as Error).message 
-          : 'An unexpected error occurred'
-      }, { status: 500 })
+
+      return NextResponse.json(
+        {
+          success: false,
+          error: 'Internal server error',
+          message:
+            process.env.NODE_ENV === 'development'
+              ? (error as Error).message
+              : 'An unexpected error occurred',
+        },
+        { status: 500 }
+      )
     }
   }
 }
@@ -287,7 +324,7 @@ export async function getUserId(request: NextRequest): Promise<string | null> {
 export function validateApiKey(request: NextRequest): boolean {
   const apiKey = request.headers.get('X-API-Key')
   const validApiKeys = process.env.API_KEYS?.split(',') || []
-  
+
   return apiKey ? validApiKeys.includes(apiKey) : false
 }
 
@@ -299,5 +336,5 @@ export default {
   requireVerified,
   withAuth,
   getUserId,
-  validateApiKey
+  validateApiKey,
 }

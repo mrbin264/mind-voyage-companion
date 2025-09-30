@@ -11,14 +11,14 @@ class MemoryCache {
   private cleanup() {
     const now = Date.now()
     const entries = Array.from(this.cache.entries())
-    
+
     // Remove expired entries
     for (const [key, item] of entries) {
       if (now > item.expiry) {
         this.cache.delete(key)
       }
     }
-    
+
     // If still too large, remove oldest entries
     if (this.cache.size > this.maxSize) {
       const remaining = Array.from(this.cache.entries())
@@ -43,7 +43,7 @@ class MemoryCache {
     this.cleanup()
     this.cache.set(key, {
       value,
-      expiry: Date.now() + (ttlSeconds * 1000)
+      expiry: Date.now() + ttlSeconds * 1000,
     })
   }
 
@@ -58,7 +58,7 @@ class MemoryCache {
   async invalidatePattern(pattern: string): Promise<void> {
     const keys = Array.from(this.cache.keys())
     const regex = new RegExp(pattern.replace(/\*/g, '.*'))
-    
+
     for (const key of keys) {
       if (regex.test(key)) {
         this.cache.delete(key)
@@ -72,16 +72,18 @@ export const cache = new MemoryCache()
 // Cache key generators
 export const cacheKeys = {
   userHabits: (userId: string) => `habits:${userId}`,
-  userAnalytics: (userId: string, timeframe: string) => `analytics:${userId}:${timeframe}`,
-  habitProgress: (habitId: string, userId: string) => `progress:${habitId}:${userId}`,
+  userAnalytics: (userId: string, timeframe: string) =>
+    `analytics:${userId}:${timeframe}`,
+  habitProgress: (habitId: string, userId: string) =>
+    `progress:${habitId}:${userId}`,
   userStreaks: (userId: string) => `streaks:${userId}`,
-  journalAnalytics: (userId: string, period: string) => `journal:${userId}:${period}`,
+  journalAnalytics: (userId: string, period: string) =>
+    `journal:${userId}:${period}`,
   moodCorrelations: (userId: string) => `mood:${userId}`,
 }
 
 // Optimized database queries
 export class OptimizedQueries {
-  
   // Get habits with basic stats (avoiding complex aggregations)
   static async getHabitsWithBasicStats(
     userId: string,
@@ -89,14 +91,15 @@ export class OptimizedQueries {
     limit: number = 50
   ) {
     const cacheKey = `${cacheKeys.userHabits(userId)}:${JSON.stringify(filters)}:${limit}`
-    
+
     const cached = await cache.get(cacheKey)
     if (cached) {
       return cached
     }
 
     // Simple query with lean() for better performance
-    const habits = await mongoose.model('Habit')
+    const habits = await mongoose
+      .model('Habit')
       .find({ userId: new mongoose.Types.ObjectId(userId), ...filters })
       .sort({ priority: -1, createdAt: -1 })
       .limit(limit)
@@ -104,10 +107,11 @@ export class OptimizedQueries {
 
     // Get recent logs in separate query
     const habitIds = habits.map(h => h._id)
-    const recentLogs = await mongoose.model('HabitLog')
-      .find({ 
+    const recentLogs = await mongoose
+      .model('HabitLog')
+      .find({
         habitId: { $in: habitIds },
-        userId: new mongoose.Types.ObjectId(userId)
+        userId: new mongoose.Types.ObjectId(userId),
       })
       .sort({ date: -1 })
       .limit(100)
@@ -118,71 +122,76 @@ export class OptimizedQueries {
       const habitLogs = recentLogs.filter(
         (log: any) => log.habitId.toString() === (habit as any)._id.toString()
       )
-      
+
       const completedCount = habitLogs.filter(log => log.completed).length
       const totalCount = habitLogs.length
-      
+
       return {
         ...habit,
         recentStats: {
-          completionRate: totalCount > 0 ? Math.round((completedCount / totalCount) * 100) : 0,
+          completionRate:
+            totalCount > 0
+              ? Math.round((completedCount / totalCount) * 100)
+              : 0,
           totalLogs: totalCount,
           completedLogs: completedCount,
-          lastLogDate: habitLogs[0]?.date || null
-        }
+          lastLogDate: habitLogs[0]?.date || null,
+        },
       }
     })
-    
+
     // Cache for 5 minutes
     await cache.set(cacheKey, habitsWithStats, 300)
-    
+
     return habitsWithStats
   }
 
   // Efficient batch operations
-  static async batchUpdateHabitLogs(updates: Array<{
-    habitId: string,
-    userId: string,
-    date: string,
-    completed: boolean,
-    value?: number
-  }>) {
+  static async batchUpdateHabitLogs(
+    updates: Array<{
+      habitId: string
+      userId: string
+      date: string
+      completed: boolean
+      value?: number
+    }>
+  ) {
     const bulkOps = updates.map(update => ({
       updateOne: {
         filter: {
           habitId: new mongoose.Types.ObjectId(update.habitId),
           userId: new mongoose.Types.ObjectId(update.userId),
-          date: update.date
+          date: update.date,
         },
         update: {
           $set: {
             completed: update.completed,
             ...(update.value !== undefined && { value: update.value }),
             completedAt: update.completed ? new Date() : undefined,
-            updatedAt: new Date()
-          }
+            updatedAt: new Date(),
+          },
         },
-        upsert: true
-      }
+        upsert: true,
+      },
     }))
 
     const result = await mongoose.model('HabitLog').bulkWrite(bulkOps, {
-      ordered: false // Allow parallel execution
+      ordered: false, // Allow parallel execution
     })
-    
+
     // Invalidate related caches
     const userIds = Array.from(new Set(updates.map(u => u.userId)))
     for (const userId of userIds) {
       await CacheManager.invalidateUserData(userId)
     }
-    
+
     return result
   }
 
   // Quick analytics summary
   static async getUserAnalyticsSummary(userId: string, days: number = 30) {
     const cacheKey = cacheKeys.userAnalytics(userId, `${days}d`)
-    
+
     const cached = await cache.get(cacheKey)
     if (cached) {
       return cached
@@ -196,45 +205,46 @@ export class OptimizedQueries {
     const [habitCount, logCount, journalCount] = await Promise.all([
       mongoose.model('Habit').countDocuments({
         userId: new mongoose.Types.ObjectId(userId),
-        'status.active': true
+        'status.active': true,
       }),
-      
+
       mongoose.model('HabitLog').countDocuments({
         userId: new mongoose.Types.ObjectId(userId),
         date: { $gte: startDateStr },
-        completed: true
+        completed: true,
       }),
-      
-      mongoose.model('JournalEntry') ? mongoose.model('JournalEntry').countDocuments({
-        userId: new mongoose.Types.ObjectId(userId),
-        date: { $gte: startDateStr }
-      }) : 0
+
+      mongoose.model('JournalEntry')
+        ? mongoose.model('JournalEntry').countDocuments({
+            userId: new mongoose.Types.ObjectId(userId),
+            date: { $gte: startDateStr },
+          })
+        : 0,
     ])
 
     const summary = {
       activeHabits: habitCount,
       completedHabits: logCount,
       journalEntries: journalCount,
-      period: `${days} days`
+      period: `${days} days`,
     }
-    
+
     // Cache for 10 minutes
     await cache.set(cacheKey, summary, 600)
-    
+
     return summary
   }
 }
 
 // Cache management
 export class CacheManager {
-  
   static async invalidateUserData(userId: string) {
     await Promise.all([
       cache.del(cacheKeys.userHabits(userId)),
       cache.del(cacheKeys.userStreaks(userId)),
       cache.invalidatePattern(`analytics:${userId}:*`),
       cache.invalidatePattern(`progress:*:${userId}`),
-      cache.invalidatePattern(`journal:${userId}:*`)
+      cache.invalidatePattern(`journal:${userId}:*`),
     ])
   }
 
@@ -243,13 +253,13 @@ export class CacheManager {
       cache.del(cacheKeys.userHabits(userId)),
       cache.del(cacheKeys.habitProgress(habitId, userId)),
       cache.del(cacheKeys.userStreaks(userId)),
-      cache.invalidatePattern(`analytics:${userId}:*`)
+      cache.invalidatePattern(`analytics:${userId}:*`),
     ])
   }
 
   static async getStats() {
     return {
-      message: 'In-memory cache active - use Redis for production'
+      message: 'In-memory cache active - use Redis for production',
     }
   }
 }

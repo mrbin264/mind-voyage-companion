@@ -6,13 +6,14 @@ import { JournalEntryModel } from '@/lib/models/journal'
 import { secureEndpoint } from '@/lib/middleware/security'
 import type { SecurityContext } from '@/lib/middleware/security'
 
-export const GET = secureEndpoint.api(async (
-  request: NextRequest,
-  context: SecurityContext
-): Promise<NextResponse> => {
-  const { session } = context
-  
-  await connectDB()
+export const GET = secureEndpoint.api(
+  async (
+    request: NextRequest,
+    context: SecurityContext
+  ): Promise<NextResponse> => {
+    const { session } = context
+
+    await connectDB()
 
     // Get user data
     const user = await User.findById(session!.user.id)
@@ -56,58 +57,61 @@ export const GET = secureEndpoint.api(async (
     }
 
     return NextResponse.json(profileData)
-})
+  }
+)
 
-export const PUT = secureEndpoint.mutation(async (
-  request: NextRequest,
-  context: SecurityContext
-): Promise<NextResponse> => {
-  const { session } = context
-  
-  const body = await request.json()
-  const { firstName, lastName, email, timezone } = body
+export const PUT = secureEndpoint.mutation(
+  async (
+    request: NextRequest,
+    context: SecurityContext
+  ): Promise<NextResponse> => {
+    const { session } = context
 
-  // Basic validation
-  if (!firstName?.trim() || !lastName?.trim()) {
-    return NextResponse.json(
-      { error: 'First name and last name are required' },
-      { status: 400 }
+    const body = await request.json()
+    const { firstName, lastName, email, timezone } = body
+
+    // Basic validation
+    if (!firstName?.trim() || !lastName?.trim()) {
+      return NextResponse.json(
+        { error: 'First name and last name are required' },
+        { status: 400 }
+      )
+    }
+
+    if (!email?.trim() || !email.includes('@')) {
+      return NextResponse.json(
+        { error: 'Valid email is required' },
+        { status: 400 }
+      )
+    }
+
+    await connectDB()
+
+    // Update user profile
+    const updatedUser = await User.findByIdAndUpdate(
+      session!.user.id,
+      {
+        firstName: firstName.trim(),
+        lastName: lastName.trim(),
+        email: email.trim(),
+        timezone: timezone || 'America/New_York',
+        updatedAt: new Date(),
+      },
+      { new: true }
     )
-  }
 
-  if (!email?.trim() || !email.includes('@')) {
-    return NextResponse.json(
-      { error: 'Valid email is required' },
-      { status: 400 }
-    )
-  }
+    if (!updatedUser) {
+      return NextResponse.json({ error: 'User not found' }, { status: 404 })
+    }
 
-  await connectDB()
-
-  // Update user profile
-  const updatedUser = await User.findByIdAndUpdate(
-    session!.user.id,
-    {
-      firstName: firstName.trim(),
-      lastName: lastName.trim(),
-      email: email.trim(),
-      timezone: timezone || 'America/New_York',
-      updatedAt: new Date(),
-    },
-    { new: true }
-  )
-
-  if (!updatedUser) {
-    return NextResponse.json({ error: 'User not found' }, { status: 404 })
-  }
-
-  return NextResponse.json({
-    message: 'Profile updated successfully',
-    user: {
-      firstName: updatedUser.firstName,
-      lastName: updatedUser.lastName,
-      email: updatedUser.email,
+    return NextResponse.json({
+      message: 'Profile updated successfully',
+      user: {
+        firstName: updatedUser.firstName,
+        lastName: updatedUser.lastName,
+        email: updatedUser.email,
         timezone: updatedUser.timezone,
       },
     })
-})
+  }
+)

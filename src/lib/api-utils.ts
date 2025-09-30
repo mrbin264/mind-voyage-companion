@@ -27,14 +27,14 @@ export interface APIResponse<T = any> {
 // Authentication middleware
 export async function requireAuth(request: NextRequest) {
   const session = await auth()
-  
+
   if (!session?.user?.id) {
     return {
       error: NextResponse.json(
         { success: false, error: 'Authentication required' },
         { status: 401 }
       ),
-      session: null
+      session: null,
     }
   }
 
@@ -51,38 +51,55 @@ export function createAPIError(
 
   // Security: Never expose internal errors in production
   const isDevelopment = process.env.NODE_ENV === 'development'
-  
+
   // Handle specific error types
   if (error instanceof z.ZodError) {
-    return NextResponse.json({
-      success: false,
-      error: 'Validation failed',
-      details: isDevelopment ? error.issues : 'Invalid input data'
-    }, { status: 400 })
+    return NextResponse.json(
+      {
+        success: false,
+        error: 'Validation failed',
+        details: isDevelopment ? error.issues : 'Invalid input data',
+      },
+      { status: 400 }
+    )
   }
 
   if (error instanceof mongoose.Error.ValidationError) {
-    return NextResponse.json({
-      success: false,
-      error: 'Database validation error',
-      details: isDevelopment ? error.message : 'Invalid data format'
-    }, { status: 400 })
+    return NextResponse.json(
+      {
+        success: false,
+        error: 'Database validation error',
+        details: isDevelopment ? error.message : 'Invalid data format',
+      },
+      { status: 400 }
+    )
   }
 
-  if (error instanceof mongoose.Error || (error as any)?.name?.includes('Mongo')) {
-    return NextResponse.json({
-      success: false,
-      error: 'Database connection error',
-      message: 'Please try again later'
-    }, { status: 503 })
+  if (
+    error instanceof mongoose.Error ||
+    (error as any)?.name?.includes('Mongo')
+  ) {
+    return NextResponse.json(
+      {
+        success: false,
+        error: 'Database connection error',
+        message: 'Please try again later',
+      },
+      { status: 503 }
+    )
   }
 
   // Generic error response
-  return NextResponse.json({
-    success: false,
-    error: 'Internal server error',
-    message: isDevelopment ? (error as Error)?.message : 'An unexpected error occurred'
-  }, { status: statusCode })
+  return NextResponse.json(
+    {
+      success: false,
+      error: 'Internal server error',
+      message: isDevelopment
+        ? (error as Error)?.message
+        : 'An unexpected error occurred',
+    },
+    { status: statusCode }
+  )
 }
 
 // Input sanitization utilities
@@ -91,15 +108,17 @@ export function sanitizeRegexInput(input: string): string {
   return input.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
 }
 
-export function sanitizeMongoQuery(query: Record<string, any>): Record<string, any> {
+export function sanitizeMongoQuery(
+  query: Record<string, any>
+): Record<string, any> {
   // Remove MongoDB injection attempts
   const sanitized = JSON.parse(JSON.stringify(query))
-  
+
   function cleanObject(obj: any): any {
     if (Array.isArray(obj)) {
       return obj.map(cleanObject)
     }
-    
+
     if (obj && typeof obj === 'object') {
       const cleaned: any = {}
       for (const [key, value] of Object.entries(obj)) {
@@ -110,10 +129,10 @@ export function sanitizeMongoQuery(query: Record<string, any>): Record<string, a
       }
       return cleaned
     }
-    
+
     return obj
   }
-  
+
   return cleanObject(sanitized)
 }
 
@@ -124,11 +143,16 @@ export interface PaginationParams {
   offset: number
 }
 
-export function parsePagination(searchParams: URLSearchParams): PaginationParams {
+export function parsePagination(
+  searchParams: URLSearchParams
+): PaginationParams {
   const page = Math.max(1, parseInt(searchParams.get('page') || '1', 10))
-  const limit = Math.min(100, Math.max(1, parseInt(searchParams.get('limit') || '20', 10)))
+  const limit = Math.min(
+    100,
+    Math.max(1, parseInt(searchParams.get('limit') || '20', 10))
+  )
   const offset = (page - 1) * limit
-  
+
   return { page, limit, offset }
 }
 
@@ -138,7 +162,7 @@ export function createPaginatedResponse<T>(
   pagination: PaginationParams
 ): APIResponse<T[]> {
   const totalPages = Math.ceil(total / pagination.limit)
-  
+
   return {
     success: true,
     data,
@@ -147,11 +171,11 @@ export function createPaginatedResponse<T>(
         page: pagination.page,
         limit: pagination.limit,
         total,
-        totalPages
+        totalPages,
       },
       timestamp: new Date().toISOString(),
-      version: '1.0'
-    }
+      version: '1.0',
+    },
   }
 }
 
@@ -165,7 +189,7 @@ export function checkRateLimit(
 ): { allowed: boolean; remaining: number; resetTime: number } {
   const now = Date.now()
   const key = identifier
-  
+
   // Clean expired entries
   if (rateLimitStore.has(key)) {
     const entry = rateLimitStore.get(key)!
@@ -173,36 +197,39 @@ export function checkRateLimit(
       rateLimitStore.delete(key)
     }
   }
-  
+
   // Get or create entry
-  const entry = rateLimitStore.get(key) || { count: 0, resetTime: now + windowMs }
-  
+  const entry = rateLimitStore.get(key) || {
+    count: 0,
+    resetTime: now + windowMs,
+  }
+
   if (entry.count >= maxRequests) {
-    return { 
-      allowed: false, 
-      remaining: 0, 
-      resetTime: entry.resetTime 
+    return {
+      allowed: false,
+      remaining: 0,
+      resetTime: entry.resetTime,
     }
   }
-  
+
   entry.count++
   rateLimitStore.set(key, entry)
-  
+
   return {
     allowed: true,
     remaining: maxRequests - entry.count,
-    resetTime: entry.resetTime
+    resetTime: entry.resetTime,
   }
 }
 
 // Validation schemas for common operations
 export const paginationSchema = z.object({
   page: z.coerce.number().min(1).default(1),
-  limit: z.coerce.number().min(1).max(100).default(20)
+  limit: z.coerce.number().min(1).max(100).default(20),
 })
 
 export const searchSchema = z.object({
   q: z.string().min(1).max(100).optional(),
   category: z.string().max(50).optional(),
-  status: z.enum(['active', 'inactive', 'all']).default('all')
+  status: z.enum(['active', 'inactive', 'all']).default('all'),
 })

@@ -110,18 +110,19 @@ const categories = {
   },
 }
 
-export const GET = secureEndpoint.api(async (
-  request: NextRequest,
-  context: SecurityContext
-): Promise<NextResponse> => {
-  const { session } = context
-  
-  await connectDB()
+export const GET = secureEndpoint.api(
+  async (
+    request: NextRequest,
+    context: SecurityContext
+  ): Promise<NextResponse> => {
+    const { session } = context
 
-  const { searchParams } = new URL(request.url)
-  const category = searchParams.get('category')
-  const search = searchParams.get('search')
-  const random = searchParams.get('random') === 'true'
+    await connectDB()
+
+    const { searchParams } = new URL(request.url)
+    const category = searchParams.get('category')
+    const search = searchParams.get('search')
+    const random = searchParams.get('random') === 'true'
 
     let filteredQuotes = [...quotesDatabase]
 
@@ -176,30 +177,33 @@ export const GET = secureEndpoint.api(async (
         count: quotesDatabase.filter(q => q.category === key).length,
       })),
     })
-})
+  }
+)
 
 // Get daily quote for the user
-export const POST = secureEndpoint.api(async (
-  request: NextRequest,
-  context: SecurityContext
-): Promise<NextResponse> => {
-  const { session } = context
-  
-  await connectDB()
+export const POST = secureEndpoint.api(
+  async (
+    request: NextRequest,
+    context: SecurityContext
+  ): Promise<NextResponse> => {
+    const { session } = context
 
-  // In a real app, you might store user's daily quote preference or use AI to personalize
-  // For now, we'll return a quote based on the current date to ensure consistency
-  const today = new Date().toDateString()
-  const seed = today
-    .split('')
-    .reduce((acc, char) => acc + char.charCodeAt(0), 0)
-  const dailyQuoteIndex = seed % quotesDatabase.length
-  const dailyQuote = quotesDatabase[dailyQuoteIndex]
+    await connectDB()
 
-  return NextResponse.json({
-    quote: dailyQuote,
-    category:
-      categories[dailyQuote.category as keyof typeof categories] || null,
-    date: today,
-  })
-})
+    // In a real app, you might store user's daily quote preference or use AI to personalize
+    // For now, we'll return a quote based on the current date to ensure consistency
+    const today = new Date().toDateString()
+    const seed = today
+      .split('')
+      .reduce((acc, char) => acc + char.charCodeAt(0), 0)
+    const dailyQuoteIndex = seed % quotesDatabase.length
+    const dailyQuote = quotesDatabase[dailyQuoteIndex]
+
+    return NextResponse.json({
+      quote: dailyQuote,
+      category:
+        categories[dailyQuote.category as keyof typeof categories] || null,
+      date: today,
+    })
+  }
+)

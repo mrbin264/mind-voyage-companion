@@ -23,7 +23,7 @@ export enum ErrorSeverity {
   LOW = 'low',
   MEDIUM = 'medium',
   HIGH = 'high',
-  CRITICAL = 'critical'
+  CRITICAL = 'critical',
 }
 
 // Error categories for better handling
@@ -36,7 +36,7 @@ export enum ErrorCategory {
   DATABASE = 'database',
   EXTERNAL_API = 'external_api',
   SERVER = 'server',
-  CLIENT = 'client'
+  CLIENT = 'client',
 }
 
 // Custom error class for API errors
@@ -88,13 +88,20 @@ export class AuthorizationError extends APIError {
 
 export class NotFoundError extends APIError {
   constructor(resource: string = 'Resource') {
-    super(`${resource} not found`, 404, ErrorCategory.NOT_FOUND, ErrorSeverity.LOW)
+    super(
+      `${resource} not found`,
+      404,
+      ErrorCategory.NOT_FOUND,
+      ErrorSeverity.LOW
+    )
   }
 }
 
 export class RateLimitError extends APIError {
   constructor(message: string = 'Rate limit exceeded', retryAfter?: number) {
-    super(message, 429, ErrorCategory.RATE_LIMIT, ErrorSeverity.MEDIUM, { retryAfter })
+    super(message, 429, ErrorCategory.RATE_LIMIT, ErrorSeverity.MEDIUM, {
+      retryAfter,
+    })
   }
 }
 
@@ -122,18 +129,22 @@ export class ErrorLogger {
       category: (error as APIError).category || ErrorCategory.SERVER,
       severity: (error as APIError).severity || ErrorSeverity.MEDIUM,
       details: (error as APIError).details,
-      request: request ? {
-        method: request.method,
-        url: request.url,
-        headers: this.sanitizeHeaders(Object.fromEntries(request.headers.entries())),
-        userAgent: request.headers.get('user-agent')
-      } : undefined,
-      context
+      request: request
+        ? {
+            method: request.method,
+            url: request.url,
+            headers: this.sanitizeHeaders(
+              Object.fromEntries(request.headers.entries())
+            ),
+            userAgent: request.headers.get('user-agent'),
+          }
+        : undefined,
+      context,
     }
 
     // Log based on severity
     const severity = (error as APIError).severity || ErrorSeverity.MEDIUM
-    
+
     switch (severity) {
       case ErrorSeverity.CRITICAL:
         console.error('🚨 CRITICAL ERROR:', errorInfo)
@@ -151,8 +162,15 @@ export class ErrorLogger {
     }
   }
 
-  private static sanitizeHeaders(headers: Record<string, string>): Record<string, string> {
-    const sensitiveHeaders = ['authorization', 'cookie', 'x-api-key', 'x-auth-token']
+  private static sanitizeHeaders(
+    headers: Record<string, string>
+  ): Record<string, string> {
+    const sensitiveHeaders = [
+      'authorization',
+      'cookie',
+      'x-api-key',
+      'x-auth-token',
+    ]
     const sanitized: Record<string, string> = {}
 
     for (const [key, value] of Object.entries(headers)) {
@@ -184,25 +202,28 @@ export function handleError(
   } else if (error instanceof ZodError) {
     apiError = new ValidationError('Invalid input data', {
       issues: isDevelopment ? error.issues : 'Multiple validation errors',
-      fieldErrors: error.issues.reduce((acc, issue) => {
-        const field = issue.path.join('.')
-        acc[field] = issue.message
-        return acc
-      }, {} as Record<string, string>)
+      fieldErrors: error.issues.reduce(
+        (acc, issue) => {
+          const field = issue.path.join('.')
+          acc[field] = issue.message
+          return acc
+        },
+        {} as Record<string, string>
+      ),
     })
   } else if (error instanceof mongoose.Error.ValidationError) {
     const validationErrors = Object.values(error.errors).map(err => ({
       field: err.path,
-      message: err.message
+      message: err.message,
     }))
-    
+
     apiError = new ValidationError('Database validation failed', {
-      errors: isDevelopment ? validationErrors : 'Invalid data format'
+      errors: isDevelopment ? validationErrors : 'Invalid data format',
     })
   } else if (error instanceof mongoose.Error.CastError) {
     apiError = new ValidationError('Invalid data format', {
       field: error.path,
-      value: isDevelopment ? error.value : '[REDACTED]'
+      value: isDevelopment ? error.value : '[REDACTED]',
     })
   } else if (error instanceof mongoose.Error) {
     apiError = new DatabaseError('Database connection error')
@@ -228,7 +249,7 @@ export function handleError(
     message: apiError.message,
     code: `${apiError.category.toUpperCase()}_ERROR`,
     timestamp: new Date().toISOString(),
-    requestId
+    requestId,
   }
 
   // Add details only in development or for certain error types
@@ -244,7 +265,7 @@ export function handleError(
   // Set appropriate headers
   const headers: Record<string, string> = {
     'Content-Type': 'application/json',
-    'X-Request-ID': requestId
+    'X-Request-ID': requestId,
   }
 
   if (apiError instanceof RateLimitError && apiError.details?.retryAfter) {
@@ -253,7 +274,7 @@ export function handleError(
 
   return NextResponse.json(errorResponse, {
     status: apiError.statusCode,
-    headers
+    headers,
   })
 }
 
@@ -291,7 +312,9 @@ export function withErrorHandling<T extends any[]>(
     try {
       // Log request if enabled
       if (options?.logRequests) {
-        console.log(`📨 [${requestId}] ${request.method} ${new URL(request.url).pathname}`)
+        console.log(
+          `📨 [${requestId}] ${request.method} ${new URL(request.url).pathname}`
+        )
       }
 
       const response = await handler(request, ...args)
@@ -314,7 +337,7 @@ export function withErrorHandling<T extends any[]>(
         ...options?.context,
         requestId,
         duration,
-        handler: handler.name
+        handler: handler.name,
       })
     }
   }
@@ -365,5 +388,5 @@ export default {
   throwAuthError,
   throwForbiddenError,
   throwRateLimitError,
-  throwDatabaseError
+  throwDatabaseError,
 }

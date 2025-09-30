@@ -8,24 +8,25 @@ import { secureEndpoint } from '@/lib/middleware/security'
 import type { SecurityContext } from '@/lib/middleware/security'
 
 // GET /api/habits/[id]/logs - Get habit logs with date range
-export const GET = secureEndpoint.api(async (
-  request: NextRequest,
-  context: SecurityContext,
-  { params }: { params: Promise<{ id: string }> }
-): Promise<NextResponse> => {
-  const { session } = context
-  const { id } = await params
+export const GET = secureEndpoint.api(
+  async (
+    request: NextRequest,
+    context: SecurityContext,
+    { params }: { params: Promise<{ id: string }> }
+  ): Promise<NextResponse> => {
+    const { session } = context
+    const { id } = await params
 
-  if (!mongoose.Types.ObjectId.isValid(id)) {
-    return NextResponse.json({ error: 'Invalid habit ID' }, { status: 400 })
-  }
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      return NextResponse.json({ error: 'Invalid habit ID' }, { status: 400 })
+    }
 
-  const { searchParams } = new URL(request.url)
-  const startDate = searchParams.get('startDate')
-  const endDate = searchParams.get('endDate')
-  const limit = parseInt(searchParams.get('limit') || '100')
+    const { searchParams } = new URL(request.url)
+    const startDate = searchParams.get('startDate')
+    const endDate = searchParams.get('endDate')
+    const limit = parseInt(searchParams.get('limit') || '100')
 
-  await connectDB()
+    await connectDB()
 
     // Verify habit belongs to user
     const habit = await HabitModel.findOne({
@@ -50,16 +51,18 @@ export const GET = secureEndpoint.api(async (
     const logs = await HabitLogModel.find(query).sort({ date: -1 }).limit(limit)
 
     return NextResponse.json({ logs })
-})
+  }
+)
 
 // POST /api/habits/[id]/logs - Log habit completion
-export const POST = secureEndpoint.mutation(async (
-  request: NextRequest,
-  context: SecurityContext,
-  { params }: { params: Promise<{ id: string }> }
-): Promise<NextResponse> => {
-  const { session } = context
-  const { id } = await params
+export const POST = secureEndpoint.mutation(
+  async (
+    request: NextRequest,
+    context: SecurityContext,
+    { params }: { params: Promise<{ id: string }> }
+  ): Promise<NextResponse> => {
+    const { session } = context
+    const { id } = await params
 
     if (!mongoose.Types.ObjectId.isValid(id)) {
       return NextResponse.json({ error: 'Invalid habit ID' }, { status: 400 })
@@ -143,4 +146,5 @@ export const POST = secureEndpoint.mutation(async (
       await newLog.save()
       return NextResponse.json({ log: newLog }, { status: 201 })
     }
-})
+  }
+)

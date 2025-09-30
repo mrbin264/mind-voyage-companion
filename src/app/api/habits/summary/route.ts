@@ -39,17 +39,18 @@ function handleSummaryError(error: unknown) {
 }
 
 // GET /api/habits/summary - Get habit summary statistics
-export const GET = secureEndpoint.api(async (
-  request: NextRequest,
-  context: SecurityContext
-): Promise<NextResponse> => {
-  const { session } = context
-  
-  // Use enhanced connection manager
-  await connectDB()
+export const GET = secureEndpoint.api(
+  async (
+    request: NextRequest,
+    context: SecurityContext
+  ): Promise<NextResponse> => {
+    const { session } = context
 
-  // Get all user habits
-  const habits = await HabitModel.find({ userId: session!.user.id })
+    // Use enhanced connection manager
+    await connectDB()
+
+    // Get all user habits
+    const habits = await HabitModel.find({ userId: session!.user.id })
 
     // Get recent logs (last 30 days)
     const thirtyDaysAgo = new Date()
@@ -64,4 +65,5 @@ export const GET = secureEndpoint.api(async (
     const summary = calculateHabitSummary(habits, logs)
 
     return NextResponse.json({ summary })
-})
+  }
+)

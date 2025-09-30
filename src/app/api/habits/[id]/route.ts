@@ -47,24 +47,25 @@ function handleHabitError(error: unknown, operation: string) {
 }
 
 // GET /api/habits/[id] - Get a specific habit with progress
-export const GET = secureEndpoint.api(async (
-  request: NextRequest,
-  context: SecurityContext,
-  { params }: { params: Promise<{ id: string }> }
-): Promise<NextResponse> => {
-  const { session } = context
-  const { id } = await params
+export const GET = secureEndpoint.api(
+  async (
+    request: NextRequest,
+    context: SecurityContext,
+    { params }: { params: Promise<{ id: string }> }
+  ): Promise<NextResponse> => {
+    const { session } = context
+    const { id } = await params
 
-  if (!mongoose.Types.ObjectId.isValid(id)) {
-    return NextResponse.json({ error: 'Invalid habit ID' }, { status: 400 })
-  }
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      return NextResponse.json({ error: 'Invalid habit ID' }, { status: 400 })
+    }
 
-  await connectDB()
+    await connectDB()
 
-  const habit = await HabitModel.findOne({
-    _id: id,
-    userId: session!.user.id,
-  })
+    const habit = await HabitModel.findOne({
+      _id: id,
+      userId: session!.user.id,
+    })
 
     if (!habit) {
       return NextResponse.json({ error: 'Habit not found' }, { status: 404 })
@@ -79,22 +80,24 @@ export const GET = secureEndpoint.api(async (
     const habitWithProgress = calculateHabitProgress(habit, logs)
 
     return NextResponse.json({ habit: habitWithProgress })
-})
+  }
+)
 
 // PUT /api/habits/[id] - Update a habit
-export const PUT = secureEndpoint.mutation(async (
-  request: NextRequest,
-  context: SecurityContext,
-  { params }: { params: Promise<{ id: string }> }
-): Promise<NextResponse> => {
-  const { session } = context
-  const { id } = await params
+export const PUT = secureEndpoint.mutation(
+  async (
+    request: NextRequest,
+    context: SecurityContext,
+    { params }: { params: Promise<{ id: string }> }
+  ): Promise<NextResponse> => {
+    const { session } = context
+    const { id } = await params
 
-  if (!mongoose.Types.ObjectId.isValid(id)) {
-    return NextResponse.json({ error: 'Invalid habit ID' }, { status: 400 })
-  }
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      return NextResponse.json({ error: 'Invalid habit ID' }, { status: 400 })
+    }
 
-  const body: UpdateHabitRequest = await request.json()
+    const body: UpdateHabitRequest = await request.json()
 
     // Validate frequency if provided
     if (body.frequency) {
@@ -148,28 +151,30 @@ export const PUT = secureEndpoint.mutation(async (
     }
 
     return NextResponse.json({ habit })
-})
+  }
+)
 
 // DELETE /api/habits/[id] - Delete a habit
-export const DELETE = secureEndpoint.mutation(async (
-  request: NextRequest,
-  context: SecurityContext,
-  { params }: { params: Promise<{ id: string }> }
-): Promise<NextResponse> => {
-  const { session } = context
-  const { id } = await params
+export const DELETE = secureEndpoint.mutation(
+  async (
+    request: NextRequest,
+    context: SecurityContext,
+    { params }: { params: Promise<{ id: string }> }
+  ): Promise<NextResponse> => {
+    const { session } = context
+    const { id } = await params
 
-  if (!mongoose.Types.ObjectId.isValid(id)) {
-    return NextResponse.json({ error: 'Invalid habit ID' }, { status: 400 })
-  }
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      return NextResponse.json({ error: 'Invalid habit ID' }, { status: 400 })
+    }
 
-  await connectDB()
+    await connectDB()
 
-  // Check if habit exists and belongs to user
-  const habit = await HabitModel.findOne({
-    _id: id,
-    userId: session!.user.id,
-  })
+    // Check if habit exists and belongs to user
+    const habit = await HabitModel.findOne({
+      _id: id,
+      userId: session!.user.id,
+    })
 
     if (!habit) {
       return NextResponse.json({ error: 'Habit not found' }, { status: 404 })
@@ -182,4 +187,5 @@ export const DELETE = secureEndpoint.mutation(async (
     ])
 
     return NextResponse.json({ message: 'Habit deleted successfully' })
-})
+  }
+)

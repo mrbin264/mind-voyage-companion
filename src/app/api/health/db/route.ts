@@ -30,11 +30,13 @@ export async function GET(req: NextRequest) {
           ? health.lastConnected.toISOString()
           : null,
         connectionCount: health.connectionCount,
-        uptime: health.lastConnected ? Date.now() - health.lastConnected.getTime() : null,
+        uptime: health.lastConnected
+          ? Date.now() - health.lastConnected.getTime()
+          : null,
         retryCount: health.retryCount,
         ...(health.lastError && {
-          lastError: health.lastError.message
-        })
+          lastError: health.lastError.message,
+        }),
       },
       timestamp: new Date().toISOString(),
       environment: process.env.NODE_ENV,
@@ -56,8 +58,6 @@ export async function GET(req: NextRequest) {
   }
 }
 
-
-
 /**
  * Optional: Add a POST endpoint to force reconnection (useful for testing)
  * Only available in development environment
@@ -73,7 +73,7 @@ export async function POST(req: NextRequest) {
   try {
     const { disconnectDB } = await import('@/lib/db')
     const connectDB = (await import('@/lib/db')).default
-    
+
     await disconnectDB()
     await connectDB()
 

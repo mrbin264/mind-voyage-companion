@@ -57,23 +57,24 @@ function handleSettingsError(error: unknown, operation: string) {
 }
 
 // GET /api/settings - Get user settings
-export const GET = secureEndpoint.api(async (
-  request: NextRequest,
-  context: SecurityContext
-): Promise<NextResponse> => {
-  const { session } = context
-  
-  // Use enhanced connection manager
-  await connectDB()
+export const GET = secureEndpoint.api(
+  async (
+    request: NextRequest,
+    context: SecurityContext
+  ): Promise<NextResponse> => {
+    const { session } = context
 
-  const { searchParams } = new URL(request.url)
-  const section = searchParams.get('section') as SettingsSection | null
+    // Use enhanced connection manager
+    await connectDB()
 
-  if (section === 'profile') {
-    const profileData = await getUserProfile(session!.user.id)
-    return NextResponse.json({
-      success: true,
-      data: profileData,
+    const { searchParams } = new URL(request.url)
+    const section = searchParams.get('section') as SettingsSection | null
+
+    if (section === 'profile') {
+      const profileData = await getUserProfile(session!.user.id)
+      return NextResponse.json({
+        success: true,
+        data: profileData,
       })
     } else if (section === 'statistics') {
       const statsData = await generateAccountStatistics(session!.user.id)
@@ -100,20 +101,22 @@ export const GET = secureEndpoint.api(async (
         },
       })
     }
-})
+  }
+)
 
 // PUT /api/settings - Update user settings
-export const PUT = secureEndpoint.mutation(async (
-  request: NextRequest,
-  context: SecurityContext
-): Promise<NextResponse> => {
-  const { session } = context
-  
-  const { section, data } = await request.json()
+export const PUT = secureEndpoint.mutation(
+  async (
+    request: NextRequest,
+    context: SecurityContext
+  ): Promise<NextResponse> => {
+    const { session } = context
 
-  if (!section || !data) {
-    return NextResponse.json(
-      { success: false, error: 'Section and data are required' },
+    const { section, data } = await request.json()
+
+    if (!section || !data) {
+      return NextResponse.json(
+        { success: false, error: 'Section and data are required' },
         { status: 400 }
       )
     }
@@ -136,7 +139,8 @@ export const PUT = secureEndpoint.mutation(async (
         data: data,
       })
     }
-})
+  }
+)
 
 // Helper Functions
 async function getUserProfile(userId: string): Promise<UserProfile> {
