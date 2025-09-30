@@ -225,7 +225,7 @@ stages:
     dependsOn: 
       - BuildAndTest
       - IntegrationTests
-    condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/develop'))
+    condition: and(succeeded(), or(eq(variables['Build.SourceBranch'], 'refs/heads/develop'), eq(variables['Build.SourceBranch'], 'refs/heads/main')))
     variables:
       - group: mind-voyage-staging-variables
     jobs:
@@ -264,53 +264,8 @@ stages:
                     action: 'Restart Azure App Service'
                     webAppName: '$(stagingAppServiceName)'
 
-  # =============================================================================
-  # PRODUCTION DEPLOYMENT STAGE
-  # =============================================================================
-  - stage: DeployToProduction
-    displayName: 'Deploy to Production Environment'
-    dependsOn: DeployToStaging
-    condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/main'))
-    variables:
-      - group: mind-voyage-production-variables
-    jobs:
-      - deployment: ProductionDeployment
-        displayName: 'Deploy to Production'
-        environment: 'production'
-        strategy:
-          runOnce:
-            deploy:
-              steps:
-                - download: current
-                  displayName: 'Download Build Artifacts'
-                  artifact: build-artifacts
-
-                - task: AzureWebApp@1
-                  displayName: 'Deploy to Azure App Service (Production)'
-                  inputs:
-                    azureSubscription: '$(azureServiceConnection)'
-                    appType: 'webAppLinux'
-                    appName: '$(productionAppServiceName)'
-                    runtimeStack: 'NODE|20-lts'
-                    package: '$(Pipeline.Workspace)/build-artifacts/*.zip'
-                    appSettings: |
-                      -NODE_ENV production
-                      -NEXTAUTH_URL https://$(productionAppServiceName).azurewebsites.net
-                      -MONGODB_URI $(PRODUCTION_MONGODB_URI)
-                      -NEXTAUTH_SECRET $(PRODUCTION_NEXTAUTH_SECRET)
-                      -JWT_SECRET $(PRODUCTION_JWT_SECRET)
-                      -NEXT_TELEMETRY_DISABLED 1
-                    startUpCommand: 'pnpm start'
-
-                - task: AzureAppServiceManage@0
-                  displayName: 'Restart Production App Service'
-                  inputs:
-                    azureSubscription: '$(azureServiceConnection)'
-                    action: 'Restart Azure App Service'
-                    webAppName: '$(productionAppServiceName)'
-
                 - script: |
                     echo "Waiting for application to start..."
                     sleep 30
-                    curl -f https://$(productionAppServiceName).azurewebsites.net/api/health || exit 1
-                  displayName: 'Health Check - Production Deployment'
+                    curl -f https://$(stagingAppServiceName).azurewebsites.net/api/health || exit 1
+                  displayName: 'Health Check - Staging Deployment'
