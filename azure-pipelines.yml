@@ -148,10 +148,11 @@ stages:
                 cp -r src $(Build.ArtifactStagingDirectory)/deploy/
               fi
               
-              # Install production dependencies
-              echo "Installing production dependencies..."
+              # Install production dependencies (use shamefully-hoist to flatten node_modules
+              # so modules are resolvable after zip/unzip on Azure App Service)
+              echo "Installing production dependencies (flat node_modules)..."
               cd $(Build.ArtifactStagingDirectory)/deploy
-              pnpm install --prod --frozen-lockfile
+              pnpm install --prod --shamefully-hoist --frozen-lockfile
               
               echo "Deployment package created successfully"
               du -sh $(Build.ArtifactStagingDirectory)/deploy/
@@ -322,7 +323,8 @@ stages:
                     appName: '$(stagingAppServiceName)'
                     runtimeStack: 'NODE|20-lts'
                     package: '$(Pipeline.Workspace)/build-artifacts/*.zip'
-                    startUpCommand: 'corepack enable && corepack prepare pnpm@9.12.2 --activate && pnpm start'
+                    # Forward -p and -H to `next start` so it listens on 0.0.0.0:8080 (Azure probe port)
+                    startUpCommand: 'corepack enable && corepack prepare pnpm@9.12.2 --activate && pnpm start -- -p 8080 -H 0.0.0.0'
 
                 - script: |
                     echo "Waiting for application to start after deployment..."
