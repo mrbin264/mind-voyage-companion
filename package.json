@@ -21,6 +21,8 @@
     "test:coverage": "vitest run --coverage --config vitest.config.mjs",
     "test:e2e": "playwright test",
     "test:e2e:ui": "playwright test --ui",
+    "test:all": "pnpm type-check && pnpm test:run && CI=true pnpm test:e2e",
+    "test:quick": "pnpm type-check && pnpm test:run",
     "verify:tailwind": "bash scripts/verify-tailwind.sh",
     "docker:build": "docker-compose build",
     "docker:dev": "docker-compose --profile development up -d",
@@ -91,6 +93,15 @@
     "tailwindcss": "^4.1.13",
     "typescript": "^5.9.2",
     "zod": "^4.1.8"
+  },
+  "lint-staged": {
+    "*.{js,jsx,ts,tsx}": [
+      "eslint --fix",
+      "prettier --write"
+    ],
+    "*.{json,css,md}": [
+      "prettier --write"
+    ]
   },
   "devDependencies": {
     "@playwright/test": "^1.55.0",

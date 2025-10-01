@@ -1,0 +1,36 @@
+#!/usr/bin/env sh
+. "$(dirname -- "$0")/_/husky.sh"
+
+echo "🚀 Running pre-push validation..."
+
+# Check if we're pushing to main or develop branches
+branch=$(git rev-parse --abbrev-ref HEAD)
+
+if [[ "$branch" == "main" || "$branch" == "develop" ]]; then
+  echo "⚠️  Pushing to protected branch: $branch"
+  echo "🔍 Running comprehensive test suite..."
+  
+  # Run type checking
+  echo "📝 Type checking..."
+  pnpm type-check
+  
+  # Run unit tests
+  echo "🧪 Running unit tests..."
+  pnpm test:run
+  
+  # Run E2E tests (only for critical branches)
+  echo "🎭 Running E2E tests..."
+  CI=true pnpm test:e2e
+  
+  echo "✅ All tests passed! Safe to push to $branch"
+else
+  echo "📋 Running quick validation for feature branch: $branch"
+  
+  # For feature branches, run lighter checks
+  pnpm type-check
+  pnpm test:run
+  
+  echo "✅ Feature branch validation passed!"
+fi
+
+echo "🎉 Pre-push checks completed successfully!"

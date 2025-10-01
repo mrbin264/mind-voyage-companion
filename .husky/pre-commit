@@ -1,1 +1,13 @@
-pnpm run lint:fix && pnpm run format && pnpm run type-check
+#!/bin/sh
+. "$(dirname -- "$0")/_/husky.sh"
+
+echo "🔍 Running pre-commit checks..."
+
+# Run lint-staged for optimized checks on staged files
+npx lint-staged
+
+# Run unit tests to ensure no breaking changes
+echo "🧪 Running unit tests..."
+pnpm test:run
+
+echo "✅ Pre-commit checks passed!"
