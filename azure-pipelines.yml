@@ -140,18 +140,17 @@ stages:
               cp -r .next $(Build.ArtifactStagingDirectory)/deploy/
               cp -r public $(Build.ArtifactStagingDirectory)/deploy/
               cp package.json $(Build.ArtifactStagingDirectory)/deploy/
-              cp pnpm-lock.yaml $(Build.ArtifactStagingDirectory)/deploy/
               cp next.config.js $(Build.ArtifactStagingDirectory)/deploy/
               
-              # Copy source files needed for production
+              # Copy source files needed for production (required for Next.js)
               if [ -d "src" ]; then
                 cp -r src $(Build.ArtifactStagingDirectory)/deploy/
               fi
               
-              # Copy production dependencies only (no dev dependencies)
-              echo "Installing production dependencies..."
+              # Create package-lock.json from pnpm-lock.yaml for Azure compatibility
+              echo "Generating package-lock.json for Azure compatibility..."
               cd $(Build.ArtifactStagingDirectory)/deploy
-              pnpm install --prod --frozen-lockfile
+              npm install --package-lock-only
               
               echo "Deployment package created successfully"
               ls -la $(Build.ArtifactStagingDirectory)/deploy/
@@ -298,7 +297,7 @@ stages:
                     runtimeStack: 'NODE|20-lts'
                     package: '$(Pipeline.Workspace)/build-artifacts/*.zip'
                     appSettings: '-NODE_ENV production -NEXTAUTH_URL https://$(stagingAppServiceName).azurewebsites.net -MONGODB_URI $(STAGING_MONGODB_URI) -NEXTAUTH_SECRET $(STAGING_NEXTAUTH_SECRET) -JWT_SECRET $(STAGING_JWT_SECRET) -NEXT_TELEMETRY_DISABLED 1'
-                    startUpCommand: 'pnpm start'
+                    startUpCommand: 'npm start'
 
                 - script: |
                     echo "Waiting for application to start after deployment..."
