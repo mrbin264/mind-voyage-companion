@@ -43,8 +43,10 @@ describe('PasswordResetRequestForm', () => {
     await waitFor(() => {
       expect(
         screen.getByText((content, element) => {
-          return content.includes('sent a password reset link') && 
-                 content.includes('email address')
+          return (
+            content.includes('sent a password reset link') &&
+            content.includes('email address')
+          )
         })
       ).toBeInTheDocument()
     })
