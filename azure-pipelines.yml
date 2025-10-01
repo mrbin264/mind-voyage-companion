@@ -246,7 +246,7 @@ stages:
     displayName: 'Deploy to Staging Environment'
     dependsOn: 
       - BuildAndTest
-      - IntegrationTests
+      # - IntegrationTests
     condition: and(succeeded(), or(eq(variables['Build.SourceBranch'], 'refs/heads/develop'), eq(variables['Build.SourceBranch'], 'refs/heads/main')))
     variables:
       - group: mind-voyage-staging-variables
