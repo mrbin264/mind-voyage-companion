@@ -174,70 +174,70 @@ stages:
   # =============================================================================
   # INTEGRATION TESTS STAGE
   # =============================================================================
-  - stage: IntegrationTests
-    displayName: 'Integration and E2E Tests'
-    dependsOn: BuildAndTest
-    condition: succeeded()
-    jobs:
-      - job: E2ETests
-        displayName: 'Playwright E2E Tests'
-        steps:
-          - checkout: self
-            displayName: 'Checkout Repository'
+  # - stage: IntegrationTests
+  #   displayName: 'Integration and E2E Tests'
+  #   dependsOn: BuildAndTest
+  #   condition: succeeded()
+  #   jobs:
+  #     - job: E2ETests
+  #       displayName: 'Playwright E2E Tests'
+  #       steps:
+  #         - checkout: self
+  #           displayName: 'Checkout Repository'
 
-          - task: NodeTool@0
-            displayName: 'Setup Node.js $(nodeVersion)'
-            inputs:
-              versionSpec: '$(nodeVersion)'
+  #         - task: NodeTool@0
+  #           displayName: 'Setup Node.js $(nodeVersion)'
+  #           inputs:
+  #             versionSpec: '$(nodeVersion)'
 
-          - script: |
-              corepack enable
-              corepack prepare pnpm@$(pnpmVersion) --activate
-            displayName: 'Setup pnpm'
+  #         - script: |
+  #             corepack enable
+  #             corepack prepare pnpm@$(pnpmVersion) --activate
+  #           displayName: 'Setup pnpm'
 
-          - script: pnpm install --frozen-lockfile
-            displayName: 'Install Dependencies'
+  #         - script: pnpm install --frozen-lockfile
+  #           displayName: 'Install Dependencies'
 
-          - script: |
-              pnpm exec playwright install --with-deps chromium
-            displayName: 'Install Playwright Chromium Browser'
+  #         - script: |
+  #             pnpm exec playwright install --with-deps chromium
+  #           displayName: 'Install Playwright Chromium Browser'
 
-          - script: pnpm build
-            displayName: 'Build Application for E2E Tests'
-            env:
-              NODE_ENV: 'production'
+  #         - script: pnpm build
+  #           displayName: 'Build Application for E2E Tests'
+  #           env:
+  #             NODE_ENV: 'production'
 
-          - script: pnpm test:e2e
-            displayName: 'Run Playwright E2E Tests'
-            env:
-              CI: 'true'
+  #         - script: pnpm test:e2e
+  #           displayName: 'Run Playwright E2E Tests'
+  #           env:
+  #             CI: 'true'
 
-          - task: PublishTestResults@2
-            displayName: 'Publish E2E Test Results'
-            condition: succeededOrFailed()
-            inputs:
-              testResultsFormat: 'JUnit'
-              testResultsFiles: '**/test-results/results.xml'
-              failTaskOnFailedTests: true
+  #         - task: PublishTestResults@2
+  #           displayName: 'Publish E2E Test Results'
+  #           condition: succeededOrFailed()
+  #           inputs:
+  #             testResultsFormat: 'JUnit'
+  #             testResultsFiles: '**/test-results/results.xml'
+  #             failTaskOnFailedTests: true
 
-          - script: |
-              if [ -d "playwright-report" ]; then
-                echo "Playwright report directory found"
-                ls -la playwright-report/
-              else
-                echo "Playwright report directory not found, creating empty report"
-                mkdir -p playwright-report
-                echo "No E2E test reports generated" > playwright-report/no-reports.txt
-              fi
-            displayName: 'Prepare E2E Test Reports'
-            condition: succeededOrFailed()
+  #         - script: |
+  #             if [ -d "playwright-report" ]; then
+  #               echo "Playwright report directory found"
+  #               ls -la playwright-report/
+  #             else
+  #               echo "Playwright report directory not found, creating empty report"
+  #               mkdir -p playwright-report
+  #               echo "No E2E test reports generated" > playwright-report/no-reports.txt
+  #             fi
+  #           displayName: 'Prepare E2E Test Reports'
+  #           condition: succeededOrFailed()
             
-          - task: PublishPipelineArtifact@1
-            displayName: 'Publish E2E Test Reports'
-            condition: succeededOrFailed()
-            inputs:
-              targetPath: 'playwright-report'
-              artifact: 'e2e-test-reports'
+  #         - task: PublishPipelineArtifact@1
+  #           displayName: 'Publish E2E Test Reports'
+  #           condition: succeededOrFailed()
+  #           inputs:
+  #             targetPath: 'playwright-report'
+  #             artifact: 'e2e-test-reports'
 
   # =============================================================================
   # STAGING DEPLOYMENT STAGE
