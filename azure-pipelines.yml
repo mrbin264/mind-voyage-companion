@@ -290,23 +290,14 @@ stages:
                   displayName: 'Download Build Artifacts'
                   artifact: build-artifacts
 
-                - task: AzureWebApp@1
-                  displayName: 'Deploy to Azure App Service (Staging)'
-                  inputs:
-                    azureSubscription: '$(azureServiceConnection)'
-                    appType: 'webAppLinux'
-                    appName: '$(stagingAppServiceName)'
-                    runtimeStack: 'NODE|20-lts'
-                    package: '$(Pipeline.Workspace)/build-artifacts/*.zip'
-                    startUpCommand: 'corepack enable && corepack prepare pnpm@9.12.2 --activate && pnpm start'
-
                 - task: AzureCLI@2
-                  displayName: 'Configure App Settings with Secrets'
+                  displayName: 'Configure App Settings (Pre-Deployment)'
                   inputs:
                     azureSubscription: '$(azureServiceConnection)'
                     scriptType: 'bash'
                     scriptLocation: 'inlineScript'
                     inlineScript: |
+                      echo "Setting app configuration to disable Oryx build..."
                       az webapp config appsettings set \
                         --name mind-voyage-companion-staging-app-ja7cvi \
                         --resource-group rg-mind-voyage-staging \
@@ -320,6 +311,18 @@ stages:
                           SCM_DO_BUILD_DURING_DEPLOYMENT=false \
                           ENABLE_ORYX_BUILD=false \
                           WEBSITE_RUN_FROM_PACKAGE=1
+                      
+                      echo "App settings configured successfully"
+
+                - task: AzureWebApp@1
+                  displayName: 'Deploy to Azure App Service (Staging)'
+                  inputs:
+                    azureSubscription: '$(azureServiceConnection)'
+                    appType: 'webAppLinux'
+                    appName: '$(stagingAppServiceName)'
+                    runtimeStack: 'NODE|20-lts'
+                    package: '$(Pipeline.Workspace)/build-artifacts/*.zip'
+                    startUpCommand: 'corepack enable && corepack prepare pnpm@9.12.2 --activate && pnpm start'
 
                 - script: |
                     echo "Waiting for application to start after deployment..."
