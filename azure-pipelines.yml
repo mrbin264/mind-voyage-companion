@@ -133,7 +133,7 @@ stages:
               NEXT_TELEMETRY_DISABLED: '1'
 
           - script: |
-              echo "Creating deployment package for pnpm..."
+              echo "Creating deployment package with production dependencies..."
               mkdir -p $(Build.ArtifactStagingDirectory)/deploy
               
               # Copy essential files for deployment
@@ -148,7 +148,13 @@ stages:
                 cp -r src $(Build.ArtifactStagingDirectory)/deploy/
               fi
               
-              echo "Deployment package created successfully with pnpm configuration"
+              # Install production dependencies
+              echo "Installing production dependencies..."
+              cd $(Build.ArtifactStagingDirectory)/deploy
+              pnpm install --prod --frozen-lockfile
+              
+              echo "Deployment package created successfully"
+              du -sh $(Build.ArtifactStagingDirectory)/deploy/
               ls -la $(Build.ArtifactStagingDirectory)/deploy/
             displayName: 'Prepare Deployment Package'
 
@@ -311,8 +317,9 @@ stages:
                           NEXTAUTH_SECRET='$(STAGING_NEXTAUTH_SECRET)' \
                           JWT_SECRET='$(STAGING_JWT_SECRET)' \
                           NEXT_TELEMETRY_DISABLED=1 \
-                          SCM_DO_BUILD_DURING_DEPLOYMENT=true \
-                          ENABLE_ORYX_BUILD=true
+                          SCM_DO_BUILD_DURING_DEPLOYMENT=false \
+                          ENABLE_ORYX_BUILD=false \
+                          WEBSITE_RUN_FROM_PACKAGE=1
 
                 - script: |
                     echo "Waiting for application to start after deployment..."
