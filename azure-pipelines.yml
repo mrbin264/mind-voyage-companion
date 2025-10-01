@@ -34,6 +34,12 @@ variables:
     value: '9.12.2'
   - name: PNPM_STORE_PATH
     value: '$(Pipeline.Workspace)/.pnpm-store'
+  - name: stagingAppServiceName
+    value: 'mind-voyage-companion-staging-app-ja7cvi'
+  - name: azureServiceConnection
+    value: 'azure-staging-connection'
+  - name: keyVaultName
+    value: 'mv-staging-ja7cvi'
 
 pool:
   vmImage: 'ubuntu-latest'
