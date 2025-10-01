@@ -126,14 +126,39 @@ stages:
             displayName: 'Build Next.js Application'
             env:
               NODE_ENV: 'production'
-              NEXTAUTH_URL: 'https://$(appServiceName).azurewebsites.net'
+              NEXTAUTH_URL: 'https://$(stagingAppServiceName).azurewebsites.net'
               # Build-time environment variables (non-sensitive)
               NEXT_TELEMETRY_DISABLED: '1'
+
+          - script: |
+              echo "Creating deployment package..."
+              mkdir -p $(Build.ArtifactStagingDirectory)/deploy
+              
+              # Copy essential files for deployment
+              cp -r .next $(Build.ArtifactStagingDirectory)/deploy/
+              cp -r public $(Build.ArtifactStagingDirectory)/deploy/
+              cp package.json $(Build.ArtifactStagingDirectory)/deploy/
+              cp pnpm-lock.yaml $(Build.ArtifactStagingDirectory)/deploy/
+              cp next.config.js $(Build.ArtifactStagingDirectory)/deploy/
+              
+              # Copy source files needed for production
+              if [ -d "src" ]; then
+                cp -r src $(Build.ArtifactStagingDirectory)/deploy/
+              fi
+              
+              # Copy production dependencies only (no dev dependencies)
+              echo "Installing production dependencies..."
+              cd $(Build.ArtifactStagingDirectory)/deploy
+              pnpm install --prod --frozen-lockfile
+              
+              echo "Deployment package created successfully"
+              ls -la $(Build.ArtifactStagingDirectory)/deploy/
+            displayName: 'Prepare Deployment Package'
 
           - task: ArchiveFiles@2
             displayName: 'Archive Build Artifacts'
             inputs:
-              rootFolderOrFile: '$(System.DefaultWorkingDirectory)'
+              rootFolderOrFile: '$(Build.ArtifactStagingDirectory)/deploy'
               includeRootFolder: false
               archiveType: 'zip'
               archiveFile: '$(Build.ArtifactStagingDirectory)/mind-voyage-companion-$(Build.BuildId).zip'
