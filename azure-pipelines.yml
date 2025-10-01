@@ -32,6 +32,8 @@ variables:
     value: '20.x'
   - name: pnpmVersion
     value: '9.12.2'
+  - name: PNPM_STORE_PATH
+    value: '$(Pipeline.Workspace)/.pnpm-store'
 
 pool:
   vmImage: 'ubuntu-latest'
@@ -47,13 +49,17 @@ stages:
         displayName: 'Build Application'
         steps:
           - checkout: self
-            fetchDepth: 1
+            fetchDepth: '1'
             displayName: 'Checkout Repository'
 
           - task: NodeTool@0
             displayName: 'Setup Node.js $(nodeVersion)'
             inputs:
               versionSpec: '$(nodeVersion)'
+
+          - script: |
+              mkdir -p $(PNPM_STORE_PATH)
+            displayName: 'Create pnpm store directory'
 
           - task: Cache@2
             displayName: 'Cache pnpm store'
@@ -68,8 +74,6 @@ stages:
               corepack prepare pnpm@$(pnpmVersion) --activate
               pnpm config set store-dir $(PNPM_STORE_PATH)
             displayName: 'Setup pnpm'
-            env:
-              PNPM_STORE_PATH: $(Pipeline.Workspace)/.pnpm-store
 
           - script: pnpm install --frozen-lockfile
             displayName: 'Install Dependencies'
@@ -101,13 +105,14 @@ stages:
             env:
               CI: 'true'
 
-          - task: PublishCodeCoverageResults@1
-            displayName: 'Publish Code Coverage'
+          - task: PublishTestResults@2
+            displayName: 'Publish Code Coverage Results'
             condition: succeededOrFailed()
             inputs:
-              codeCoverageTool: 'Cobertura'
-              summaryFileLocation: '**/coverage/cobertura-coverage.xml'
-              reportDirectory: '**/coverage'
+              testResultsFormat: 'JUnit'
+              testResultsFiles: '**/coverage/junit.xml'
+              mergeTestResults: true
+              publishRunAttachments: true
 
           - script: |
               echo "Building Next.js application..."
@@ -129,19 +134,16 @@ stages:
               replaceExistingArchive: true
               verbose: true
 
-          - task: PublishBuildArtifacts@1
+          - script: |
+              echo "##vso[artifact.upload containerfolder=build-artifacts;artifactname=build-artifacts;]$(Build.ArtifactStagingDirectory)"
             displayName: 'Publish Build Artifacts'
-            inputs:
-              pathToPublish: '$(Build.ArtifactStagingDirectory)'
-              artifactName: 'build-artifacts'
-              publishLocation: 'Container'
 
       - job: SecurityScan
         displayName: 'Security and Dependency Scan'
         dependsOn: []
         steps:
           - checkout: self
-            fetchDepth: 1
+            fetchDepth: '1'
             displayName: 'Checkout Repository'
 
           - task: NodeTool@0
@@ -159,7 +161,7 @@ stages:
 
           - script: pnpm audit --audit-level moderate
             displayName: 'Security Audit Dependencies'
-            continueOnError: true
+            continueOnError: 'true'
 
   # =============================================================================
   # INTEGRATION TESTS STAGE
@@ -210,12 +212,10 @@ stages:
               testResultsFiles: '**/test-results/results.xml'
               failTaskOnFailedTests: true
 
-          - task: PublishBuildArtifacts@1
+          - script: |
+              echo "##vso[artifact.upload containerfolder=e2e-test-reports;artifactname=e2e-test-reports;]playwright-report"
             displayName: 'Publish E2E Test Reports'
             condition: succeededOrFailed()
-            inputs:
-              pathToPublish: 'playwright-report'
-              artifactName: 'e2e-test-reports'
 
   # =============================================================================
   # STAGING DEPLOYMENT STAGE
@@ -257,12 +257,14 @@ stages:
                       -NEXT_TELEMETRY_DISABLED 1
                     startUpCommand: 'pnpm start'
 
-                - task: AzureAppServiceManage@0
+                - task: AzureCLI@2
                   displayName: 'Restart Staging App Service'
                   inputs:
                     azureSubscription: '$(azureServiceConnection)'
-                    action: 'Restart Azure App Service'
-                    webAppName: '$(stagingAppServiceName)'
+                    scriptType: 'bash'
+                    scriptLocation: 'inlineScript'
+                    inlineScript: |
+                      az webapp restart --name $(stagingAppServiceName) --resource-group $(resourceGroupName)
 
                 - script: |
                     echo "Waiting for application to start..."
