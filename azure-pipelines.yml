@@ -295,13 +295,7 @@ stages:
                     appName: '$(stagingAppServiceName)'
                     runtimeStack: 'NODE|20-lts'
                     package: '$(Pipeline.Workspace)/build-artifacts/*.zip'
-                    appSettings: |
-                      NODE_ENV=production
-                      NEXTAUTH_URL=https://$(stagingAppServiceName).azurewebsites.net
-                      MONGODB_URI=$(STAGING_MONGODB_URI)
-                      NEXTAUTH_SECRET=$(STAGING_NEXTAUTH_SECRET)
-                      JWT_SECRET=$(STAGING_JWT_SECRET)
-                      NEXT_TELEMETRY_DISABLED=1
+                    appSettings: '-NODE_ENV production -NEXTAUTH_URL https://$(stagingAppServiceName).azurewebsites.net -MONGODB_URI $(STAGING_MONGODB_URI) -NEXTAUTH_SECRET $(STAGING_NEXTAUTH_SECRET) -JWT_SECRET $(STAGING_JWT_SECRET) -NEXT_TELEMETRY_DISABLED 1'
                     startUpCommand: 'pnpm start'
 
                 - task: AzureCLI@2
