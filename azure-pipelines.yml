@@ -36,6 +36,8 @@ variables:
     value: '$(Pipeline.Workspace)/.pnpm-store'
   - name: stagingAppServiceName
     value: 'mind-voyage-companion-staging-app-ja7cvi'
+  - name: resourceGroupName
+    value: 'mind-voyage-companion-staging-rg'
   - name: azureServiceConnection
     value: 'azure-staging-connection'
   - name: keyVaultName
@@ -305,10 +307,10 @@ stages:
                     scriptType: 'bash'
                     scriptLocation: 'inlineScript'
                     inlineScript: |
-                      az webapp restart --name $(stagingAppServiceName) --resource-group $(resourceGroupName)
+                      az webapp restart --name mind-voyage-companion-staging-app-ja7cvi --resource-group mind-voyage-companion-staging-rg
 
                 - script: |
                     echo "Waiting for application to start..."
                     sleep 30
-                    curl -f https://$(stagingAppServiceName).azurewebsites.net/api/health || exit 1
+                    curl -f https://mind-voyage-companion-staging-app-ja7cvi.azurewebsites.net/ || exit 1
                   displayName: 'Health Check - Staging Deployment'
