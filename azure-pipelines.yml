@@ -133,13 +133,14 @@ stages:
               NEXT_TELEMETRY_DISABLED: '1'
 
           - script: |
-              echo "Creating deployment package..."
+              echo "Creating deployment package for pnpm..."
               mkdir -p $(Build.ArtifactStagingDirectory)/deploy
               
               # Copy essential files for deployment
               cp -r .next $(Build.ArtifactStagingDirectory)/deploy/
               cp -r public $(Build.ArtifactStagingDirectory)/deploy/
               cp package.json $(Build.ArtifactStagingDirectory)/deploy/
+              cp pnpm-lock.yaml $(Build.ArtifactStagingDirectory)/deploy/
               cp next.config.js $(Build.ArtifactStagingDirectory)/deploy/
               
               # Copy source files needed for production (required for Next.js)
@@ -147,12 +148,7 @@ stages:
                 cp -r src $(Build.ArtifactStagingDirectory)/deploy/
               fi
               
-              # Create package-lock.json from pnpm-lock.yaml for Azure compatibility
-              echo "Generating package-lock.json for Azure compatibility..."
-              cd $(Build.ArtifactStagingDirectory)/deploy
-              npm install --package-lock-only
-              
-              echo "Deployment package created successfully"
+              echo "Deployment package created successfully with pnpm configuration"
               ls -la $(Build.ArtifactStagingDirectory)/deploy/
             displayName: 'Prepare Deployment Package'
 
@@ -296,8 +292,8 @@ stages:
                     appName: '$(stagingAppServiceName)'
                     runtimeStack: 'NODE|20-lts'
                     package: '$(Pipeline.Workspace)/build-artifacts/*.zip'
-                    appSettings: '-NODE_ENV production -NEXTAUTH_URL https://$(stagingAppServiceName).azurewebsites.net -MONGODB_URI $(STAGING_MONGODB_URI) -NEXTAUTH_SECRET $(STAGING_NEXTAUTH_SECRET) -JWT_SECRET $(STAGING_JWT_SECRET) -NEXT_TELEMETRY_DISABLED 1'
-                    startUpCommand: 'npm start'
+                    appSettings: '-NODE_ENV production -NEXTAUTH_URL https://$(stagingAppServiceName).azurewebsites.net -MONGODB_URI $(STAGING_MONGODB_URI) -NEXTAUTH_SECRET $(STAGING_NEXTAUTH_SECRET) -JWT_SECRET $(STAGING_JWT_SECRET) -NEXT_TELEMETRY_DISABLED 1 -SCM_DO_BUILD_DURING_DEPLOYMENT true -ENABLE_ORYX_BUILD true'
+                    startUpCommand: 'corepack enable && corepack prepare pnpm@9.12.2 --activate && pnpm start'
 
                 - script: |
                     echo "Waiting for application to start after deployment..."
