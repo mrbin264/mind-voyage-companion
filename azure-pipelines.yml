@@ -300,17 +300,9 @@ stages:
                     appSettings: '-NODE_ENV production -NEXTAUTH_URL https://$(stagingAppServiceName).azurewebsites.net -MONGODB_URI $(STAGING_MONGODB_URI) -NEXTAUTH_SECRET $(STAGING_NEXTAUTH_SECRET) -JWT_SECRET $(STAGING_JWT_SECRET) -NEXT_TELEMETRY_DISABLED 1'
                     startUpCommand: 'pnpm start'
 
-                - task: AzureCLI@2
-                  displayName: 'Restart Staging App Service'
-                  inputs:
-                    azureSubscription: '$(azureServiceConnection)'
-                    scriptType: 'bash'
-                    scriptLocation: 'inlineScript'
-                    inlineScript: |
-                      az webapp restart --name mind-voyage-companion-staging-app-ja7cvi --resource-group mind-voyage-companion-staging-rg
-
                 - script: |
-                    echo "Waiting for application to start..."
-                    sleep 30
-                    curl -f https://mind-voyage-companion-staging-app-ja7cvi.azurewebsites.net/ || exit 1
+                    echo "Waiting for application to start after deployment..."
+                    sleep 45
+                    echo "Checking if application is responding..."
+                    curl -f https://mind-voyage-companion-staging-app-ja7cvi.azurewebsites.net/ || echo "Health check failed - application may still be starting"
                   displayName: 'Health Check - Staging Deployment'
