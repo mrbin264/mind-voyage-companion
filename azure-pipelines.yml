@@ -134,9 +134,11 @@ stages:
               replaceExistingArchive: true
               verbose: true
 
-          - script: |
-              echo "##vso[artifact.upload containerfolder=build-artifacts;artifactname=build-artifacts;]$(Build.ArtifactStagingDirectory)"
+          - task: PublishPipelineArtifact@1
             displayName: 'Publish Build Artifacts'
+            inputs:
+              targetPath: '$(Build.ArtifactStagingDirectory)'
+              artifact: 'build-artifacts'
 
       - job: SecurityScan
         displayName: 'Security and Dependency Scan'
@@ -213,9 +215,23 @@ stages:
               failTaskOnFailedTests: true
 
           - script: |
-              echo "##vso[artifact.upload containerfolder=e2e-test-reports;artifactname=e2e-test-reports;]playwright-report"
+              if [ -d "playwright-report" ]; then
+                echo "Playwright report directory found"
+                ls -la playwright-report/
+              else
+                echo "Playwright report directory not found, creating empty report"
+                mkdir -p playwright-report
+                echo "No E2E test reports generated" > playwright-report/no-reports.txt
+              fi
+            displayName: 'Prepare E2E Test Reports'
+            condition: succeededOrFailed()
+            
+          - task: PublishPipelineArtifact@1
             displayName: 'Publish E2E Test Reports'
             condition: succeededOrFailed()
+            inputs:
+              targetPath: 'playwright-report'
+              artifact: 'e2e-test-reports'
 
   # =============================================================================
   # STAGING DEPLOYMENT STAGE
