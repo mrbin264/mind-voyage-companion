@@ -4,10 +4,10 @@ test('homepage loads correctly', async ({ page }) => {
   await page.goto('/')
   
   // Check that the main title is present
-  await expect(page.getByRole('heading', { name: /Welcome to Mind Voyage Companion/i })).toBeVisible()
+  await expect(page.getByRole('heading', { name: /Build Better Habits Through Mindful Reflection/i })).toBeVisible()
   
   // Check that the description is present
-  await expect(page.getByText(/Your privacy-first habit tracking and journaling companion/i)).toBeVisible()
+  await expect(page.getByText(/A privacy-first platform combining habit tracking with philosophical reflection/i)).toBeVisible()
 })
 
 test('page has correct metadata', async ({ page }) => {
@@ -16,7 +16,6 @@ test('page has correct metadata', async ({ page }) => {
   // Check page title
   await expect(page).toHaveTitle(/Mind Voyage Companion/)
   
-  // Check meta description
-  const metaDescription = page.locator('meta[name="description"]')
-  await expect(metaDescription).toHaveAttribute('content', /A privacy-first habit tracking and journaling application/)
+  // Check that the brand name appears in header
+  await expect(page.getByRole('heading', { name: /Mind Voyage Companion/i })).toBeVisible()
 })

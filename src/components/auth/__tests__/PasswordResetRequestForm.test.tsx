@@ -42,7 +42,10 @@ describe('PasswordResetRequestForm', () => {
     await userEvent.click(screen.getByRole('button'))
     await waitFor(() => {
       expect(
-        screen.getByText(/a reset link has been sent/i)
+        screen.getByText((content, element) => {
+          return content.includes('sent a password reset link') && 
+                 content.includes('email address')
+        })
       ).toBeInTheDocument()
     })
   })

@@ -190,7 +190,7 @@ stages:
 
           - script: |
               pnpm exec playwright install --with-deps chromium
-            displayName: 'Install Playwright Browsers'
+            displayName: 'Install Playwright Chromium Browser'
 
           - script: pnpm build
             displayName: 'Build Application for E2E Tests'
