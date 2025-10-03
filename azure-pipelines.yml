@@ -323,12 +323,12 @@ stages:
                     appName: '$(stagingAppServiceName)'
                     runtimeStack: 'NODE|20-lts'
                     package: '$(Pipeline.Workspace)/build-artifacts/*.zip'
-                    # Forward -p and -H to `next start` so it listens on 0.0.0.0:8080 (Azure probe port)
-                    startUpCommand: 'corepack enable && corepack prepare pnpm@9.12.2 --activate && pnpm start -- -p 8080 -H 0.0.0.0'
+                    # Use npx to run next start directly, which should respect PORT environment variable
+                    startUpCommand: 'npx next start'
 
                 - script: |
                     echo "Waiting for application to start after deployment..."
                     sleep 45
-                    echo "Checking if application is responding..."
-                    curl -f https://mind-voyage-companion-staging-app-ja7cvi.azurewebsites.net/ || echo "Health check failed - application may still be starting"
+                    echo "Checking application health endpoint..."
+                    curl -f https://mind-voyage-companion-staging-app-ja7cvi.azurewebsites.net/api/health || echo "Health check failed - application may still be starting or MongoDB connection failed"
                   displayName: 'Health Check - Staging Deployment'

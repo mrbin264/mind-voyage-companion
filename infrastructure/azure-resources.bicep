@@ -165,6 +165,7 @@ resource appService 'Microsoft.Web/sites@2023-12-01' = {
         }
       ]
       connectionStrings: []
+      healthCheckPath: '/api/health'
     }
     httpsOnly: true
     clientAffinityEnabled: false
