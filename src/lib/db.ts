@@ -44,7 +44,7 @@ const CONNECTION_OPTIONS = {
   heartbeatFrequencyMS: 10000, // How often to check server status
 
   // Authentication
-  authSource: 'mind_voyage_companion', // Database to authenticate against
+  authSource: 'admin', // Database to authenticate against (admin for MongoDB Atlas)
 }
 
 /**
