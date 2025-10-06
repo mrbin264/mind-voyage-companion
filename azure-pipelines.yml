@@ -291,6 +291,14 @@ stages:
                   displayName: 'Download Build Artifacts'
                   artifact: build-artifacts
 
+                - task: AzureKeyVault@2
+                  displayName: 'Fetch Secrets from Azure Key Vault'
+                  inputs:
+                    azureSubscription: '$(azureServiceConnection)'
+                    KeyVaultName: '$(keyVaultName)'
+                    SecretsFilter: 'STAGING-MONGODB-URI,STAGING-NEXTAUTH-SECRET,STAGING-JWT-SECRET'
+                    RunAsPreJob: false
+
                 - task: AzureCLI@2
                   displayName: 'Configure App Settings (Pre-Deployment)'
                   inputs:
@@ -305,9 +313,9 @@ stages:
                         --settings \
                           NODE_ENV=production \
                           NEXTAUTH_URL=https://mind-voyage-companion-staging-app-ja7cvi.azurewebsites.net \
-                          MONGODB_URI='$(STAGING_MONGODB_URI)' \
-                          NEXTAUTH_SECRET='$(STAGING_NEXTAUTH_SECRET)' \
-                          JWT_SECRET='$(STAGING_JWT_SECRET)' \
+                          MONGODB_URI='$(STAGING-MONGODB-URI)' \
+                          NEXTAUTH_SECRET='$(STAGING-NEXTAUTH-SECRET)' \
+                          JWT_SECRET='$(STAGING-JWT-SECRET)' \
                           NEXT_TELEMETRY_DISABLED=1 \
                           SCM_DO_BUILD_DURING_DEPLOYMENT=false \
                           ENABLE_ORYX_BUILD=false \
