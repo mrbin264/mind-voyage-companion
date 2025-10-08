@@ -1,103 +1,66 @@
-/**
- * Secure User Registration API with rate limiting and validation
- * POST /api/auth/register - Create new user account
- */
-import { NextRequest, NextResponse } from 'next/server'
+import { NextResponse } from 'next/server'
 import { hash } from 'bcryptjs'
-import { User } from '@/lib/models/user'
 import connectDB from '@/lib/db'
-import { secureEndpoint, type SecurityContext } from '@/lib/middleware/security'
-import { throwValidationError } from '@/lib/middleware/error-handler'
-import schemas from '@/lib/validation/schemas'
+import { User } from '@/lib/models/user'
+import { registerSchema } from '@/lib/validation/schemas'
 
-// POST /api/auth/register - User registration with rate limiting
-export const POST = secureEndpoint.custom(
-  async (
-    request: NextRequest,
-    context: SecurityContext
-  ): Promise<NextResponse> => {
+// Use Node.js runtime for bcryptjs compatibility
+export const runtime = 'nodejs'
+
+export async function POST(request: Request) {
+  try {
+    const body = await request.json()
+
+    // Validate input
+    const validatedData = registerSchema.parse(body)
+
     await connectDB()
 
-    // Use validated body from security middleware
-    const { email, password, firstName, lastName, timezone } =
-      context.validatedBody!
-
-    // Combine firstName and lastName into name for user creation
-    const name = `${firstName} ${lastName}`.trim()
-
     // Check if user already exists
-    const existingUser = await User.findOne({ email })
+    const existingUser = await User.findOne({ email: validatedData.email })
+
     if (existingUser) {
-      throwValidationError('User already exists', {
-        email: ['Email already in use'],
-      })
+      return NextResponse.json(
+        { error: 'User already exists with this email' },
+        { status: 400 }
+      )
     }
 
-    // Hash password securely
-    const hashedPassword = await hash(password, 12)
+    // Hash password
+    const hashedPassword = await hash(validatedData.password, 12)
 
-    // Create user with secure defaults
+    // Create user
     const user = await User.create({
-      email,
+      email: validatedData.email,
+      name: validatedData.name || validatedData.email.split('@')[0],
       password: hashedPassword,
-      name,
       verified: false,
-      timezone: timezone || 'UTC',
-      preferences: {
-        theme: 'system',
-        dateFormat: 'MM/DD/YYYY',
-        timeFormat: '12h',
-        weekStartsOn: 'sunday',
-        language: 'en-US',
-        notifications: {
-          email: true,
-          push: false,
-          habitReminders: true,
-          journalReminders: true,
-          weeklyReports: true,
-        },
-        privacy: {
-          publicProfile: false,
-          shareStats: false,
-        },
-        onboardingCompleted: false,
-        onboardingStep: 0,
-        dashboard: {
-          showWeather: true,
-          showQuote: true,
-          showStreak: true,
-          defaultView: 'grid',
-        },
-      },
-      createdAt: new Date(),
-      updatedAt: new Date(),
     })
 
-    // Return success response
     return NextResponse.json(
       {
-        success: true,
-        message: 'Account created successfully. Please sign in to continue.',
-        data: {
-          id: user._id.toString(),
+        message: 'User created successfully',
+        user: {
+          id: user._id,
           email: user.email,
           name: user.name,
-          verified: user.verified,
-          timezone: user.timezone,
-          createdAt: user.createdAt,
-        },
-        meta: {
-          timestamp: new Date().toISOString(),
         },
       },
       { status: 201 }
     )
-  },
-  {
-    rateLimit: { type: 'auth' },
-    auth: { required: false },
-    validation: { body: schemas.register },
-    sanitization: { sanitizeBody: true },
-    logging: { logRequests: true },
+  } catch (error: any) {
+    console.error('Registration error:', error)
+
+    if (error.name === 'ZodError') {
+      return NextResponse.json(
+        { error: 'Validation failed', details: error.errors },
+        { status: 400 }
+      )
+    }
+
+    return NextResponse.json(
+      { error: 'Internal server error' },
+      { status: 500 }
+    )
   }
-)
+}

@@ -79,13 +79,15 @@ export default function PasswordResetRequestForm() {
               </Link>
             </p>
             <p>
-              Need immediate help?{' '}
-              <Link
-                href="/help"
-                className="font-medium text-blue-400 hover:underline"
-              >
-                Contact Support
-              </Link>
+              <div className="mt-4 text-center text-sm text-zinc-400">
+                Need help?{' '}
+                <Link
+                  href="/login"
+                  className="font-medium text-blue-400 hover:underline"
+                >
+                  Back to Login
+                </Link>
+              </div>
             </p>
           </div>
         </div>
@@ -151,10 +153,10 @@ export default function PasswordResetRequestForm() {
         <p className="text-center text-sm text-gray-400 mt-2">
           Need help?{' '}
           <Link
-            href="/help"
+            href="/login"
             className="font-medium text-blue-400 hover:underline"
           >
-            Contact Support
+            Back to Login
           </Link>
           .
         </p>

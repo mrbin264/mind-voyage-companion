@@ -1,15 +1,15 @@
-# Mind Voyage Companion - Docker Compose Configuration
-# Complete development and production environment with MongoDB
+# Next.js + MongoDB Boilerplate - Docker Compose
+# Development environment with MongoDB
 
 # =============================================================================
-# Networks - Isolated network for services
+# Networks
 # =============================================================================
 networks:
-  mind-voyage-network:
+  app-network:
     driver: bridge
 
 # =============================================================================
-# Volumes - Persistent data storage
+# Volumes
 # =============================================================================
 volumes:
   mongodb_data:
@@ -18,8 +18,6 @@ volumes:
       type: none
       o: bind
       device: ./data/mongodb
-  mongodb_logs:
-    driver: local
 
 # =============================================================================
 # Services
@@ -27,41 +25,25 @@ volumes:
 services:
   
   # ---------------------------------------------------------------------------
-  # MongoDB Database Service
+  # MongoDB Database - Development
   # ---------------------------------------------------------------------------
   mongodb:
     image: mongo:7.0
-    container_name: mind-voyage-mongodb
+    container_name: boilerplate-mongodb
     restart: unless-stopped
     
-    # Environment configuration
     environment:
       MONGO_INITDB_ROOT_USERNAME: admin
-      MONGO_INITDB_ROOT_PASSWORD: ${MONGODB_ROOT_PASSWORD:-mindvoyage_admin_2025}
-      MONGO_INITDB_DATABASE: mind_voyage_companion
-      MONGODB_DATABASE: mind_voyage_companion
-      MONGODB_USERNAME: ${MONGODB_USERNAME:-mindvoyage_user}
-      MONGODB_PASSWORD: ${MONGODB_PASSWORD:-mindvoyage_pass_2025}
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGODB_ROOT_PASSWORD:-admin123}
+      MONGO_INITDB_DATABASE: ${MONGODB_DATABASE:-app_db}
     
-    # Port mapping
     ports:
       - "${MONGODB_PORT:-27017}:27017"
     
-    # Volume mounts for data persistence
     volumes:
       - mongodb_data:/data/db
-      - mongodb_logs:/var/log/mongodb
       - ./docker/mongodb/init-mongo.js:/docker-entrypoint-initdb.d/init-mongo.js:ro
     
-    # Resource limits
-    deploy:
-      resources:
-        limits:
-          memory: 512M
-        reservations:
-          memory: 256M
-    
-    # Health check
     healthcheck:
       test: ["CMD", "mongosh", "--eval", "db.adminCommand('ping')"]
       interval: 30s
@@ -69,149 +51,33 @@ services:
       retries: 5
       start_period: 40s
     
-    # Network
     networks:
-      - mind-voyage-network
+      - app-network
 
   # ---------------------------------------------------------------------------
-  # Next.js Application Service - Development
-  # ---------------------------------------------------------------------------
-  app-dev:
-    build:
-      context: .
-      dockerfile: Dockerfile
-      target: development
-      args:
-        - NODE_ENV=development
-    
-    container_name: mind-voyage-app-dev
-    restart: unless-stopped
-    
-    # Environment configuration
-    environment:
-      - NODE_ENV=development
-      - MONGODB_URI=mongodb://${MONGODB_USERNAME:-mindvoyage_user}:${MONGODB_PASSWORD:-mindvoyage_pass_2025}@mongodb:27017/mind_voyage_companion?authSource=mind_voyage_companion
-      - NEXTAUTH_URL=http://localhost:3000
-      - NEXTAUTH_SECRET=${NEXTAUTH_SECRET:-your_nextauth_secret_here_min_32_chars}
-    
-    # Port mapping
-    ports:
-      - "${APP_PORT:-3000}:3000"
-    
-    # Volume mounts for development (hot reload)
-    volumes:
-      - .:/app
-      - /app/node_modules
-      - /app/.next
-    
-    # Dependencies
-    depends_on:
-      mongodb:
-        condition: service_healthy
-    
-    # Health check
-    healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:3000/api/health"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
-      start_period: 30s
-    
-    # Network
-    networks:
-      - mind-voyage-network
-    
-    # Development specific
-    stdin_open: true
-    tty: true
-    
-    profiles:
-      - development
-
-  # ---------------------------------------------------------------------------
-  # Next.js Application Service - Production
-  # ---------------------------------------------------------------------------
-  app:
-    build:
-      context: .
-      dockerfile: Dockerfile
-      target: production
-      args:
-        - NODE_ENV=production
-    
-    container_name: mind-voyage-app
-    restart: unless-stopped
-    
-    # Environment configuration
-    environment:
-      - NODE_ENV=production
-      - MONGODB_URI=mongodb://${MONGODB_USERNAME:-mindvoyage_user}:${MONGODB_PASSWORD:-mindvoyage_pass_2025}@mongodb:27017/mind_voyage_companion?authSource=mind_voyage_companion
-      - NEXTAUTH_URL=${NEXTAUTH_URL:-http://localhost:3000}
-      - NEXTAUTH_SECRET=${NEXTAUTH_SECRET:-your_nextauth_secret_here_min_32_chars}
-      - PORT=3000
-    
-    # Port mapping
-    ports:
-      - "${APP_PORT:-3000}:3000"
-    
-    # Dependencies
-    depends_on:
-      mongodb:
-        condition: service_healthy
-    
-    # Resource limits
-    deploy:
-      resources:
-        limits:
-          memory: 512M
-        reservations:
-          memory: 256M
-    
-    # Health check
-    healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:3000/api/health"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
-      start_period: 30s
-    
-    # Network
-    networks:
-      - mind-voyage-network
-    
-    profiles:
-      - production
-
-  # ---------------------------------------------------------------------------
-  # MongoDB Admin Interface (Optional)
+  # MongoDB Admin UI (Optional - use with 'docker compose --profile tools up')
   # ---------------------------------------------------------------------------
   mongo-express:
     image: mongo-express:1.0.0
-    container_name: mind-voyage-mongo-express
+    container_name: boilerplate-mongo-express
     restart: unless-stopped
     
-    # Environment configuration
     environment:
       ME_CONFIG_MONGODB_ADMINUSERNAME: admin
-      ME_CONFIG_MONGODB_ADMINPASSWORD: ${MONGODB_ROOT_PASSWORD:-mindvoyage_admin_2025}
-      ME_CONFIG_MONGODB_URL: mongodb://admin:${MONGODB_ROOT_PASSWORD:-mindvoyage_admin_2025}@mongodb:27017/?authSource=admin
-      ME_CONFIG_MONGODB_SERVER: mongodb
-      ME_CONFIG_BASICAUTH_USERNAME: ${MONGO_EXPRESS_USERNAME:-admin}
-      ME_CONFIG_BASICAUTH_PASSWORD: ${MONGO_EXPRESS_PASSWORD:-admin123}
-      ME_CONFIG_SITE_BASEURL: /mongo-admin/
+      ME_CONFIG_MONGODB_ADMINPASSWORD: ${MONGODB_ROOT_PASSWORD:-admin123}
+      ME_CONFIG_MONGODB_URL: mongodb://admin:${MONGODB_ROOT_PASSWORD:-admin123}@mongodb:27017/
+      ME_CONFIG_BASICAUTH_USERNAME: ${MONGO_EXPRESS_USER:-admin}
+      ME_CONFIG_BASICAUTH_PASSWORD: ${MONGO_EXPRESS_PASS:-admin}
     
-    # Port mapping
     ports:
       - "${MONGO_EXPRESS_PORT:-8081}:8081"
     
-    # Dependencies
     depends_on:
       mongodb:
         condition: service_healthy
     
-    # Network
     networks:
-      - mind-voyage-network
+      - app-network
     
     profiles:
       - tools

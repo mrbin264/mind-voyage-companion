@@ -8,8 +8,8 @@ interface UserData {
   password?: string
   image?: string
   verified: boolean
-  timezone: string
-  preferences: Record<string, any>
+  timezone?: string
+  preferences?: Record<string, any>
   createdAt: Date
   updatedAt: Date
 }

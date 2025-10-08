@@ -61,3 +61,11 @@ jspm_packages/
 
 # Prisma
 prisma/migrations/
+
+# Test artifacts
+playwright-report/
+test-results/
+*.xml
+
+# TypeScript build info
+tsconfig.tsbuildinfo

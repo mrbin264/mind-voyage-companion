@@ -6,7 +6,17 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { signIn } from 'next-auth/react'
-import { timezoneOptions } from '@/hooks/useSettings'
+
+// Simple timezone options for boilerplate
+const timezoneOptions = [
+  { value: 'America/New_York', label: '(GMT-5) Eastern Time' },
+  { value: 'America/Chicago', label: '(GMT-6) Central Time' },
+  { value: 'America/Denver', label: '(GMT-7) Mountain Time' },
+  { value: 'America/Los_Angeles', label: '(GMT-8) Pacific Time' },
+  { value: 'Europe/London', label: '(GMT+0) London' },
+  { value: 'Europe/Paris', label: '(GMT+1) Paris' },
+  { value: 'Asia/Tokyo', label: '(GMT+9) Tokyo' },
+]
 
 const registerSchema = z
   .object({
@@ -45,7 +55,7 @@ export default function RegisterForm() {
   } = useForm<RegisterFormValues>({
     resolver: zodResolver(registerSchema),
     defaultValues: {
-      timezone: '(GMT-8) Pacific Time',
+      timezone: 'America/Los_Angeles',
       termsAccepted: false,
       updatesOptIn: false,
     },
@@ -96,9 +106,10 @@ export default function RegisterForm() {
         return
       }
 
-      console.log('Sign in successful, redirecting to onboarding')
-      // New users always go to onboarding
-      router.replace('/onboarding')
+      console.log('Sign in successful, redirecting to dashboard')
+      // Redirect to dashboard after successful registration
+      router.replace('/dashboard')
+      router.refresh()
     } catch (e) {
       setError('Network error')
       setLoading(false)
@@ -332,21 +343,7 @@ export default function RegisterForm() {
                 {...register('termsAccepted')}
               />
               <label htmlFor="terms" className="ml-3 text-sm text-gray-400">
-                I agree to the{' '}
-                <Link
-                  href="/terms"
-                  className="font-medium text-blue-400 hover:underline"
-                >
-                  Terms of Service
-                </Link>{' '}
-                and{' '}
-                <Link
-                  href="/privacy"
-                  className="font-medium text-blue-400 hover:underline"
-                >
-                  Privacy Policy
-                </Link>
-                .
+                I agree to the Terms of Service and Privacy Policy
               </label>
             </div>
             {errors.termsAccepted && (

@@ -1,5 +1,5 @@
-# Mind Voyage Companion - Azure DevOps Pipeline
-# Next.js app with MongoDB deployment to Azure App Service
+# Next.js + MongoDB Boilerplate - Azure DevOps Pipeline
+# CI/CD with staging auto-deploy and manual production approval
 
 trigger:
   branches:
@@ -8,48 +8,28 @@ trigger:
       - develop
   paths:
     exclude:
-      - docs/*
       - README.md
-      - design/*
-      - .github/*
+      - LOCAL_SETUP.md
+      - DEPLOYMENT.md
 
 pr:
   branches:
     include:
       - main
       - develop
-  paths:
-    exclude:
-      - docs/*
-      - README.md
-      - design/*
 
 variables:
-  - group: mind-voyage-shared-variables
-  - name: buildConfiguration
-    value: 'production'
   - name: nodeVersion
     value: '20.x'
   - name: pnpmVersion
     value: '9.12.2'
   - name: PNPM_STORE_PATH
     value: '$(Pipeline.Workspace)/.pnpm-store'
-  - name: stagingAppServiceName
-    value: 'mind-voyage-companion-staging-app-ja7cvi'
-  - name: resourceGroupName
-    value: 'mind-voyage-companion-staging-rg'
-  - name: azureServiceConnection
-    value: 'azure-staging-connection'
-  - name: keyVaultName
-    value: 'mv-staging-ja7cvi'
 
 pool:
   vmImage: 'ubuntu-latest'
 
 stages:
-  # =============================================================================
-  # BUILD AND TEST STAGE
-  # =============================================================================
   - stage: BuildAndTest
     displayName: 'Build, Lint, and Test'
     jobs:
@@ -58,23 +38,20 @@ stages:
         steps:
           - checkout: self
             fetchDepth: '1'
-            displayName: 'Checkout Repository'
 
           - task: NodeTool@0
-            displayName: 'Setup Node.js $(nodeVersion)'
+            displayName: 'Setup Node.js'
             inputs:
               versionSpec: '$(nodeVersion)'
 
-          - script: |
-              mkdir -p $(PNPM_STORE_PATH)
-            displayName: 'Create pnpm store directory'
+          - script: mkdir -p $(PNPM_STORE_PATH)
+            displayName: 'Create pnpm store'
 
           - task: Cache@2
-            displayName: 'Cache pnpm store'
+            displayName: 'Cache pnpm'
             inputs:
               key: 'pnpm | "$(Agent.OS)" | pnpm-lock.yaml'
-              restoreKeys: |
-                pnpm | "$(Agent.OS)"
+              restoreKeys: pnpm | "$(Agent.OS)"
               path: $(PNPM_STORE_PATH)
 
           - script: |
@@ -87,104 +64,50 @@ stages:
             displayName: 'Install Dependencies'
 
           - script: pnpm type-check
-            displayName: 'TypeScript Type Check'
+            displayName: 'TypeScript Check'
 
           - script: pnpm lint
-            displayName: 'ESLint Code Quality Check'
+            displayName: 'ESLint'
 
           - script: pnpm format:check
-            displayName: 'Prettier Format Check'
+            displayName: 'Prettier Check'
 
-          - script: pnpm test:run
-            displayName: 'Run Unit Tests'
-            env:
-              CI: 'true'
-
-          - task: PublishTestResults@2
-            displayName: 'Publish Unit Test Results'
-            condition: succeededOrFailed()
-            inputs:
-              testResultsFormat: 'JUnit'
-              testResultsFiles: '**/test-results.xml'
-              failTaskOnFailedTests: true
-
-          - script: pnpm test:coverage
-            displayName: 'Generate Test Coverage'
-            env:
-              CI: 'true'
-
-          - task: PublishTestResults@2
-            displayName: 'Publish Code Coverage Results'
-            condition: succeededOrFailed()
-            inputs:
-              testResultsFormat: 'JUnit'
-              testResultsFiles: '**/coverage/junit.xml'
-              mergeTestResults: true
-              publishRunAttachments: true
-
-          - script: |
-              echo "Building Next.js application..."
-              pnpm build
-            displayName: 'Build Next.js Application'
+          - script: pnpm build
+            displayName: 'Build Next.js'
             env:
               NODE_ENV: 'production'
-              NEXTAUTH_URL: 'https://$(stagingAppServiceName).azurewebsites.net'
-              # Build-time environment variables (non-sensitive)
               NEXT_TELEMETRY_DISABLED: '1'
 
           - script: |
-              echo "Creating deployment package with production dependencies..."
               mkdir -p $(Build.ArtifactStagingDirectory)/deploy
-              
-              # Copy essential files for deployment
-              cp -r .next $(Build.ArtifactStagingDirectory)/deploy/
-              cp -r public $(Build.ArtifactStagingDirectory)/deploy/
-              cp package.json $(Build.ArtifactStagingDirectory)/deploy/
-              cp pnpm-lock.yaml $(Build.ArtifactStagingDirectory)/deploy/
-              cp next.config.js $(Build.ArtifactStagingDirectory)/deploy/
-              
-              # Copy source files needed for production (required for Next.js)
-              if [ -d "src" ]; then
-                cp -r src $(Build.ArtifactStagingDirectory)/deploy/
-              fi
-              
-              # Install production dependencies (use shamefully-hoist to flatten node_modules
-              # so modules are resolvable after zip/unzip on Azure App Service)
-              echo "Installing production dependencies (flat node_modules)..."
+              cp -r .next public package.json pnpm-lock.yaml next.config.js $(Build.ArtifactStagingDirectory)/deploy/
+              [ -d "src" ] && cp -r src $(Build.ArtifactStagingDirectory)/deploy/
               cd $(Build.ArtifactStagingDirectory)/deploy
               pnpm install --prod --shamefully-hoist --frozen-lockfile
-              
-              echo "Deployment package created successfully"
-              du -sh $(Build.ArtifactStagingDirectory)/deploy/
-              ls -la $(Build.ArtifactStagingDirectory)/deploy/
-            displayName: 'Prepare Deployment Package'
+            displayName: 'Prepare Deployment'
 
           - task: ArchiveFiles@2
-            displayName: 'Archive Build Artifacts'
+            displayName: 'Archive Artifacts'
             inputs:
               rootFolderOrFile: '$(Build.ArtifactStagingDirectory)/deploy'
               includeRootFolder: false
               archiveType: 'zip'
-              archiveFile: '$(Build.ArtifactStagingDirectory)/mind-voyage-companion-$(Build.BuildId).zip'
+              archiveFile: '$(Build.ArtifactStagingDirectory)/app.zip'
               replaceExistingArchive: true
-              verbose: true
 
           - task: PublishPipelineArtifact@1
-            displayName: 'Publish Build Artifacts'
+            displayName: 'Publish Artifacts'
             inputs:
               targetPath: '$(Build.ArtifactStagingDirectory)'
               artifact: 'build-artifacts'
 
       - job: SecurityScan
-        displayName: 'Security and Dependency Scan'
+        displayName: 'Security Audit'
         dependsOn: []
         steps:
           - checkout: self
-            fetchDepth: '1'
-            displayName: 'Checkout Repository'
 
           - task: NodeTool@0
-            displayName: 'Setup Node.js $(nodeVersion)'
             inputs:
               versionSpec: '$(nodeVersion)'
 
@@ -197,146 +120,41 @@ stages:
             displayName: 'Install Dependencies'
 
           - script: pnpm audit --audit-level moderate
-            displayName: 'Security Audit Dependencies'
+            displayName: 'Security Audit'
             continueOnError: 'true'
 
-  # =============================================================================
-  # INTEGRATION TESTS STAGE
-  # =============================================================================
-  # - stage: IntegrationTests
-  #   displayName: 'Integration and E2E Tests'
-  #   dependsOn: BuildAndTest
-  #   condition: succeeded()
-  #   jobs:
-  #     - job: E2ETests
-  #       displayName: 'Playwright E2E Tests'
-  #       steps:
-  #         - checkout: self
-  #           displayName: 'Checkout Repository'
-
-  #         - task: NodeTool@0
-  #           displayName: 'Setup Node.js $(nodeVersion)'
-  #           inputs:
-  #             versionSpec: '$(nodeVersion)'
-
-  #         - script: |
-  #             corepack enable
-  #             corepack prepare pnpm@$(pnpmVersion) --activate
-  #           displayName: 'Setup pnpm'
-
-  #         - script: pnpm install --frozen-lockfile
-  #           displayName: 'Install Dependencies'
-
-  #         - script: |
-  #             pnpm exec playwright install --with-deps chromium
-  #           displayName: 'Install Playwright Chromium Browser'
-
-  #         - script: pnpm build
-  #           displayName: 'Build Application for E2E Tests'
-  #           env:
-  #             NODE_ENV: 'production'
-
-  #         - script: pnpm test:e2e
-  #           displayName: 'Run Playwright E2E Tests'
-  #           env:
-  #             CI: 'true'
-
-  #         - task: PublishTestResults@2
-  #           displayName: 'Publish E2E Test Results'
-  #           condition: succeededOrFailed()
-  #           inputs:
-  #             testResultsFormat: 'JUnit'
-  #             testResultsFiles: '**/test-results/results.xml'
-  #             failTaskOnFailedTests: true
-
-  #         - script: |
-  #             if [ -d "playwright-report" ]; then
-  #               echo "Playwright report directory found"
-  #               ls -la playwright-report/
-  #             else
-  #               echo "Playwright report directory not found, creating empty report"
-  #               mkdir -p playwright-report
-  #               echo "No E2E test reports generated" > playwright-report/no-reports.txt
-  #             fi
-  #           displayName: 'Prepare E2E Test Reports'
-  #           condition: succeededOrFailed()
-            
-  #         - task: PublishPipelineArtifact@1
-  #           displayName: 'Publish E2E Test Reports'
-  #           condition: succeededOrFailed()
-  #           inputs:
-  #             targetPath: 'playwright-report'
-  #             artifact: 'e2e-test-reports'
-
-  # =============================================================================
-  # STAGING DEPLOYMENT STAGE
-  # =============================================================================
   - stage: DeployToStaging
-    displayName: 'Deploy to Staging Environment'
-    dependsOn: 
-      - BuildAndTest
-      # - IntegrationTests
+    displayName: 'Deploy to Staging'
+    dependsOn: BuildAndTest
     condition: and(succeeded(), or(eq(variables['Build.SourceBranch'], 'refs/heads/develop'), eq(variables['Build.SourceBranch'], 'refs/heads/main')))
-    variables:
-      - group: mind-voyage-staging-variables
     jobs:
       - deployment: StagingDeployment
-        displayName: 'Deploy to Staging'
+        displayName: 'Staging Deployment'
         environment: 'staging'
         strategy:
           runOnce:
             deploy:
               steps:
                 - download: current
-                  displayName: 'Download Build Artifacts'
                   artifact: build-artifacts
 
-                - task: AzureKeyVault@2
-                  displayName: 'Fetch Secrets from Azure Key Vault'
-                  inputs:
-                    azureSubscription: '$(azureServiceConnection)'
-                    KeyVaultName: '$(keyVaultName)'
-                    SecretsFilter: 'STAGING-MONGODB-URI,STAGING-NEXTAUTH-SECRET,STAGING-JWT-SECRET'
-                    RunAsPreJob: false
+                - script: echo "Configure Azure deployment here"
+                  displayName: 'Deployment Placeholder'
 
-                - task: AzureCLI@2
-                  displayName: 'Configure App Settings (Pre-Deployment)'
-                  inputs:
-                    azureSubscription: '$(azureServiceConnection)'
-                    scriptType: 'bash'
-                    scriptLocation: 'inlineScript'
-                    inlineScript: |
-                      echo "Setting app configuration to disable Oryx build..."
-                      az webapp config appsettings set \
-                        --name mind-voyage-companion-staging-app-ja7cvi \
-                        --resource-group rg-mind-voyage-staging \
-                        --settings \
-                          NODE_ENV=production \
-                          NEXTAUTH_URL=https://mind-voyage-companion-staging-app-ja7cvi.azurewebsites.net \
-                          MONGODB_URI='$(STAGING-MONGODB-URI)' \
-                          NEXTAUTH_SECRET='$(STAGING-NEXTAUTH-SECRET)' \
-                          JWT_SECRET='$(STAGING-JWT-SECRET)' \
-                          NEXT_TELEMETRY_DISABLED=1 \
-                          SCM_DO_BUILD_DURING_DEPLOYMENT=false \
-                          ENABLE_ORYX_BUILD=false \
-                          WEBSITE_RUN_FROM_PACKAGE=1
-                      
-                      echo "App settings configured successfully"
+  - stage: DeployToProduction
+    displayName: 'Deploy to Production'
+    dependsOn: DeployToStaging
+    condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/main'))
+    jobs:
+      - deployment: ProductionDeployment
+        displayName: 'Production Deployment'
+        environment: 'production'
+        strategy:
+          runOnce:
+            deploy:
+              steps:
+                - download: current
+                  artifact: build-artifacts
 
-                - task: AzureWebApp@1
-                  displayName: 'Deploy to Azure App Service (Staging)'
-                  inputs:
-                    azureSubscription: '$(azureServiceConnection)'
-                    appType: 'webAppLinux'
-                    appName: '$(stagingAppServiceName)'
-                    runtimeStack: 'NODE|20-lts'
-                    package: '$(Pipeline.Workspace)/build-artifacts/*.zip'
-                    # Use npx to run next start directly, which should respect PORT environment variable
-                    startUpCommand: 'npx next start'
-
-                - script: |
-                    echo "Waiting for application to start after deployment..."
-                    sleep 45
-                    echo "Checking application health endpoint..."
-                    curl -f https://mind-voyage-companion-staging-app-ja7cvi.azurewebsites.net/api/health || echo "Health check failed - application may still be starting or MongoDB connection failed"
-                  displayName: 'Health Check - Staging Deployment'
+                - script: echo "Configure Azure production deployment here"
+                  displayName: 'Production Deployment Placeholder'

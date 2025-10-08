@@ -4,6 +4,9 @@ import Credentials from 'next-auth/providers/credentials'
 import { compare } from 'bcryptjs'
 import { z } from 'zod'
 
+// Configure auth to use Node.js runtime (bcryptjs needs Node.js APIs)
+export const runtime = 'nodejs'
+
 // Login schema for credential validation
 const loginSchema = z.object({
   email: z.string().email('Invalid email address'),

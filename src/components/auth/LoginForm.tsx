@@ -48,29 +48,9 @@ export default function LoginForm() {
         return
       }
 
-      // Check onboarding status
-      try {
-        const onboardingRes = await fetch('/api/onboarding/complete', {
-          credentials: 'include',
-        })
-        if (onboardingRes.ok) {
-          const onboardingData = await onboardingRes.json()
-          if (
-            onboardingData.success &&
-            onboardingData.data.onboardingCompleted
-          ) {
-            router.replace('/dashboard/habits')
-          } else {
-            router.replace('/onboarding')
-          }
-        } else {
-          // If onboarding check fails, redirect to onboarding to be safe
-          router.replace('/onboarding')
-        }
-      } catch {
-        // If onboarding check fails, redirect to onboarding to be safe
-        router.replace('/onboarding')
-      }
+      // Successful login - redirect to dashboard
+      router.replace('/dashboard')
+      router.refresh()
     } catch (e) {
       console.error('LoginForm - error:', e)
       setError('Network error')

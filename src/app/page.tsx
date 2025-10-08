@@ -1,261 +1,71 @@
 import Link from 'next/link'
-import { ThemeToggle } from '@/components/ui/ThemeToggle'
+import { Button } from '@/components/ui/button'
 
-export default function Home() {
+export default function HomePage() {
   return (
-    <div
-      className="relative min-h-screen antialiased overflow-x-hidden"
-      style={{
-        backgroundColor: 'var(--mv-color-bg)',
-        color: 'var(--mv-color-text)',
-      }}
-    >
-      {/* Decorative Glow */}
-      <div
-        className="glow-effect -top-40 -left-60"
-        style={{
-          position: 'absolute',
-          width: '500px',
-          height: '500px',
-          background:
-            'radial-gradient(circle, rgba(167, 139, 250, 0.15) 0%, rgba(167, 139, 250, 0) 60%)',
-          zIndex: -1,
-          pointerEvents: 'none',
-        }}
-      />
-      <div
-        className="glow-effect top-1/2 right-0 transform -translate-y-1/2"
-        style={{
-          position: 'absolute',
-          width: '500px',
-          height: '500px',
-          background:
-            'radial-gradient(circle, rgba(167, 139, 250, 0.15) 0%, rgba(167, 139, 250, 0) 60%)',
-          zIndex: -1,
-          pointerEvents: 'none',
-        }}
-      />
+    <div className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-br from-zinc-950 via-zinc-900 to-zinc-950">
+      <div className="max-w-4xl mx-auto px-6 text-center space-y-8">
+        <div className="space-y-4">
+          <h1 className="text-5xl md:text-7xl font-bold bg-gradient-to-r from-white to-zinc-400 bg-clip-text text-transparent">
+            Next.js MVP Boilerplate
+          </h1>
+          <p className="text-xl text-zinc-400 max-w-2xl mx-auto">
+            Production-ready starter with Next.js 15, TypeScript, MongoDB,
+            NextAuth, and Azure CI/CD
+          </p>
+        </div>
 
-      <div className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-7xl relative z-10">
-        {/* Header Section */}
-        <header className="flex justify-between items-center py-6">
-          <div className="flex items-center gap-3">
-            <span className="text-3xl">🧠</span>
-            <h1
-              className="text-xl font-bold"
-              style={{ color: 'var(--mv-color-text)' }}
-            >
-              Mind Voyage Companion
-            </h1>
-          </div>
-          <div className="flex items-center gap-4">
-            {/* Mobile Theme Toggle */}
-            <div className="md:hidden">
-              <ThemeToggle />
-            </div>
-            {/* Desktop Navigation */}
-            <div className="hidden md:flex items-center gap-4">
-              <Link
-                href="/login"
-                className="transition-colors px-4 py-2 hover:opacity-80"
-                style={{ color: 'var(--mv-color-text-subtle)' }}
-              >
-                Sign In
-              </Link>
-              <Link
-                href="/register"
-                className="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-4 py-2 rounded-lg transition-colors"
-              >
-                Get Started
-              </Link>
-              <ThemeToggle />
-            </div>
-          </div>
-        </header>
+        <div className="flex flex-col sm:flex-row gap-4 justify-center">
+          <Link href="/dashboard">
+            <Button size="lg" className="min-w-[180px]">
+              Go to Dashboard
+            </Button>
+          </Link>
+          <Link href="/login">
+            <Button size="lg" variant="outline" className="min-w-[180px]">
+              Sign In
+            </Button>
+          </Link>
+        </div>
 
-        {/* Main Content Grid */}
-        <main className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center py-16 md:py-24">
-          {/* Left Column: Marketing Copy */}
-          <div className="flex flex-col gap-8">
-            <h2
-              className="text-5xl md:text-6xl font-extrabold leading-tight"
-              style={{ color: 'var(--mv-color-text)' }}
-            >
-              Build Better Habits Through{' '}
-              <span className="gradient-text">Mindful Reflection</span>
-            </h2>
-            <p
-              className="text-lg"
-              style={{ color: 'var(--mv-color-text-subtle)' }}
-            >
-              A privacy-first platform combining habit tracking with
-              philosophical reflection for meaningful personal growth.
-            </p>
-
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 text-gray-300">
-              <div>
-                <h3 className="font-semibold text-gray-100 mb-2">
-                  Core Features:
-                </h3>
-                <ul className="space-y-2">
-                  <li className="flex items-center gap-2">
-                    ✓{' '}
-                    <span className="text-gray-400">
-                      Daily habit tracking with streaks
-                    </span>
-                  </li>
-                  <li className="flex items-center gap-2">
-                    ✓{' '}
-                    <span className="text-gray-400">
-                      Guided journaling with mood tracking
-                    </span>
-                  </li>
-                  <li className="flex items-center gap-2">
-                    ✓{' '}
-                    <span className="text-gray-400">
-                      Daily Stoic quotes and prompts
-                    </span>
-                  </li>
-                  <li className="flex items-center gap-2">
-                    ✓{' '}
-                    <span className="text-gray-400">
-                      Beautiful data visualizations
-                    </span>
-                  </li>
-                </ul>
-              </div>
-              <div>
-                <h3 className="font-semibold text-gray-100 mb-2">
-                  Pro Features:
-                </h3>
-                <ul className="space-y-2">
-                  <li className="flex items-center gap-2">
-                    ⭐{' '}
-                    <span className="text-gray-400">
-                      AI-powered writing enhancement
-                    </span>
-                  </li>
-                  <li className="flex items-center gap-2">
-                    ⭐{' '}
-                    <span className="text-gray-400">
-                      Weekly insights and recommendations
-                    </span>
-                  </li>
-                  <li className="flex items-center gap-2">
-                    ⭐{' '}
-                    <span className="text-gray-400">
-                      Advanced habit analytics
-                    </span>
-                  </li>
-                </ul>
-              </div>
-            </div>
-
-            <div className="flex flex-col sm:flex-row items-center gap-4 mt-4">
-              <Link
-                href="/register"
-                className="w-full sm:w-auto bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-6 rounded-lg transition-all duration-300 transform hover:scale-105"
-              >
-                Start Free{' '}
-                <span className="font-normal text-blue-200">
-                  (No CC Req&rsquo;d)
-                </span>
-              </Link>
-              <button className="w-full sm:w-auto border border-gray-600 hover:bg-gray-800 text-gray-300 font-bold py-3 px-6 rounded-lg transition-colors">
-                See How It Works
-              </button>
-            </div>
-
-            <p className="text-sm text-gray-500 mt-2">
-              Used by 10,000+ mindful habit builders
-            </p>
-          </div>
-
-          {/* Right Column: Interactive Feature Demo */}
-          <div className="flex flex-col gap-6">
-            <h3 className="text-center text-lg font-semibold text-gray-300 mb-2">
-              Interactive Feature Demo
+        <div className="pt-12 grid grid-cols-1 md:grid-cols-3 gap-6 text-left">
+          <div className="p-6 rounded-lg border border-zinc-800 bg-zinc-900/50">
+            <h3 className="text-lg font-semibold mb-2 text-white">
+              🚀 Production Ready
             </h3>
-
-            {/* Habit Dashboard Card */}
-            <div className="feature-card p-6 rounded-xl transform transition-transform duration-300 hover:scale-105 hover:rotate-1">
-              <h4 className="font-bold text-gray-100 mb-4">
-                📊 Habit Dashboard
-              </h4>
-              <div className="flex justify-around items-center bg-gray-900/50 p-4 rounded-lg">
-                <div className="text-center">
-                  <p className="text-3xl">✓7d</p>
-                  <p className="text-xs text-gray-400">Streak</p>
-                </div>
-                <div className="text-center">
-                  <p className="text-3xl">○3/8</p>
-                  <p className="text-xs text-gray-400">Water</p>
-                </div>
-                <div className="text-center">
-                  <p className="text-3xl">📚20</p>
-                  <p className="text-xs text-gray-400">Reading</p>
-                </div>
-              </div>
-            </div>
-
-            {/* Journal Entry Card */}
-            <div className="feature-card p-6 rounded-xl transform transition-transform duration-300 hover:scale-105 hover:-rotate-1">
-              <h4 className="font-bold text-gray-100 mb-4">📔 Journal Entry</h4>
-              <div className="bg-gray-900/50 p-4 rounded-lg space-y-3">
-                <p className="text-gray-300 italic">
-                  &ldquo;Today was challenging, but I practiced patience
-                  when...&rdquo;
-                </p>
-                <div className="text-sm bg-green-500/10 text-green-300 px-3 py-1 rounded-full inline-block">
-                  😊 Mood: Content
-                </div>
-              </div>
-            </div>
-
-            {/* Daily Wisdom Card */}
-            <div className="feature-card p-6 rounded-xl transform transition-transform duration-300 hover:scale-105 hover:rotate-1">
-              <h4 className="font-bold text-gray-100 mb-4">🏛️ Daily Wisdom</h4>
-              <div className="bg-gray-900/50 p-4 rounded-lg">
-                <blockquote className="text-gray-300 italic">
-                  &ldquo;The best time to plant a tree was 20 years ago. The
-                  second best time is now.&rdquo;
-                </blockquote>
-                <cite className="text-right block mt-2 text-sm text-gray-500 not-italic">
-                  — Chinese Proverb
-                </cite>
-              </div>
-            </div>
+            <p className="text-sm text-zinc-400">
+              Next.js 15 with App Router, TypeScript strict mode, and MongoDB
+              integration out of the box.
+            </p>
           </div>
-        </main>
-
-        {/* Testimonials Section */}
-        <section className="py-16 md:py-24 border-t border-gray-800">
-          <h2 className="text-3xl font-bold text-center text-gray-100 mb-12">
-            Social Proof & Testimonials
-          </h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-            <div className="feature-card p-8 rounded-xl">
-              <p className="text-gray-300 italic mb-6">
-                &ldquo;Mind Voyage helped me build a consistent journaling
-                practice that transformed my self-awareness and emotional
-                resilience.&rdquo;
-              </p>
-              <p className="font-semibold text-gray-200">
-                — Sarah K., Product Manager
-              </p>
-            </div>
-            <div className="feature-card p-8 rounded-xl">
-              <p className="text-gray-300 italic mb-6">
-                &ldquo;The combination of habit tracking and philosophical
-                reflection is brilliant. It&rsquo;s not just about checking
-                boxes&mdash;it&rsquo;s about personal growth.&rdquo;
-              </p>
-              <p className="font-semibold text-gray-200">
-                — Alex M., Software Engineer
-              </p>
-            </div>
+          <div className="p-6 rounded-lg border border-zinc-800 bg-zinc-900/50">
+            <h3 className="text-lg font-semibold mb-2 text-white">
+              🔐 Auth Built-in
+            </h3>
+            <p className="text-sm text-zinc-400">
+              NextAuth v5 with credential and OAuth providers, session
+              management included.
+            </p>
           </div>
-        </section>
+          <div className="p-6 rounded-lg border border-zinc-800 bg-zinc-900/50">
+            <h3 className="text-lg font-semibold mb-2 text-white">
+              ☁️ Azure Ready
+            </h3>
+            <p className="text-sm text-zinc-400">
+              Complete CI/CD pipeline with staging auto-deploy and manual
+              production release.
+            </p>
+          </div>
+        </div>
+
+        <div className="pt-8">
+          <p className="text-sm text-zinc-500">
+            Get started by editing{' '}
+            <code className="px-2 py-1 bg-zinc-800 rounded text-zinc-300">
+              src/app/page.tsx
+            </code>
+          </p>
+        </div>
       </div>
     </div>
   )
