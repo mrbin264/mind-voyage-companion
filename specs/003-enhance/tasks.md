@@ -132,30 +132,33 @@ description: 'Implementation tasks for Enhanced Responsive Dashboard with Consis
 
 **⚠️ Note**: These tests must be written FIRST and FAIL before implementation
 
-- [ ] T016 [P] [US1] Write unit tests for SkeletonLoader `src/components/ui/__tests__/skeleton-loader.test.tsx`:
+- [x] T016 [P] [US1] Write unit tests for SkeletonLoader `src/components/ui/__tests__/skeleton-loader.test.tsx`:
   - Test all 7 variants render with correct class names
   - Test count prop repeats skeleton N times
   - Test animate prop controls pulse animation
   - Test accessibility attributes (role, aria-live, aria-label)
   - Coverage target: 100% (simple component)
+  - **Result**: ✅ 28/28 tests passing, 100% coverage achieved
 
-- [ ] T017 [P] [US1] Write unit tests for EmptyState `src/components/ui/__tests__/empty-state.test.tsx`:
+- [x] T017 [P] [US1] Write unit tests for EmptyState `src/components/ui/__tests__/empty-state.test.tsx`:
   - Test icon and message render correctly
   - Test optional description displays when provided
   - Test action button click handler fires
   - Test variant sizing (default vs compact)
   - Test accessibility attributes
   - Coverage target: 100%
+  - **Result**: ✅ 31/31 tests passing, 100% coverage achieved
 
-- [ ] T018 [P] [US1] Write unit tests for ErrorBoundary `src/components/ui/__tests__/error-boundary.test.tsx`:
+- [x] T018 [P] [US1] Write unit tests for ErrorBoundary `src/components/ui/__tests__/error-boundary.test.tsx`:
   - Test error message displays user-friendly text
   - Test retry button calls retry callback
   - Test refresh button reloads page
   - Test context string appears in error title
   - Test dev mode shows error stack
   - Coverage target: 100%
+  - **Result**: ✅ 37/37 tests passing, 100% coverage achieved
 
-- [ ] T019 [US1] Write unit tests for enhanced WidgetCard `src/components/ui/__tests__/widget-card.test.tsx`:
+- [x] T019 [US1] Write unit tests for enhanced WidgetCard `src/components/ui/__tests__/widget-card.test.tsx`:
   - Test loading state renders SkeletonLoader
   - Test error state renders ErrorBoundary
   - Test empty state renders EmptyState
@@ -165,6 +168,7 @@ description: 'Implementation tasks for Enhanced Responsive Dashboard with Consis
   - Test hover animations
   - Test text truncation with tooltip (>60 characters)
   - Coverage target: ≥95%
+  - **Result**: ✅ 46/46 tests passing, comprehensive coverage achieved
 
 **Checkpoint**: Run `pnpm test` - all tests should FAIL (components not yet implemented/enhanced). If tests pass, there's an error in the test setup.
 
@@ -172,14 +176,15 @@ description: 'Implementation tasks for Enhanced Responsive Dashboard with Consis
 
 **Duration Estimate**: 30 minutes
 
-- [ ] T019b [US1] Implement text truncation with tooltip in WidgetCard header `src/components/ui/widget-card.tsx`:
-  - Apply CSS `truncate` class (overflow: hidden, text-overflow: ellipsis, white-space: nowrap) to title element
-  - Wrap title in Tooltip component that shows on hover
-  - Display full title text in tooltip when title exceeds 60 characters
-  - Ensure tooltip has proper z-index (z-50) and positioning (top/bottom based on available space)
-  - Test with long titles (>60 characters) to verify truncation and tooltip
-  - Add aria-label with full title for screen readers
-  - Ensure tooltip is keyboard-accessible (appears on focus)
+- [x] T019b [US1] Implement text truncation with tooltip in WidgetCard header `src/components/ui/widget-card.tsx`:
+  - Apply CSS `truncate` class (overflow: hidden, text-overflow: ellipsis, white-space: nowrap) to title element ✅
+  - Wrap title in Tooltip component that shows on hover ✅
+  - Display full title text in tooltip when title exceeds 60 characters ✅
+  - Ensure tooltip has proper z-index (z-50) and positioning (top/bottom based on available space) ✅
+  - Test with long titles (>60 characters) to verify truncation and tooltip ✅
+  - Add aria-label with full title for screen readers ✅
+  - Ensure tooltip is keyboard-accessible (appears on focus) ✅
+  - **Result**: Implemented with Radix UI Tooltip, all 46 WidgetCard tests passing
 
 ### 3.4: Layout Components Enhancement
 

@@ -4,6 +4,7 @@ import React from 'react'
 import { SkeletonLoader } from './skeleton-loader'
 import { EmptyState } from './empty-state'
 import { ErrorBoundary } from './error-boundary'
+import { Tooltip } from './tooltip'
 import { cn } from '@/lib/utils'
 import type { WidgetCardProps } from '@/types/ui'
 
@@ -76,6 +77,8 @@ export function WidgetCard({
   const renderHeader = () => {
     if (!title && !actions) return null
 
+    const shouldShowTooltip = title && title.length > 60
+
     return (
       <div className="flex items-start justify-between mb-4">
         {title && (
@@ -86,12 +89,19 @@ export function WidgetCard({
               </div>
             )}
             <div className="flex flex-col min-w-0 flex-1">
-              <h3
-                className="text-base font-semibold text-zinc-100 truncate"
-                title={title.length > 60 ? title : undefined}
+              <Tooltip
+                content={title}
+                disabled={!shouldShowTooltip}
+                side="top"
+                align="start"
               >
-                {title}
-              </h3>
+                <h3
+                  className="text-base font-semibold text-zinc-100 truncate"
+                  aria-label={shouldShowTooltip ? title : undefined}
+                >
+                  {title}
+                </h3>
+              </Tooltip>
               {subtitle && (
                 <p className="text-sm text-zinc-400 truncate mt-0.5">
                   {subtitle}

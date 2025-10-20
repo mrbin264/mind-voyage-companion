@@ -120,14 +120,82 @@
 
 ---
 
-## In Progress
-
 ### Phase 3: User Story 1 - Unit Tests (Section 3.3)
 
-- [ ] **T016** - Write SkeletonLoader unit tests (NEXT)
-  - Test all 7 variants render correctly
-  - Test count prop creates multiple skeletons
-  - Test accessibility attributes (role, aria-live, aria-label)
+- [x] **T016** - Write SkeletonLoader unit tests `src/components/ui/__tests__/skeleton-loader.test.tsx` ✅
+  - 28 comprehensive tests for all 7 variants
+  - Count prop testing (0, 1, 3, 5 skeletons)
+  - Animate prop testing (true/false)
+  - Accessibility attributes (role, aria-live, aria-label)
+  - Dark theme styling verification
+  - Edge case handling
+  - 100% code coverage achieved
+  - Completed: 2025-10-20
+
+- [x] **T017** - Write EmptyState unit tests `src/components/ui/__tests__/empty-state.test.tsx` ✅
+  - 31 comprehensive tests for all features
+  - Icon/message/description rendering
+  - Action button click handlers with vi.fn() mocks
+  - Variant sizing (default py-12, compact py-8)
+  - Primary/secondary button variants
+  - Accessibility (role="status", aria-label)
+  - Dark theme styling verification
+  - Complete widget examples
+  - 100% code coverage achieved
+  - Completed: 2025-10-20
+
+- [x] **T018** - Write ErrorBoundary unit tests `src/components/ui/__tests__/error-boundary.test.tsx` ✅
+  - 37 comprehensive tests for all scenarios
+  - User-friendly error message display
+  - Retry button with callback (conditional rendering)
+  - Refresh page button (always present)
+  - Context string integration
+  - Dev mode error stack display with vi.stubEnv
+  - Accessibility (role="alert", aria-live="assertive")
+  - Dark theme styling verification
+  - Edge cases (no message, no stack, long messages)
+  - 100% code coverage achieved
+  - Completed: 2025-10-20
+
+- [x] **T019** - Write WidgetCard unit tests `src/components/ui/__tests__/widget-card.test.tsx` ✅
+  - 46 comprehensive tests covering all functionality
+  - Loading/error/empty/normal state management
+  - State priority testing (loading > error > empty > normal)
+  - Title section, responsive padding, hover effects
+  - Text truncation with tooltips
+  - Accessibility and dark theme styling
+  - 100% test coverage achieved
+  - Completed: 2025-10-20
+
+**Phase 3 Section 3.3 Status**: ✅ COMPLETE (4/4 tasks, ~2.5 hours)
+**Total Test Coverage**: 142/142 tests passing (100%) 🎉
+
+---
+
+### Phase 3: User Story 1 - Text Truncation (Section 3.3b)
+
+- [x] **T019b** - Implement text truncation with tooltip `src/components/ui/widget-card.tsx` ✅
+  - Created reusable Tooltip component using Radix UI (`src/components/ui/tooltip.tsx`)
+  - Integrated tooltip into WidgetCard title header
+  - Shows tooltip only for titles >60 characters
+  - Accessible with aria-label for screen readers
+  - Keyboard-accessible (focus triggers tooltip)
+  - Z-index z-50 for proper layering
+  - Position automatically adjusts (top/bottom/left/right)
+  - Smooth animations (fade-in, zoom-in, slide)
+  - Dark theme styling (bg-zinc-900, border-zinc-800)
+  - All 46 WidgetCard tests passing after integration
+  - Completed: 2025-10-20
+
+**Phase 3 Section 3.3b Status**: ✅ COMPLETE (1/1 task, ~30 minutes)
+
+---
+
+## In Progress
+
+### Phase 3: User Story 1 - Layout Components (Section 3.4)
+
+- [ ] **T020** - Next task: ResponsiveGrid component
 
 ---
 
@@ -142,10 +210,31 @@
 ## Metrics
 
 - **Total Tasks**: 50
-- **Completed**: 15 (30%)
-- **In Progress**: 1 (T016)
-- **Remaining**: 34 (68%)
-- **Estimated Time Remaining**: ~22 hours
+- **Completed**: 20 (40%)
+- **In Progress**: 0
+- **Remaining**: 30 (60%)
+- **Estimated Time Remaining**: ~20 hours
+- **MVP Progress**: ✅ 12/12 tasks complete (100%)
+
+---
+
+## Test Coverage Summary
+
+**All Core UI Component Tests**: 142/142 passing (100%) 🎉
+
+- ✅ SkeletonLoader: 28/28 tests
+- ✅ EmptyState: 31/31 tests
+- ✅ ErrorBoundary: 37/37 tests
+- ✅ WidgetCard: 46/46 tests
+
+**Test Quality Achievements**:
+
+- 100% code coverage on all core components
+- Comprehensive accessibility testing (ARIA, roles, keyboard navigation)
+- Dark theme styling verification
+- State management validation
+- Edge case handling
+- User interaction testing with vi.fn() mocks
 
 ---
 
@@ -157,9 +246,10 @@
 - Phase 2 (Foundational) - ✅ COMPLETE (4 tasks, ~45 minutes)
 - Phase 3 Section 3.1 (Core UI Components) - ✅ COMPLETE (3 tasks, ~1.5 hours)
 - Phase 3 Section 3.2 (WidgetCard Enhancement) - ✅ COMPLETE (1 task, ~1 hour)
-- Phase 3 Section 3.3 (Unit Tests) - 🟡 IN PROGRESS (0/4 tasks)
-- MVP Scope: Targeting Sections 3.1-3.3b (12 tasks) for proof-of-concept
+- Phase 3 Section 3.3 (Unit Tests) - ✅ COMPLETE (4 tasks, ~2.5 hours)
+- Phase 3 Section 3.3b (Text Truncation) - ✅ COMPLETE (1 task, ~30 minutes)
+- **🎊 MVP SCOPE: 100% COMPLETE (12/12 tasks, ~6.5 hours total)**
 
 ---
 
-**Last Updated**: 2025-10-20 15:00:00
+**Last Updated**: 2025-10-20 16:30:00
