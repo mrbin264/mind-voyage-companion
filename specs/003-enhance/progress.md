@@ -191,11 +191,65 @@
 
 ---
 
-## In Progress
-
 ### Phase 3: User Story 1 - Layout Components (Section 3.4)
 
-- [ ] **T020** - Next task: ResponsiveGrid component
+- [x] **T020** - Create ResponsiveGrid component `src/components/ui/responsive-grid.tsx` ✅
+  - Dynamic column configuration with ResponsiveColumns interface
+  - Default columns: mobile=1, tablet=2, desktop=3, xl=5
+  - Gap prop (default gap-6) for flexible spacing
+  - GridPresets object with 7 common layouts (singleColumn, twoColumn, threeColumn, fourColumn, habitCards, dashboard, dense)
+  - Semantic HTML: role="list" container with role="listitem" children
+  - Full TypeScript interfaces exported
+  - Completed: 2025-10-20
+
+- [x] **T021** - Enhanced DashboardLayout component `src/components/layout/DashboardLayout.tsx` ✅
+  - Integrated new Sidebar and MobileNav components
+  - State management: isMobileMenuOpen, isTabletCollapsed
+  - Keyboard shortcuts:
+    - Ctrl+B / Cmd+B: Toggle sidebar collapse
+    - Escape: Close mobile menu
+  - Focus trap for mobile sidebar (prevents tab outside)
+  - Auto-close mobile menu on route change
+  - Sidebar toggle button (tablet/desktop) with dynamic positioning
+  - Responsive header with mobile-friendly spacing
+  - Accessibility: main landmark (#main-content), semantic HTML, focus management
+  - Background: bg-[#0A0A0A] for main content
+  - Completed: 2025-10-20
+
+- [x] **T022** - Create Sidebar component `src/components/layout/Sidebar.tsx` ✅
+  - Three responsive modes:
+    - Mobile (<768px): Hidden by default, full-screen overlay when opened
+    - Tablet (768-1024px): Collapsible between icon-only (64px) and full-width (256px)
+    - Desktop (≥1024px): Persistent full-width (256px)
+  - Icon-only mode when collapsed
+  - Skip-to-content link (visible on focus)
+  - Active state styling (gradient background, blue border-left)
+  - Smooth transitions (300ms)
+  - Background: bg-[#101010]
+  - Props: navigationItems, isCollapsed, isVisible, onClose, className, showUpgradeButton
+  - Accessibility: Semantic <nav>, aria-label, aria-current, keyboard navigation
+  - Completed: 2025-10-20
+
+- [x] **T023** - Create MobileNav component `src/components/layout/MobileNav.tsx` ✅
+  - Hamburger menu button for mobile/tablet
+  - Animated Menu ↔ X icon transition
+  - Visible only <1024px (lg:hidden)
+  - Touch optimization (touch-manipulation, active:scale-95)
+  - MobileMenuOverlay component for backdrop
+  - Props: isOpen, onToggle, className
+  - Accessibility: aria-label, aria-expanded, aria-controls
+  - Smooth rotation/scale animations (300ms)
+  - Completed: 2025-10-20
+
+**Phase 3 Section 3.4 Status**: ✅ COMPLETE (4/4 tasks, ~2 hours)
+
+---
+
+## In Progress
+
+### Phase 3: User Story 1 - Dashboard Widgets Enhancement (Section 3.5)
+
+- [ ] **T024** - Next task: Enhance HabitOverviewWidget
 
 ---
 

@@ -14,11 +14,13 @@
 ## 🎨 UI/Design System
 
 ### Dark Theme Standards
+
 - **Primary Background**: `#0A0A0A` (body), `#101010` (sidebar), `#18181B` (cards/zinc-900)
 - **Widget Cards**: Use `WidgetCard` component with `zinc-900` background and `border-white/10`
 - **Typography**: JSX quote escaping required: `&ldquo;`, `&rdquo;`, `&apos;`
 
 ### Layout Patterns
+
 ```tsx
 // Dashboard pages: Always wrap with DashboardLayout
 <DashboardLayout user={user}>
@@ -33,12 +35,14 @@
 ## 🔄 Data Flow Patterns
 
 ### Habit Management
+
 - **Hook**: `useHabits()` for all habit operations (CRUD + real-time sync)
 - **Types**: Import from `@/types/habit` - extensive type definitions for habits, logs, progress
 - **API**: RESTful `/api/habits/*` with automatic progress calculation
 - **State Updates**: Always call `fetchHabits()` and `fetchSummary()` after mutations
 
 ### Authentication Flow
+
 - **Middleware**: JWT validation in `src/middleware.ts` protects `/dashboard/*` routes
 - **User Data**: Extract from cookies server-side, pass to client components as props
 - **Auth State**: Use `UserProfileDropdown` component for logout functionality
@@ -46,6 +50,7 @@
 ## 🛠️ Development Workflows
 
 ### Essential Commands
+
 ```bash
 # Development (auto-starts MongoDB Memory Server)
 pnpm dev
@@ -58,6 +63,7 @@ pnpm db:cleanup && pnpm dev
 ```
 
 ### Component Creation Patterns
+
 ```tsx
 // Dashboard components: Always 'use client' with dark theme
 'use client'
@@ -73,12 +79,14 @@ const form = useForm<FormData>({ resolver: zodResolver(schema) })
 ## 🧪 Testing & Quality
 
 ### Current Setup
+
 - **Unit Tests**: Vitest + React Testing Library (configured but deferred to MVC-002+)
 - **E2E Tests**: Playwright configured for `/e2e` directory
 - **Linting**: ESLint + Prettier with pre-commit hooks (husky)
 - **Type Safety**: Strict TypeScript mode enabled
 
 ### Code Standards
+
 - **Import Alias**: Always use `@/` for internal imports
 - **Component Exports**: Default export for single components, named for multiple
 - **Error Handling**: Use `handleError` pattern in hooks for consistent UX
@@ -86,16 +94,19 @@ const form = useForm<FormData>({ resolver: zodResolver(schema) })
 ## 🔍 Common Pitfalls
 
 ### MongoDB Connections
+
 - **Development**: Never set `MONGODB_URI` (uses Memory Server automatically)
 - **Production**: Memory Server disabled, requires `MONGODB_URI` environment variable
 - **Dual Clients**: NextAuth and Mongoose maintain separate connection pools
 
 ### React/Next.js Patterns
+
 - **Server Components**: Default behavior, use for data fetching and static content
 - **Client Components**: Add `'use client'` for interactivity, hooks, browser APIs
 - **Dynamic Imports**: Avoid `next/dynamic` with `{ ssr: false }` in Server Components
 
 ### Design Implementation
+
 - **HTML References**: Match components exactly to files in `design/html/dashboard/`
 - **Grid Responsiveness**: Always test xl:col-span patterns for desktop layouts
 - **Quote Escaping**: Use HTML entities in JSX to pass ESLint validation
