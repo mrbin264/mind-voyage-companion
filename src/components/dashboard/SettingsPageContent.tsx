@@ -1,13 +1,19 @@
 'use client'
 
-import React, { useState } from 'react'
+import React, { useState, lazy, Suspense } from 'react'
 import {
   SettingsNavigation,
   SettingsHeader,
 } from '@/components/dashboard/settings/SettingsComponents'
-import { ProfileForm } from '@/components/dashboard/settings/ProfileForm'
 import { useSettings } from '@/hooks/useSettings'
 import type { SettingsSection } from '@/types/settings'
+import { SkeletonLoader } from '@/components/ui/skeleton-loader'
+
+const ProfileForm = lazy(() =>
+  import('@/components/dashboard/settings/ProfileForm').then(m => ({
+    default: m.ProfileForm,
+  }))
+)
 
 interface SettingsPageContentProps {
   user: {
@@ -60,13 +66,21 @@ export function SettingsPageContent({ user }: SettingsPageContentProps) {
     switch (activeSection) {
       case 'profile':
         return profile ? (
-          <ProfileForm
-            profile={profile}
-            onUpdate={handleProfileUpdate}
-            onSave={handleSave}
-            isDirty={false}
-            isSaving={saving}
-          />
+          <Suspense
+            fallback={
+              <div className="space-y-4">
+                <SkeletonLoader variant="dashboard-widget" count={1} />
+              </div>
+            }
+          >
+            <ProfileForm
+              profile={profile}
+              onUpdate={handleProfileUpdate}
+              onSave={handleSave}
+              isDirty={false}
+              isSaving={saving}
+            />
+          </Suspense>
         ) : (
           <div className="bg-gray-800 rounded-xl p-8 border border-gray-700 text-center">
             <p className="text-gray-400">Profile data not available</p>

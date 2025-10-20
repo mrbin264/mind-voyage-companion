@@ -1,15 +1,20 @@
 'use client'
 
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, lazy, Suspense } from 'react'
 import { Plus, Search, Upload, Settings } from 'lucide-react'
 import { useSession } from 'next-auth/react'
 import { DashboardLayout } from '@/components/layout/DashboardLayout'
-import JournalEntryList from '@/components/journal/JournalEntryList'
+import { SkeletonLoader } from '@/components/ui/skeleton-loader'
 import type {
   JournalEntry,
   JournalSearchResult,
   JournalStats,
 } from '@/types/journal'
+
+// Lazy load journal entry list for better initial page load
+const JournalEntryList = lazy(
+  () => import('@/components/journal/JournalEntryList')
+)
 
 // Filter types
 type FilterType = 'all' | 'month' | 'favorites' | 'tags'
@@ -272,7 +277,7 @@ export default function JournalHistoryPage() {
           ))}
         </div>
 
-        {/* Entry List - Mobile Responsive */}
+        {/* Entry List - Lazy Loaded */}
         {error ? (
           <div className="text-center py-8 sm:py-12">
             <div className="text-red-500 text-base sm:text-lg mb-4">
@@ -289,16 +294,24 @@ export default function JournalHistoryPage() {
             </button>
           </div>
         ) : (
-          <JournalEntryList
-            entries={entries}
-            onEdit={handleEdit}
-            onToggleFavorite={handleToggleFavorite}
-            onView={handleView}
-            onShare={handleShare}
-            onLoadMore={handleLoadMore}
-            hasMore={hasMore}
-            isLoading={isLoading}
-          />
+          <Suspense
+            fallback={
+              <div className="space-y-4">
+                <SkeletonLoader variant="dashboard-widget" count={3} />
+              </div>
+            }
+          >
+            <JournalEntryList
+              entries={entries}
+              onEdit={handleEdit}
+              onToggleFavorite={handleToggleFavorite}
+              onView={handleView}
+              onShare={handleShare}
+              onLoadMore={handleLoadMore}
+              hasMore={hasMore}
+              isLoading={isLoading}
+            />
+          </Suspense>
         )}
       </div>
     </DashboardLayout>

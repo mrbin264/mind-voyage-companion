@@ -1,17 +1,42 @@
 'use client'
 
-import React, { useState } from 'react'
+import React, { useState, lazy, Suspense } from 'react'
 import { BarChart3, Download, RefreshCw, Filter, Calendar } from 'lucide-react'
 import { useAnalytics } from '@/hooks/useAnalytics'
+import { SkeletonLoader } from '@/components/ui/skeleton-loader'
 import type { AnalyticsFilters, AnalyticsTimeframe } from '@/types/analytics'
-import {
-  OverviewWidget,
-  StreakWidget,
-  WeeklyTrendsWidget,
-  MoodCorrelationWidget,
-  AIInsightsWidget,
-  WeeklyTrendsChart,
-} from '@/components/dashboard/analytics'
+
+// Lazy load analytics widgets for better initial page load
+const OverviewWidget = lazy(() =>
+  import('@/components/dashboard/analytics').then(m => ({
+    default: m.OverviewWidget,
+  }))
+)
+const StreakWidget = lazy(() =>
+  import('@/components/dashboard/analytics').then(m => ({
+    default: m.StreakWidget,
+  }))
+)
+const WeeklyTrendsWidget = lazy(() =>
+  import('@/components/dashboard/analytics').then(m => ({
+    default: m.WeeklyTrendsWidget,
+  }))
+)
+const MoodCorrelationWidget = lazy(() =>
+  import('@/components/dashboard/analytics').then(m => ({
+    default: m.MoodCorrelationWidget,
+  }))
+)
+const AIInsightsWidget = lazy(() =>
+  import('@/components/dashboard/analytics').then(m => ({
+    default: m.AIInsightsWidget,
+  }))
+)
+const WeeklyTrendsChart = lazy(() =>
+  import('@/components/dashboard/analytics').then(m => ({
+    default: m.WeeklyTrendsChart,
+  }))
+)
 
 const timeframeOptions = [
   { label: 'Last 7 Days', value: 'week' },
@@ -177,35 +202,56 @@ export function AnalyticsPageContent({ user }: AnalyticsPageContentProps) {
           </div>
         </div>
 
-        {/* Overview Cards */}
-        <OverviewWidget overview={overview} />
+        {/* Overview Cards - Lazy Loaded */}
+        <Suspense
+          fallback={<SkeletonLoader variant="dashboard-widget" count={1} />}
+        >
+          <OverviewWidget overview={overview} />
+        </Suspense>
 
-        {/* Weekly Trends Chart - Mobile Responsive */}
-        <div className="bg-gray-800 rounded-lg p-4 sm:p-6 border border-gray-700">
-          <div className="flex items-center gap-2 mb-4 sm:mb-6">
-            <Calendar className="w-4 h-4 sm:w-5 sm:h-5 text-blue-400" />
-            <h3 className="text-base sm:text-lg font-semibold text-white">
-              Weekly Progress Trends
-            </h3>
+        {/* Weekly Trends Chart - Lazy Loaded */}
+        <Suspense
+          fallback={<SkeletonLoader variant="dashboard-widget" count={1} />}
+        >
+          <div className="bg-gray-800 rounded-lg p-4 sm:p-6 border border-gray-700">
+            <div className="flex items-center gap-2 mb-4 sm:mb-6">
+              <Calendar className="w-4 h-4 sm:w-5 sm:h-5 text-blue-400" />
+              <h3 className="text-base sm:text-lg font-semibold text-white">
+                Weekly Progress Trends
+              </h3>
+            </div>
+            <WeeklyTrendsChart trends={overview.weeklyTrends} />
           </div>
-          <WeeklyTrendsChart trends={overview.weeklyTrends} />
-        </div>
+        </Suspense>
 
-        {/* Analytics Widgets Grid - Mobile Responsive */}
+        {/* Analytics Widgets Grid - Lazy Loaded */}
         <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-4 sm:gap-6">
-          {/* Streaks Widget */}
-          <StreakWidget streaks={overview.activeStreaks} />
+          <Suspense
+            fallback={<SkeletonLoader variant="dashboard-widget" count={1} />}
+          >
+            <StreakWidget streaks={overview.activeStreaks} />
+          </Suspense>
 
-          {/* Weekly Trends Summary */}
-          <WeeklyTrendsWidget trends={overview.weeklyTrends} />
+          <Suspense
+            fallback={<SkeletonLoader variant="dashboard-widget" count={1} />}
+          >
+            <WeeklyTrendsWidget trends={overview.weeklyTrends} />
+          </Suspense>
 
-          {/* Mood Correlations */}
-          <MoodCorrelationWidget correlations={overview.moodCorrelations} />
+          <Suspense
+            fallback={<SkeletonLoader variant="dashboard-widget" count={1} />}
+          >
+            <MoodCorrelationWidget correlations={overview.moodCorrelations} />
+          </Suspense>
         </div>
 
-        {/* AI Insights (Pro Feature) */}
+        {/* AI Insights (Pro Feature) - Lazy Loaded */}
         {overview.aiInsights && overview.aiInsights.length > 0 && (
-          <AIInsightsWidget insights={overview.aiInsights} />
+          <Suspense
+            fallback={<SkeletonLoader variant="dashboard-widget" count={1} />}
+          >
+            <AIInsightsWidget insights={overview.aiInsights} />
+          </Suspense>
         )}
 
         {/* Performance Highlights - Mobile Responsive */}

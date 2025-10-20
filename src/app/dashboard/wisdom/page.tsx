@@ -1,6 +1,7 @@
-import React from 'react'
+import React, { Suspense } from 'react'
 import { DashboardLayout } from '@/components/layout/DashboardLayout'
 import { WisdomContent } from '@/components/dashboard/wisdom/WisdomContent'
+import { SkeletonLoader } from '@/components/ui/skeleton-loader'
 import { auth } from '@/lib/auth'
 import { redirect } from 'next/navigation'
 import { cookies } from 'next/headers'
@@ -28,7 +29,15 @@ export default async function WisdomPage() {
   return (
     <DashboardLayout user={user}>
       <div className="max-w-7xl mx-auto px-4 py-8">
-        <WisdomContent />
+        <Suspense
+          fallback={
+            <div className="space-y-6">
+              <SkeletonLoader variant="dashboard-widget" count={3} />
+            </div>
+          }
+        >
+          <WisdomContent />
+        </Suspense>
       </div>
     </DashboardLayout>
   )

@@ -1,14 +1,18 @@
 'use client'
 
-import React, { useState } from 'react'
+import React, { useState, lazy, Suspense } from 'react'
 import { Card } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
-import { HabitSummaryCards } from './HabitSummary'
-import { HabitList } from './HabitList'
+import { SkeletonLoader } from '@/components/ui/skeleton-loader'
 import { HabitForm } from './HabitForm'
 import { useHabits } from '@/hooks/useHabits'
 import type { HabitFilters, CreateHabitRequest } from '@/types/habit'
 import { Plus, Settings } from 'lucide-react'
+
+// Lazy load heavy components for better initial page load
+const HabitList = lazy(() =>
+  import('./HabitList').then(m => ({ default: m.HabitList }))
+)
 
 interface AuthUser {
   userId: string
@@ -184,26 +188,34 @@ export function HabitsPageContent({ user }: HabitsPageContentProps) {
         </div>
       </div>
 
-      {/* Main Habit List */}
-      <HabitList
-        habits={habits}
-        loading={loading}
-        filters={filters}
-        onFiltersChange={handleFiltersChange}
-        onAddHabit={handleAddHabit}
-        onCompleteHabit={handleCompleteHabit}
-        onSkipHabit={handleSkipHabit}
-        onEditHabit={handleEditHabit}
-        onDeleteHabit={handleDeleteHabit}
-        onViewHabitDetails={handleViewHabitDetails}
-        compact={false}
-        showFilters={true}
-        emptyMessage={
-          filters.status === 'all'
-            ? 'No habits found. Create your first habit to get started!'
-            : `No ${filters.status} habits found. Try adjusting your filters.`
+      {/* Main Habit List - Lazy Loaded */}
+      <Suspense
+        fallback={
+          <div className="space-y-4">
+            <SkeletonLoader variant="habit-card" count={3} />
+          </div>
         }
-      />
+      >
+        <HabitList
+          habits={habits}
+          loading={loading}
+          filters={filters}
+          onFiltersChange={handleFiltersChange}
+          onAddHabit={handleAddHabit}
+          onCompleteHabit={handleCompleteHabit}
+          onSkipHabit={handleSkipHabit}
+          onEditHabit={handleEditHabit}
+          onDeleteHabit={handleDeleteHabit}
+          onViewHabitDetails={handleViewHabitDetails}
+          compact={false}
+          showFilters={true}
+          emptyMessage={
+            filters.status === 'all'
+              ? 'No habits found. Create your first habit to get started!'
+              : `No ${filters.status} habits found. Try adjusting your filters.`
+          }
+        />
+      </Suspense>
 
       {/* Create Habit Form Modal */}
       {showCreateForm && (
