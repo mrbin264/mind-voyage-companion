@@ -297,13 +297,13 @@ export function DashboardContent({ user }: DashboardContentProps) {
               Progress: {summary?.completedToday || 0}/
               {summary?.totalCompletedToday || 0}
             </p>
-            <div className="w-full bg-white/10 rounded-full h-2.5 mb-4">
+            <div className="w-full bg-white/10 rounded-full h-2.5 mb-4 overflow-hidden">
               <div
-                className="bg-blue-600 h-2.5 rounded-full transition-all duration-300"
+                className="bg-blue-600 h-full rounded-full origin-left transition-transform duration-300"
                 style={{
-                  width: summary?.totalCompletedToday
-                    ? `${(summary.completedToday / summary.totalCompletedToday) * 100}%`
-                    : '0%',
+                  transform: summary?.totalCompletedToday
+                    ? `scaleX(${summary.completedToday / summary.totalCompletedToday})`
+                    : 'scaleX(0)',
                 }}
               ></div>
             </div>

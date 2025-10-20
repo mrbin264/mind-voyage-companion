@@ -28,11 +28,11 @@ export default function WeeklyProgressSection({
                   {habitProgress.weeklyProgress.percentage}%
                 </span>
               </div>
-              <div className="w-full bg-white/10 rounded-full h-2">
+              <div className="w-full bg-white/10 rounded-full h-2 overflow-hidden">
                 <div
-                  className="bg-blue-500 h-2 rounded-full transition-all duration-300"
+                  className="bg-blue-500 h-full rounded-full origin-left transition-transform duration-300"
                   style={{
-                    width: `${habitProgress.weeklyProgress.percentage}%`,
+                    transform: `scaleX(${habitProgress.weeklyProgress.percentage / 100})`,
                   }}
                 ></div>
               </div>

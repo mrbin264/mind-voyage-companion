@@ -103,8 +103,8 @@ function ProgressBar({ habitTitle, percentage }: ProgressBarProps) {
       </div>
       <div className="w-full bg-white/10 rounded-full h-2 overflow-hidden">
         <div
-          className="bg-blue-500 h-2 rounded-full transition-all duration-300"
-          style={{ width: `${Math.min(percentage, 100)}%` }}
+          className="bg-blue-500 h-full rounded-full origin-left transition-transform duration-300"
+          style={{ transform: `scaleX(${Math.min(percentage, 100) / 100})` }}
           role="progressbar"
           aria-valuenow={percentage}
           aria-valuemin={0}
