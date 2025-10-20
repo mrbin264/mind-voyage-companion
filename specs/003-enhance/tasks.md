@@ -94,19 +94,19 @@ description: 'Implementation tasks for Enhanced Responsive Dashboard with Consis
 
 **Duration Estimate**: 4-5 hours
 
-- [ ] T012 [P] [US1] Create SkeletonLoader component `src/components/ui/skeleton-loader.tsx`:
+- [x] T012 [P] [US1] Create SkeletonLoader component `src/components/ui/skeleton-loader.tsx`:
   - Implement 7 variants: dashboard-widget, habit-card, chart, analytics, list-item, avatar, text-line
   - Add pulse animation with `animate-pulse` Tailwind class
   - Include accessibility: `role="status"`, `aria-live="polite"`, `aria-label`
   - Follow dark theme (zinc-800 backgrounds)
 
-- [ ] T013 [P] [US1] Create EmptyState component `src/components/ui/empty-state.tsx`:
+- [x] T013 [P] [US1] Create EmptyState component `src/components/ui/empty-state.tsx`:
   - Support icon, message, description, optional action button
   - Two variants: 'default' (py-12) and 'compact' (py-8)
   - Action button with primary/secondary styles
   - Accessibility: `role="status"`, descriptive `aria-label`
 
-- [ ] T014 [P] [US1] Create ErrorBoundary component `src/components/ui/error-boundary.tsx`:
+- [x] T014 [P] [US1] Create ErrorBoundary component `src/components/ui/error-boundary.tsx`:
   - Accept error, retry callback, context string props
   - Display user-friendly error messages with AlertCircle icon
   - Retry and Refresh Page buttons
