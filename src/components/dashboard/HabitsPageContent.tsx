@@ -22,6 +22,8 @@ interface HabitsPageContentProps {
 
 export function HabitsPageContent({ user }: HabitsPageContentProps) {
   const [showCreateForm, setShowCreateForm] = useState(false)
+  const [showEditForm, setShowEditForm] = useState(false)
+  const [editingHabitId, setEditingHabitId] = useState<string | null>(null)
 
   const {
     habits,
@@ -33,6 +35,8 @@ export function HabitsPageContent({ user }: HabitsPageContentProps) {
     filters,
     setFilters,
     createHabit,
+    updateHabit,
+    deleteHabit,
     completeHabit,
     skipHabit,
     fetchHabits,
@@ -71,14 +75,41 @@ export function HabitsPageContent({ user }: HabitsPageContentProps) {
   }
 
   const handleEditHabit = (habitId: string) => {
-    // TODO: Open edit modal/form
-    console.log('Edit habit:', habitId)
+    setEditingHabitId(habitId)
+    setShowEditForm(true)
+  }
+
+  const handleUpdateHabit = async (habitData: any) => {
+    if (!editingHabitId) return
+    const success = await updateHabit(editingHabitId, habitData)
+    if (success) {
+      setShowEditForm(false)
+      setEditingHabitId(null)
+    }
+  }
+
+  const handleDeleteHabit = async (habitId: string) => {
+    if (
+      confirm(
+        'Are you sure you want to delete this habit? This action cannot be undone.'
+      )
+    ) {
+      const success = await deleteHabit(habitId)
+      if (success) {
+        console.log('Habit deleted successfully')
+      }
+    }
   }
 
   const handleViewHabitDetails = (habitId: string) => {
     // TODO: Navigate to habit details page or open details modal
     console.log('View habit details:', habitId)
   }
+
+  // Find the habit being edited
+  const editingHabit = editingHabitId
+    ? habits.find(h => h.habit._id === editingHabitId)?.habit
+    : null
 
   if (error) {
     return (
@@ -135,6 +166,7 @@ export function HabitsPageContent({ user }: HabitsPageContentProps) {
         onCompleteHabit={handleCompleteHabit}
         onSkipHabit={handleSkipHabit}
         onEditHabit={handleEditHabit}
+        onDeleteHabit={handleDeleteHabit}
         onViewHabitDetails={handleViewHabitDetails}
         compact={false}
         showFilters={true}
@@ -150,6 +182,19 @@ export function HabitsPageContent({ user }: HabitsPageContentProps) {
         <HabitForm
           onSubmit={handleCreateHabit}
           onCancel={() => setShowCreateForm(false)}
+          loading={actionLoading}
+        />
+      )}
+
+      {/* Edit Habit Form Modal */}
+      {showEditForm && editingHabit && (
+        <HabitForm
+          habit={editingHabit}
+          onSubmit={handleUpdateHabit}
+          onCancel={() => {
+            setShowEditForm(false)
+            setEditingHabitId(null)
+          }}
           loading={actionLoading}
         />
       )}

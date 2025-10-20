@@ -14,6 +14,7 @@ interface HabitListProps {
   onCompleteHabit?: (habitId: string, value?: number) => void
   onSkipHabit?: (habitId: string) => void
   onEditHabit?: (habitId: string) => void
+  onDeleteHabit?: (habitId: string) => void
   onViewHabitDetails?: (habitId: string) => void
   compact?: boolean
   showFilters?: boolean
@@ -29,6 +30,7 @@ export function HabitList({
   onCompleteHabit,
   onSkipHabit,
   onEditHabit,
+  onDeleteHabit,
   onViewHabitDetails,
   compact = false,
   showFilters = true,
@@ -186,6 +188,7 @@ export function HabitList({
               onComplete={onCompleteHabit}
               onSkip={onSkipHabit}
               onEdit={onEditHabit}
+              onDelete={onDeleteHabit}
               onViewDetails={onViewHabitDetails}
               compact={compact}
             />
