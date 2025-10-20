@@ -123,35 +123,63 @@ export function HabitsPageContent({ user }: HabitsPageContentProps) {
   }
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-6 sm:space-y-8">
       {/* Summary Card */}
-      <div className="bg-zinc-900 border border-white/10 rounded-xl p-6 text-center sm:text-left">
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-          <div>
-            <p className="text-gray-400 text-sm">Today&apos;s Progress</p>
-            <p className="text-xl font-semibold text-white">
+      <div className="bg-zinc-900 border border-white/10 rounded-xl p-4 sm:p-6">
+        <h2 className="text-lg sm:text-xl font-bold text-white mb-4 sm:mb-6">
+          📊 Overview
+        </h2>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
+          <div className="bg-[#18181B] border border-white/10 rounded-lg p-4">
+            <p className="text-gray-400 text-xs sm:text-sm mb-2">
+              Today&apos;s Progress
+            </p>
+            <p className="text-lg sm:text-xl font-semibold text-white break-words">
               {summary
-                ? `${summary.completedToday}/${summary.totalCompletedToday} habits completed (${Math.round((summary.completedToday / summary.totalCompletedToday) * 100) || 0}%)`
+                ? `${summary.completedToday}/${summary.totalCompletedToday} habits completed`
                 : 'Loading...'}
             </p>
+            {summary && summary.totalCompletedToday > 0 && (
+              <p className="text-sm text-blue-400 mt-1">
+                {Math.round(
+                  (summary.completedToday / summary.totalCompletedToday) * 100
+                )}
+                % complete
+              </p>
+            )}
           </div>
-          <div>
-            <p className="text-gray-400 text-sm">Current Longest Streak</p>
-            <p className="text-xl font-semibold text-white">
+          <div className="bg-[#18181B] border border-white/10 rounded-lg p-4">
+            <p className="text-gray-400 text-xs sm:text-sm mb-2">
+              Current Longest Streak
+            </p>
+            <p className="text-lg sm:text-xl font-semibold text-white break-words">
               {summary && summary.longestCurrentStreak.streakCount > 0
-                ? `🔥 ${summary.longestCurrentStreak.streakCount} days (${summary.longestCurrentStreak.habitTitle})`
+                ? `🔥 ${summary.longestCurrentStreak.streakCount} days`
                 : '🔥 0 days'}
             </p>
+            {summary && summary.longestCurrentStreak.streakCount > 0 && (
+              <p className="text-sm text-orange-400 mt-1 truncate">
+                {summary.longestCurrentStreak.habitTitle}
+              </p>
+            )}
           </div>
-          <div>
-            <p className="text-gray-400 text-sm">
+          <div className="bg-[#18181B] border border-white/10 rounded-lg p-4 sm:col-span-2 lg:col-span-1">
+            <p className="text-gray-400 text-xs sm:text-sm mb-2">
               This Week&apos;s Completions
             </p>
-            <p className="text-xl font-semibold text-white">
+            <p className="text-lg sm:text-xl font-semibold text-white">
               {summary
                 ? `📊 ${summary.weeklyCompletions}/${summary.weeklyTotal} total`
                 : 'Loading...'}
             </p>
+            {summary && summary.weeklyTotal > 0 && (
+              <p className="text-sm text-green-400 mt-1">
+                {Math.round(
+                  (summary.weeklyCompletions / summary.weeklyTotal) * 100
+                )}
+                % completion rate
+              </p>
+            )}
           </div>
         </div>
       </div>

@@ -118,23 +118,23 @@ export function AnalyticsPageContent({ user }: AnalyticsPageContentProps) {
   }
 
   return (
-    <div className="min-h-screen bg-gray-900 p-6">
-      <div className="max-w-7xl mx-auto space-y-6">
-        {/* Header */}
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+    <div className="min-h-screen bg-gray-900 p-4 sm:p-6">
+      <div className="max-w-7xl mx-auto space-y-4 sm:space-y-6">
+        {/* Header - Mobile Responsive */}
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-4">
           <div>
-            <h1 className="text-2xl font-bold text-white flex items-center gap-3">
-              <BarChart3 className="w-8 h-8 text-blue-400" />
+            <h1 className="text-xl sm:text-2xl font-bold text-white flex items-center gap-2 sm:gap-3">
+              <BarChart3 className="w-6 h-6 sm:w-8 sm:h-8 text-blue-400" />
               Analytics Dashboard
             </h1>
-            <p className="text-gray-400 mt-1">
-              Track your progress and discover insights about your habits
+            <p className="text-gray-400 mt-1 text-sm sm:text-base">
+              Track your progress and discover insights
             </p>
           </div>
 
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2 sm:gap-3 overflow-x-auto pb-2 sm:pb-0">
             {/* Timeframe Filter */}
-            <div className="relative">
+            <div className="relative flex-shrink-0">
               <select
                 value={filters.timeframe.type}
                 onChange={e =>
@@ -142,7 +142,7 @@ export function AnalyticsPageContent({ user }: AnalyticsPageContentProps) {
                     e.target.value as AnalyticsTimeframe['type']
                   )
                 }
-                className="bg-gray-800 border border-gray-700 text-white rounded-lg px-4 py-2 pr-10 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 appearance-none"
+                className="bg-gray-800 border border-gray-700 text-white text-sm rounded-lg px-3 sm:px-4 py-2 pr-8 sm:pr-10 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 appearance-none"
               >
                 {timeframeOptions.map(option => (
                   <option key={option.value} value={option.value}>
@@ -150,29 +150,29 @@ export function AnalyticsPageContent({ user }: AnalyticsPageContentProps) {
                   </option>
                 ))}
               </select>
-              <Filter className="w-4 h-4 text-gray-400 absolute right-3 top-1/2 transform -translate-y-1/2 pointer-events-none" />
+              <Filter className="w-3 h-3 sm:w-4 sm:h-4 text-gray-400 absolute right-2 sm:right-3 top-1/2 transform -translate-y-1/2 pointer-events-none" />
             </div>
 
             {/* Export Button */}
             <button
               onClick={handleExport}
               disabled={loading}
-              className="bg-blue-600 hover:bg-blue-700 disabled:bg-gray-700 disabled:cursor-not-allowed text-white px-4 py-2 rounded-lg flex items-center gap-2 transition-colors"
+              className="flex-shrink-0 bg-blue-600 hover:bg-blue-700 disabled:bg-gray-700 disabled:cursor-not-allowed text-white px-3 sm:px-4 py-2 rounded-lg flex items-center gap-2 transition-colors text-sm touch-manipulation"
             >
               <Download className="w-4 h-4" />
-              Export
+              <span className="hidden sm:inline">Export</span>
             </button>
 
             {/* Refresh Button */}
             <button
               onClick={refreshData}
               disabled={loading}
-              className="bg-gray-700 hover:bg-gray-600 disabled:cursor-not-allowed text-white px-4 py-2 rounded-lg flex items-center gap-2 transition-colors"
+              className="flex-shrink-0 bg-gray-700 hover:bg-gray-600 disabled:cursor-not-allowed text-white px-3 sm:px-4 py-2 rounded-lg flex items-center gap-2 transition-colors text-sm touch-manipulation"
             >
               <RefreshCw
                 className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`}
               />
-              Refresh
+              <span className="hidden sm:inline">Refresh</span>
             </button>
           </div>
         </div>
@@ -180,19 +180,19 @@ export function AnalyticsPageContent({ user }: AnalyticsPageContentProps) {
         {/* Overview Cards */}
         <OverviewWidget overview={overview} />
 
-        {/* Weekly Trends Chart */}
-        <div className="bg-gray-800 rounded-lg p-6 border border-gray-700">
-          <div className="flex items-center gap-2 mb-6">
-            <Calendar className="w-5 h-5 text-blue-400" />
-            <h3 className="text-lg font-semibold text-white">
+        {/* Weekly Trends Chart - Mobile Responsive */}
+        <div className="bg-gray-800 rounded-lg p-4 sm:p-6 border border-gray-700">
+          <div className="flex items-center gap-2 mb-4 sm:mb-6">
+            <Calendar className="w-4 h-4 sm:w-5 sm:h-5 text-blue-400" />
+            <h3 className="text-base sm:text-lg font-semibold text-white">
               Weekly Progress Trends
             </h3>
           </div>
           <WeeklyTrendsChart trends={overview.weeklyTrends} />
         </div>
 
-        {/* Analytics Widgets Grid */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6">
+        {/* Analytics Widgets Grid - Mobile Responsive */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-4 sm:gap-6">
           {/* Streaks Widget */}
           <StreakWidget streaks={overview.activeStreaks} />
 
@@ -208,28 +208,28 @@ export function AnalyticsPageContent({ user }: AnalyticsPageContentProps) {
           <AIInsightsWidget insights={overview.aiInsights} />
         )}
 
-        {/* Performance Highlights */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        {/* Performance Highlights - Mobile Responsive */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
           {/* Best Performance */}
-          <div className="bg-gray-800 rounded-lg p-6 border border-gray-700">
-            <h3 className="text-lg font-semibold text-white mb-4">
+          <div className="bg-gray-800 rounded-lg p-4 sm:p-6 border border-gray-700">
+            <h3 className="text-base sm:text-lg font-semibold text-white mb-3 sm:mb-4">
               Best Performance
             </h3>
-            <div className="space-y-3">
-              <div className="flex justify-between items-center">
+            <div className="space-y-2 sm:space-y-3">
+              <div className="flex justify-between items-center text-sm sm:text-base">
                 <span className="text-gray-300">Best Day</span>
                 <span className="text-green-400 font-semibold">
                   {overview.bestPerformingDay}
                 </span>
               </div>
-              <div className="flex justify-between items-center">
+              <div className="flex justify-between items-center text-sm sm:text-base">
                 <span className="text-gray-300">Best Month</span>
                 <span className="text-green-400 font-semibold">
                   {overview.bestMonth.month} (
                   {overview.bestMonth.completionRate}%)
                 </span>
               </div>
-              <div className="flex justify-between items-center">
+              <div className="flex justify-between items-center text-sm sm:text-base">
                 <span className="text-gray-300">Longest Streak</span>
                 <span className="text-yellow-400 font-semibent">
                   {overview.longestStreak} days
@@ -239,28 +239,28 @@ export function AnalyticsPageContent({ user }: AnalyticsPageContentProps) {
           </div>
 
           {/* Areas for Improvement */}
-          <div className="bg-gray-800 rounded-lg p-6 border border-gray-700">
-            <h3 className="text-lg font-semibold text-white mb-4">
+          <div className="bg-gray-800 rounded-lg p-4 sm:p-6 border border-gray-700">
+            <h3 className="text-base sm:text-lg font-semibold text-white mb-3 sm:mb-4">
               Areas for Improvement
             </h3>
-            <div className="space-y-3">
-              <div className="flex justify-between items-center">
+            <div className="space-y-2 sm:space-y-3">
+              <div className="flex justify-between items-center text-sm sm:text-base">
                 <span className="text-gray-300">Challenging Day</span>
                 <span className="text-orange-400 font-semibold">
                   {overview.challengingDay}
                 </span>
               </div>
               {overview.overallCompletionRate < 80 && (
-                <div className="p-3 bg-yellow-900/20 border border-yellow-800 rounded">
-                  <p className="text-yellow-400 text-sm">
+                <div className="p-2 sm:p-3 bg-yellow-900/20 border border-yellow-800 rounded">
+                  <p className="text-yellow-400 text-xs sm:text-sm">
                     Consider reducing your habit load or adjusting difficulty to
                     maintain consistency
                   </p>
                 </div>
               )}
               {overview.activeStreaks.length === 0 && (
-                <div className="p-3 bg-blue-900/20 border border-blue-800 rounded">
-                  <p className="text-blue-400 text-sm">
+                <div className="p-2 sm:p-3 bg-blue-900/20 border border-blue-800 rounded">
+                  <p className="text-blue-400 text-xs sm:text-sm">
                     Focus on building streaks by completing habits consistently
                     for 3+ days
                   </p>
