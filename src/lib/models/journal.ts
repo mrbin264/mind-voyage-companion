@@ -309,3 +309,7 @@ export const JournalEntryModel = (mongoose.models.JournalEntry ||
 export const JournalPromptModel =
   mongoose.models.JournalPrompt ||
   mongoose.model<IJournalPrompt>('JournalPrompt', JournalPromptSchema)
+
+export function getJournalEntryModel() {
+  return JournalEntryModel
+}

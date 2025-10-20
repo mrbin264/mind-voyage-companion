@@ -179,44 +179,47 @@ export function WisdomContent() {
   }
 
   return (
-    <div className="space-y-6">
-      {/* Header */}
-      <header className="flex flex-wrap justify-between items-center gap-4 mb-8">
+    <div className="space-y-4 sm:space-y-6">
+      {/* Header - Mobile Responsive */}
+      <header className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3 sm:gap-4 mb-6 sm:mb-8">
         <div>
-          <h1 className="text-3xl font-bold text-gray-100 flex items-center gap-3">
+          <h1 className="text-2xl sm:text-3xl font-bold text-gray-100 flex items-center gap-2 sm:gap-3">
             🏛️ Daily Wisdom
           </h1>
         </div>
       </header>
 
-      {/* Today's Quote */}
+      {/* Today's Quote - Mobile Responsive */}
       {currentQuote && (
-        <WidgetCard className="p-8 text-center">
-          <blockquote className="text-2xl lg:text-3xl text-gray-200 italic leading-relaxed mb-4">
+        <WidgetCard className="p-6 sm:p-8 text-center">
+          <blockquote className="text-lg sm:text-2xl lg:text-3xl text-gray-200 italic leading-relaxed mb-3 sm:mb-4">
             &ldquo;{currentQuote.text}&rdquo;
           </blockquote>
-          <cite className="block text-gray-500">— {currentQuote.author}</cite>
-          <div className="flex justify-center flex-wrap gap-4 mt-8">
+          <cite className="block text-sm sm:text-base text-gray-500">
+            — {currentQuote.author}
+          </cite>
+          <div className="flex justify-center flex-wrap gap-2 sm:gap-4 mt-6 sm:mt-8">
             <Button
               onClick={handleNewQuote}
               disabled={actionLoading === 'new-quote'}
-              className="bg-blue-600/20 hover:bg-blue-600/40 text-blue-300 border-0"
+              className="flex-1 sm:flex-none bg-blue-600/20 hover:bg-blue-600/40 text-blue-300 border-0 text-sm sm:text-base touch-manipulation"
             >
               {actionLoading === 'new-quote' ? (
                 <Loader2 className="w-4 h-4 mr-2 animate-spin" />
               ) : (
                 <RefreshCw className="w-4 h-4 mr-2" />
               )}
-              New Quote
+              <span className="hidden sm:inline">New Quote</span>
+              <span className="sm:hidden">New</span>
             </Button>
             <Button
               onClick={handleToggleFavorite}
               disabled={actionLoading === 'favorite'}
-              className={`${
+              className={`flex-1 sm:flex-none ${
                 isFavorited(currentQuote.id)
                   ? 'bg-pink-600/40 text-pink-200'
                   : 'bg-pink-600/20 text-pink-300'
-              } hover:bg-pink-600/40 border-0`}
+              } hover:bg-pink-600/40 border-0 text-sm sm:text-base touch-manipulation`}
             >
               {actionLoading === 'favorite' ? (
                 <Loader2 className="w-4 h-4 mr-2 animate-spin" />
@@ -225,26 +228,34 @@ export function WisdomContent() {
                   className={`w-4 h-4 mr-2 ${isFavorited(currentQuote.id) ? 'fill-current' : ''}`}
                 />
               )}
-              {isFavorited(currentQuote.id) ? 'Favorited' : 'Save to Favorites'}
+              <span className="hidden sm:inline">
+                {isFavorited(currentQuote.id)
+                  ? 'Favorited'
+                  : 'Save to Favorites'}
+              </span>
+              <span className="sm:hidden">
+                {isFavorited(currentQuote.id) ? 'Saved' : 'Save'}
+              </span>
             </Button>
             <Button
               onClick={handleShare}
-              className="bg-gray-700/50 hover:bg-gray-700 text-gray-300 border-0"
+              className="bg-gray-700/50 hover:bg-gray-700 text-gray-300 border-0 text-sm sm:text-base touch-manipulation"
             >
               <Share2 className="w-4 h-4 mr-2" />
-              Share Quote
+              <span className="hidden sm:inline">Share Quote</span>
+              <span className="sm:hidden">Share</span>
             </Button>
           </div>
         </WidgetCard>
       )}
 
-      {/* Filters */}
-      <div className="flex flex-wrap gap-2">
+      {/* Filters - Mobile Responsive */}
+      <div className="flex flex-wrap gap-2 overflow-x-auto pb-2 sm:pb-0">
         {filters.map(filter => (
           <button
             key={filter.name}
             onClick={() => handleFilterClick(filter)}
-            className={`text-sm font-semibold py-2 px-4 rounded-lg transition-colors ${
+            className={`flex-shrink-0 text-xs sm:text-sm font-semibold py-2 px-3 sm:px-4 rounded-lg transition-colors touch-manipulation active:scale-95 ${
               selectedFilter === filter.name
                 ? 'bg-blue-700 text-white'
                 : 'bg-gray-800 hover:bg-gray-700 text-gray-300'
@@ -255,24 +266,24 @@ export function WisdomContent() {
         ))}
       </div>
 
-      {/* Main Grid */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      {/* Main Grid - Mobile Responsive */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6">
         {/* Left Column - Main Content */}
-        <div className="lg:col-span-2 space-y-6">
-          {/* Quote Categories */}
-          <WidgetCard className="p-6">
-            <h3 className="font-bold text-lg mb-4 flex items-center gap-2">
-              <BookOpen className="w-5 h-5" />
+        <div className="lg:col-span-2 space-y-4 sm:space-y-6">
+          {/* Quote Categories - Mobile Responsive */}
+          <WidgetCard className="p-4 sm:p-6">
+            <h3 className="font-bold text-base sm:text-lg mb-3 sm:mb-4 flex items-center gap-2">
+              <BookOpen className="w-4 h-4 sm:w-5 sm:h-5" />
               Quote Categories
             </h3>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-4">
               {categories.map(category => (
                 <div
                   key={category.id}
-                  className="bg-gray-800/50 p-4 rounded-lg hover:bg-gray-800/70 transition-colors cursor-pointer"
+                  className="bg-gray-800/50 p-3 sm:p-4 rounded-lg hover:bg-gray-800/70 transition-colors cursor-pointer touch-manipulation active:scale-95"
                   onClick={() => handleCategoryClick(category)}
                 >
-                  <h4 className="font-bold text-gray-200 flex items-center gap-2">
+                  <h4 className="font-bold text-sm sm:text-base text-gray-200 flex items-center gap-2">
                     <span>{category.emoji}</span>
                     {category.name}
                   </h4>
@@ -283,7 +294,7 @@ export function WisdomContent() {
                     {category.count} quotes available
                   </p>
                   <button
-                    className="text-sm font-semibold text-blue-400 hover:underline"
+                    className="text-xs sm:text-sm font-semibold text-blue-400 hover:underline touch-manipulation"
                     onClick={e => {
                       e.stopPropagation()
                       handleExploreCategory(category)
@@ -295,52 +306,54 @@ export function WisdomContent() {
               ))}
             </div>
             <button
-              className="text-sm font-semibold text-blue-400 hover:underline mt-4"
+              className="text-xs sm:text-sm font-semibold text-blue-400 hover:underline mt-3 sm:mt-4 touch-manipulation"
               onClick={() => alert('Custom categories feature coming soon! 🎯')}
             >
               + Create Custom Category
             </button>
           </WidgetCard>
 
-          {/* Search & Discovery */}
-          <WidgetCard className="p-6">
-            <h3 className="font-bold text-lg mb-4 flex items-center gap-2">
-              <Search className="w-5 h-5" />
+          {/* Search & Discovery - Mobile Responsive */}
+          <WidgetCard className="p-4 sm:p-6">
+            <h3 className="font-bold text-base sm:text-lg mb-3 sm:mb-4 flex items-center gap-2">
+              <Search className="w-4 h-4 sm:w-5 sm:h-5" />
               Quote Search & Discovery
             </h3>
             <div className="relative">
-              <Search className="w-5 h-5 text-gray-500 absolute top-1/2 left-3 -translate-y-1/2" />
+              <Search className="w-4 h-4 sm:w-5 sm:h-5 text-gray-500 absolute top-1/2 left-3 -translate-y-1/2" />
               <input
                 type="search"
                 value={searchQuery}
                 onChange={e => setSearchQuery(e.target.value)}
                 placeholder="Search quotes by keyword..."
-                className="w-full bg-gray-800 border border-gray-700 rounded-lg pl-10 pr-4 py-2 text-white placeholder-gray-500 focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                className="w-full bg-gray-800 border border-gray-700 rounded-lg pl-9 sm:pl-10 pr-4 py-2 text-sm sm:text-base text-white placeholder-gray-500 focus:ring-2 focus:ring-blue-500 focus:outline-none"
               />
             </div>
-            <p className="text-xs text-gray-500 mt-4">Popular searches:</p>
+            <p className="text-xs text-gray-500 mt-3 sm:mt-4">
+              Popular searches:
+            </p>
             <div className="flex flex-wrap gap-2 mt-2">
               {popularTags.map(tag => (
                 <span
                   key={tag}
-                  className="bg-gray-700/50 px-2 py-1 rounded text-xs cursor-pointer hover:bg-gray-700/70 transition-colors"
+                  className="bg-gray-700/50 px-2 py-1 rounded text-xs cursor-pointer hover:bg-gray-700/70 transition-colors touch-manipulation active:scale-95"
                   onClick={() => setSearchQuery(tag.slice(1))}
                 >
                   {tag}
                 </span>
               ))}
             </div>
-            <div className="mt-6 border-t border-gray-700 pt-4">
-              <h4 className="font-semibold text-purple-300 flex items-center gap-2">
+            <div className="mt-4 sm:mt-6 border-t border-gray-700 pt-3 sm:pt-4">
+              <h4 className="font-semibold text-sm sm:text-base text-purple-300 flex items-center gap-2">
                 <Brain className="w-4 h-4" />
                 AI-Powered Recommendations (Pro)
               </h4>
-              <p className="text-sm text-gray-400 mt-2">
+              <p className="text-xs sm:text-sm text-gray-400 mt-2">
                 Based on your habits and mood, we suggest quotes about patience
                 and persistence.
               </p>
               <button
-                className="text-sm font-semibold text-purple-400 hover:underline mt-3"
+                className="text-xs sm:text-sm font-semibold text-purple-400 hover:underline mt-2 sm:mt-3 touch-manipulation"
                 onClick={() =>
                   alert(
                     '✨ Personalized AI recommendations are a Pro feature! Upgrade to unlock smart quote suggestions based on your habits and mood.'
@@ -353,22 +366,22 @@ export function WisdomContent() {
           </WidgetCard>
         </div>
 
-        {/* Right Column - Sidebar */}
-        <div className="space-y-6">
-          {/* Favorites */}
-          <WidgetCard className="p-6">
-            <h3 className="font-bold text-lg mb-4 flex items-center gap-2">
-              <Star className="w-5 h-5" />
+        {/* Right Column - Sidebar - Mobile Responsive */}
+        <div className="space-y-4 sm:space-y-6">
+          {/* Favorites - Mobile Responsive */}
+          <WidgetCard className="p-4 sm:p-6">
+            <h3 className="font-bold text-base sm:text-lg mb-3 sm:mb-4 flex items-center gap-2">
+              <Star className="w-4 h-4 sm:w-5 sm:h-5" />
               Your Favorites
             </h3>
-            <div className="space-y-4">
+            <div className="space-y-3 sm:space-y-4">
               {favorites.length > 0 ? (
                 favorites.slice(0, 2).map(quote => (
                   <div
                     key={quote.quoteId}
                     className="bg-gray-800/50 p-3 rounded-lg"
                   >
-                    <p className="text-gray-300 text-sm">
+                    <p className="text-gray-300 text-xs sm:text-sm">
                       &ldquo;{quote.text}&rdquo;
                     </p>
                     <p className="text-xs text-gray-500 mt-1">
@@ -378,13 +391,13 @@ export function WisdomContent() {
                 ))
               ) : (
                 <div className="text-center text-gray-500 py-4">
-                  <p className="text-sm">No favorites yet</p>
+                  <p className="text-xs sm:text-sm">No favorites yet</p>
                   <p className="text-xs mt-1">Start saving quotes you love!</p>
                 </div>
               )}
             </div>
             <button
-              className="text-xs font-semibold text-blue-400 hover:underline mt-4"
+              className="text-xs font-semibold text-blue-400 hover:underline mt-3 sm:mt-4 touch-manipulation"
               onClick={() => {
                 if (favorites.length === 0) {
                   alert(
@@ -401,13 +414,13 @@ export function WisdomContent() {
             </button>
           </WidgetCard>
 
-          {/* Wisdom Analytics */}
-          <WidgetCard className="p-6">
-            <h3 className="font-bold text-lg mb-4 flex items-center gap-2">
-              <BarChart2 className="w-5 h-5" />
+          {/* Wisdom Analytics - Mobile Responsive */}
+          <WidgetCard className="p-4 sm:p-6">
+            <h3 className="font-bold text-base sm:text-lg mb-3 sm:mb-4 flex items-center gap-2">
+              <BarChart2 className="w-4 h-4 sm:w-5 sm:h-5" />
               Wisdom Analytics
             </h3>
-            <ul className="text-sm text-gray-400 space-y-2">
+            <ul className="text-xs sm:text-sm text-gray-400 space-y-2">
               <li className="flex justify-between">
                 <span>Quotes viewed:</span>
                 <span className="font-semibold text-gray-200">
@@ -428,7 +441,7 @@ export function WisdomContent() {
               </li>
               <li className="flex justify-between">
                 <span>Most viewed:</span>
-                <span className="font-semibold text-gray-200">
+                <span className="font-semibold text-gray-200 truncate ml-2">
                   {stats?.mostViewedCategory || 'Ancient Wisdom (43%)'}
                 </span>
               </li>
@@ -440,7 +453,7 @@ export function WisdomContent() {
               </li>
             </ul>
             <button
-              className="text-xs font-semibold text-blue-400 hover:underline mt-4"
+              className="text-xs font-semibold text-blue-400 hover:underline mt-3 sm:mt-4 touch-manipulation"
               onClick={() => {
                 const quotesViewed = stats?.quotesViewed || 0
                 const favoritesSaved = stats?.favoritesSaved || 0
