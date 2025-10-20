@@ -6,12 +6,18 @@ export default defineConfig({
   forbidOnly: !!process.env.CI,
   retries: process.env.CI ? 2 : 0,
   workers: process.env.CI ? 1 : undefined,
+  timeout: 60000, // 60 seconds per test (increased for MongoDB Atlas latency)
+  expect: {
+    timeout: 10000, // 10 seconds for assertions
+  },
   reporter: process.env.CI
     ? [['junit', { outputFile: 'test-results/results.xml' }], ['html']]
     : 'html',
   use: {
     baseURL: 'http://localhost:3000',
     trace: 'on-first-retry',
+    navigationTimeout: 30000, // 30 seconds for page navigation
+    actionTimeout: 10000, // 10 seconds for actions
   },
   projects: [
     {

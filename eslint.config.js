@@ -26,6 +26,7 @@ module.exports = [
       'coverage/**',
       'playwright-report/**',
       'test-results/**',
+      'e2e/**', // Playwright E2E tests have their own linting rules
     ],
   },
 ]

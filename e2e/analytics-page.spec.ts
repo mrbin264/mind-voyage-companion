@@ -1,4 +1,4 @@
-import { test, expect, Page } from '@playwright/test'
+import { test, expect, loginAsTestUser } from './fixtures'
 
 /**
  * E2E Tests for Analytics Page
@@ -12,22 +12,10 @@ import { test, expect, Page } from '@playwright/test'
  * - Data export capabilities
  * - Responsive design
  * - Error handling
+ *
+ * Note: Uses optimized test fixtures for authentication
+ * to reduce redundant login operations and improve performance.
  */
-
-// Helper function to login as test user
-async function loginAsTestUser(page: Page) {
-  await page.goto('/login')
-  await page.fill(
-    'input[type="email"], input[name="email"]',
-    'test@example.com'
-  )
-  await page.fill(
-    'input[type="password"], input[name="password"]',
-    'TestPassword123!'
-  )
-  await page.click('button[type="submit"]')
-  await page.waitForURL('**/dashboard', { timeout: 10000 })
-}
 
 test.describe('Analytics Page - Navigation and Loading', () => {
   test('T050.1: Navigate to Analytics page from dashboard', async ({
