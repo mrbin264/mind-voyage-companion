@@ -187,37 +187,37 @@ export function DashboardContent({ user }: DashboardContentProps) {
   const moods = ['😔', '😐', '😊', '😄', '🤗']
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-6 sm:space-y-8">
       {/* Dashboard Grid */}
-      <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 xl:grid-cols-3 gap-4 sm:gap-6">
         {/* Daily Wisdom & Today's Focus */}
-        <div className="xl:col-span-3 grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div className="xl:col-span-3 grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6">
           {/* Daily Wisdom */}
-          <WidgetCard className="p-6 lg:col-span-2">
-            <h3 className="font-bold text-lg flex items-center gap-2 mb-4 text-heading">
+          <WidgetCard className="p-4 sm:p-6 lg:col-span-2">
+            <h3 className="font-bold text-base sm:text-lg flex items-center gap-2 mb-4 text-heading">
               🏛️ Daily Wisdom
             </h3>
             {currentQuote ? (
               <>
-                <blockquote className="text-xl text-body italic mb-2">
+                <blockquote className="text-lg sm:text-xl text-body italic mb-2">
                   &ldquo;{currentQuote.text}&rdquo;
                 </blockquote>
-                <cite className="block text-right text-muted mb-4">
+                <cite className="block text-right text-xs sm:text-sm text-muted mb-4">
                   — {currentQuote.author}
                 </cite>
               </>
             ) : (
               <>
-                <blockquote className="text-xl text-body italic mb-2">
+                <blockquote className="text-lg sm:text-xl text-body italic mb-2">
                   &ldquo;The best time to plant a tree was 20 years ago. The
                   second best time is now.&rdquo;
                 </blockquote>
-                <cite className="block text-right text-muted mb-4">
+                <cite className="block text-right text-xs sm:text-sm text-muted mb-4">
                   — Chinese Proverb
                 </cite>
               </>
             )}
-            <div className="flex gap-2">
+            <div className="flex flex-wrap gap-2">
               <Button
                 size="sm"
                 onClick={handleGenerateWisdomQuote}
@@ -229,7 +229,8 @@ export function DashboardContent({ user }: DashboardContentProps) {
                 ) : (
                   <RefreshCw className="w-4 h-4 mr-2" />
                 )}
-                Generate New Quote
+                <span className="hidden sm:inline">Generate New Quote</span>
+                <span className="sm:hidden">New Quote</span>
               </Button>
               <Button
                 size="sm"
@@ -252,9 +253,16 @@ export function DashboardContent({ user }: DashboardContentProps) {
                     }`}
                   />
                 )}
-                {currentQuote && isFavorited(currentQuote.id)
-                  ? 'Favorited'
-                  : 'Save to Favorites'}
+                <span className="hidden sm:inline">
+                  {currentQuote && isFavorited(currentQuote.id)
+                    ? 'Favorited'
+                    : 'Save to Favorites'}
+                </span>
+                <span className="sm:hidden">
+                  {currentQuote && isFavorited(currentQuote.id)
+                    ? 'Saved'
+                    : 'Save'}
+                </span>
               </Button>
               <Link
                 href="/dashboard/wisdom"
@@ -266,20 +274,20 @@ export function DashboardContent({ user }: DashboardContentProps) {
           </WidgetCard>
 
           {/* Today's Focus */}
-          <WidgetCard className="p-6 flex flex-col justify-center">
-            <h3 className="font-bold text-lg flex items-center gap-2 mb-2 text-heading">
+          <WidgetCard className="p-4 sm:p-6 flex flex-col justify-center">
+            <h3 className="font-bold text-base sm:text-lg flex items-center gap-2 mb-2 text-heading">
               🎯 Today&apos;s Focus
             </h3>
-            <p className="text-muted mb-4">
+            <p className="text-xs sm:text-sm text-muted mb-4">
               Complete 3 habits to maintain your momentum.
             </p>
-            <p className="text-sm font-semibold text-body mb-1">
+            <p className="text-xs sm:text-sm font-semibold text-body mb-1">
               Progress: {summary?.completedToday || 0}/
               {summary?.totalCompletedToday || 0}
             </p>
             <div className="w-full bg-white/10 rounded-full h-2.5 mb-4">
               <div
-                className="bg-blue-600 h-2.5 rounded-full"
+                className="bg-blue-600 h-2.5 rounded-full transition-all duration-300"
                 style={{
                   width: summary?.totalCompletedToday
                     ? `${(summary.completedToday / summary.totalCompletedToday) * 100}%`
@@ -289,7 +297,7 @@ export function DashboardContent({ user }: DashboardContentProps) {
             </div>
             <Link
               href="/dashboard/habits"
-              className="text-blue-400 font-semibold text-sm hover:underline"
+              className="text-blue-400 font-semibold text-xs sm:text-sm hover:underline touch-manipulation"
             >
               View All Habits
             </Link>
@@ -298,33 +306,37 @@ export function DashboardContent({ user }: DashboardContentProps) {
 
         {/* Today's Habits */}
         <div className="xl:col-span-3">
-          <WidgetCard className="p-6">
-            <div className="flex justify-between items-center mb-6">
-              <h3 className="font-bold text-lg text-gray-100">
+          <WidgetCard className="p-4 sm:p-6">
+            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 sm:gap-0 mb-6">
+              <h3 className="font-bold text-lg sm:text-xl text-gray-100">
                 📈 Today&apos;s Habits
               </h3>
               <Button
                 size="sm"
                 onClick={() => setShowCreateForm(true)}
-                className="bg-blue-600 hover:bg-blue-700 text-white font-semibold flex items-center gap-2"
+                className="bg-blue-600 hover:bg-blue-700 text-white font-semibold flex items-center gap-2 w-full sm:w-auto justify-center"
               >
                 <Plus className="h-4 w-4" />
-                Add New Habit
+                <span className="hidden sm:inline">Add New Habit</span>
+                <span className="sm:hidden">Add Habit</span>
               </Button>
             </div>
 
             {todaysHabits.length > 0 ? (
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
                 {todaysHabits.map(habitProgress => (
                   <WidgetCard
                     key={habitProgress.habit._id}
-                    className={`p-4 border-l-4 ${
+                    className={`p-3 sm:p-4 border-l-4 ${
                       habitProgress.todayLog?.completed
                         ? 'border-green-500'
                         : 'border-gray-500'
                     }`}
                   >
-                    <h4 className="font-bold text-gray-100 mb-2">
+                    <h4
+                      className="font-bold text-sm sm:text-base text-gray-100 mb-2 truncate"
+                      title={habitProgress.habit.title}
+                    >
                       {habitProgress.habit.emoji || '📋'}{' '}
                       {habitProgress.habit.title}
                     </h4>
@@ -348,7 +360,7 @@ export function DashboardContent({ user }: DashboardContentProps) {
                         <p className="text-xs text-gray-400 mb-3">🎯 Planned</p>
                         <Button
                           size="sm"
-                          className="text-xs bg-blue-600/50 hover:bg-blue-600 text-white font-semibold py-1 px-3"
+                          className="text-xs sm:text-sm bg-blue-600/50 hover:bg-blue-600 text-white font-semibold py-1 px-2 sm:px-3 w-full sm:w-auto"
                           onClick={() =>
                             handleCompleteHabit(habitProgress.habit._id!, 1)
                           }
@@ -362,17 +374,17 @@ export function DashboardContent({ user }: DashboardContentProps) {
                 ))}
               </div>
             ) : (
-              <div className="text-center py-8">
-                <div className="text-4xl mb-4">🎯</div>
-                <h4 className="font-semibold mb-2 text-gray-100">
+              <div className="text-center py-8 sm:py-12">
+                <div className="text-4xl sm:text-5xl mb-4">🎯</div>
+                <h4 className="font-semibold text-sm sm:text-base mb-2 text-gray-100">
                   No habits for today
                 </h4>
-                <p className="text-gray-400 mb-4">
+                <p className="text-xs sm:text-sm text-gray-400 mb-4 px-4">
                   Create your first habit to start tracking your progress
                 </p>
                 <Button
                   onClick={() => setShowCreateForm(true)}
-                  className="bg-blue-600 hover:bg-blue-700 text-white font-semibold"
+                  className="bg-blue-600 hover:bg-blue-700 text-white font-semibold text-sm sm:text-base"
                 >
                   <Target className="h-4 w-4 mr-2" />
                   Create Your First Habit
@@ -383,14 +395,14 @@ export function DashboardContent({ user }: DashboardContentProps) {
         </div>
 
         {/* Quick Journal & Weekly Progress */}
-        <div className="xl:col-span-3 grid grid-cols-1 lg:grid-cols-5 gap-6">
+        <div className="xl:col-span-3 grid grid-cols-1 lg:grid-cols-5 gap-4 sm:gap-6">
           {/* Quick Journal Entry */}
           <WidgetCard className="p-6 lg:col-span-2">
-            <div className="flex items-center justify-between mb-4">
+            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 mb-4">
               <h3 className="font-bold text-lg text-gray-100">
                 📝 Quick Journal Entry
               </h3>
-              <div className="text-xs text-gray-500">
+              <div className="text-xs text-gray-500 whitespace-nowrap">
                 {new Date().toLocaleDateString('en-US', {
                   weekday: 'long',
                   month: 'short',
@@ -434,8 +446,8 @@ export function DashboardContent({ user }: DashboardContentProps) {
               maxLength={5000}
               className="w-full bg-gray-800 border border-gray-700 rounded-lg p-3 text-sm h-24 resize-none focus:ring-2 focus:ring-blue-500 focus:outline-none text-white placeholder-gray-500"
             />
-            <div className="flex justify-between items-center mt-3">
-              <div className="flex items-center gap-2">
+            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 mt-3">
+              <div className="flex items-center gap-2 flex-wrap">
                 <button className="text-xs bg-gray-700/80 hover:bg-gray-700 text-gray-300 font-semibold py-1 px-3 rounded-md transition-colors">
                   🔒 Private
                 </button>
@@ -443,25 +455,29 @@ export function DashboardContent({ user }: DashboardContentProps) {
                   {journalContent.length}/5000
                 </span>
               </div>
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-2 w-full sm:w-auto">
                 <Link
                   href="/journal"
-                  className="text-xs text-blue-400 hover:underline"
+                  className="text-xs text-blue-400 hover:underline whitespace-nowrap"
                 >
                   View All →
                 </Link>
                 <Button
                   onClick={handleSaveJournalEntry}
                   disabled={journalSaving || !journalContent.trim()}
-                  className="text-sm bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 disabled:opacity-50"
+                  className="text-sm bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 disabled:opacity-50 flex-1 sm:flex-initial"
                 >
                   {journalSaving ? (
                     <>
                       <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                      Saving...
+                      <span className="hidden sm:inline">Saving...</span>
+                      <span className="sm:hidden">...</span>
                     </>
                   ) : (
-                    <>💾 Save Entry</>
+                    <>
+                      💾 <span className="hidden sm:inline">Save Entry</span>
+                      <span className="sm:hidden">Save</span>
+                    </>
                   )}
                 </Button>
               </div>
@@ -469,25 +485,25 @@ export function DashboardContent({ user }: DashboardContentProps) {
           </WidgetCard>
 
           {/* Weekly Progress */}
-          <WidgetCard className="p-6 lg:col-span-3">
-            <h3 className="font-bold text-lg mb-4 text-gray-100">
+          <WidgetCard className="p-4 sm:p-6 lg:col-span-3">
+            <h3 className="font-bold text-lg sm:text-xl mb-4 text-gray-100">
               📊 Weekly Progress
             </h3>
             <div className="space-y-3 text-sm">
               {habits.length > 0 ? (
                 habits.slice(0, 4).map(habitProgress => (
                   <div key={habitProgress.habit._id}>
-                    <div className="flex justify-between mb-1">
-                      <span className="text-gray-300">
+                    <div className="flex justify-between items-center mb-1 gap-2">
+                      <span className="text-gray-300 text-xs sm:text-sm truncate flex-1">
                         {habitProgress.habit.title}
                       </span>
-                      <span className="font-semibold text-gray-200">
+                      <span className="font-semibold text-gray-200 text-xs sm:text-sm whitespace-nowrap">
                         {habitProgress.weeklyProgress.percentage}%
                       </span>
                     </div>
                     <div className="w-full bg-white/10 rounded-full h-2">
                       <div
-                        className="bg-blue-500 h-2 rounded-full"
+                        className="bg-blue-500 h-2 rounded-full transition-all duration-300"
                         style={{
                           width: `${habitProgress.weeklyProgress.percentage}%`,
                         }}
@@ -496,17 +512,17 @@ export function DashboardContent({ user }: DashboardContentProps) {
                   </div>
                 ))
               ) : (
-                <div className="text-center py-4 text-gray-400">
+                <div className="text-center py-4 text-gray-400 text-sm">
                   No habits to display
                 </div>
               )}
             </div>
             {habits.length > 0 && (
               <div className="mt-6 border-t border-gray-700 pt-4">
-                <h4 className="font-semibold text-gray-200 mb-2">
+                <h4 className="font-semibold text-sm sm:text-base text-gray-200 mb-2">
                   🎖️ Achievements This Week:
                 </h4>
-                <ul className="space-y-1 text-sm text-gray-400">
+                <ul className="space-y-1 text-xs sm:text-sm text-gray-400">
                   <li>✓ 7-day Morning Pages streak</li>
                   <li>✓ 5 consecutive journaling days</li>
                   <li className="text-yellow-400">
@@ -519,67 +535,78 @@ export function DashboardContent({ user }: DashboardContentProps) {
         </div>
 
         {/* Recommendations & Quick Actions */}
-        <div className="xl:col-span-3 grid grid-cols-1 lg:grid-cols-5 gap-6">
+        <div className="xl:col-span-3 grid grid-cols-1 lg:grid-cols-5 gap-4 sm:gap-6">
           {/* Recommendations */}
-          <WidgetCard className="p-6 lg:col-span-2">
-            <h3 className="font-bold text-lg mb-4 text-gray-100">
+          <WidgetCard className="p-4 sm:p-6 lg:col-span-2">
+            <h3 className="font-bold text-lg sm:text-xl mb-4 text-gray-100">
               🎯 Recommendations
             </h3>
-            <p className="text-sm text-gray-400 mb-3">
+            <p className="text-xs sm:text-sm text-gray-400 mb-3">
               Based on your patterns:
             </p>
-            <ul className="space-y-2 text-sm text-gray-300">
+            <ul className="space-y-2 text-xs sm:text-sm text-gray-300">
               <li>• Try meditating after reading</li>
               <li>• Your hydration improves on journaling days</li>
               <li>• Consider an evening routine</li>
             </ul>
-            <button className="text-sm font-semibold text-purple-400 mt-4 hover:underline">
+            <button className="text-xs sm:text-sm font-semibold text-purple-400 mt-4 hover:underline touch-manipulation">
               ✨ Get Pro AI Insights
             </button>
           </WidgetCard>
 
           {/* Quick Actions */}
-          <WidgetCard className="p-6 lg:col-span-3">
-            <h3 className="font-bold text-lg mb-4 text-gray-100">
+          <WidgetCard className="p-4 sm:p-6 lg:col-span-3">
+            <h3 className="font-bold text-lg sm:text-xl mb-4 text-gray-100">
               ⚡ Quick Actions
             </h3>
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-2 gap-3 sm:gap-4">
               <button
                 onClick={handleQuickJournal}
-                className="p-4 bg-[#18181B] border border-white/10 rounded-lg hover:border-blue-500 text-left transition-colors w-full"
+                className="p-3 sm:p-4 bg-[#18181B] border border-white/10 rounded-lg hover:border-blue-500 text-left transition-colors w-full touch-manipulation active:scale-95"
               >
-                <h4 className="font-bold text-gray-200">📝 Journal</h4>
-                <p className="text-sm text-gray-400">Quick Entry</p>
+                <h4 className="font-bold text-sm sm:text-base text-gray-200">
+                  📝 Journal
+                </h4>
+                <p className="text-xs sm:text-sm text-gray-400">Quick Entry</p>
               </button>
               <button
                 onClick={handleGenerateWisdomQuote}
                 disabled={wisdomActionLoading === 'generate'}
-                className="p-4 bg-[#18181B] border border-white/10 rounded-lg hover:border-blue-500 text-left transition-colors w-full disabled:opacity-50"
+                className="p-3 sm:p-4 bg-[#18181B] border border-white/10 rounded-lg hover:border-blue-500 text-left transition-colors w-full disabled:opacity-50 touch-manipulation active:scale-95"
               >
-                <h4 className="font-bold text-gray-200 flex items-center gap-2">
+                <h4 className="font-bold text-sm sm:text-base text-gray-200 flex items-center gap-2">
                   {wisdomActionLoading === 'generate' ? (
                     <Loader2 className="w-4 h-4 animate-spin" />
                   ) : (
                     '🏛️'
                   )}
-                  Get Daily Wisdom
+                  <span className="hidden sm:inline">Get Daily Wisdom</span>
+                  <span className="sm:hidden">Wisdom</span>
                 </h4>
-                <p className="text-sm text-gray-400">
+                <p className="text-xs sm:text-sm text-gray-400">
                   {wisdomActionLoading === 'generate'
                     ? 'Generating...'
                     : 'New Quote'}
                 </p>
               </button>
               <Link href="/dashboard/analytics" className="block">
-                <button className="p-4 bg-[#18181B] border border-white/10 rounded-lg hover:border-blue-500 text-left transition-colors w-full">
-                  <h4 className="font-bold text-gray-200">📊 Analytics</h4>
-                  <p className="text-sm text-gray-400">View Reports</p>
+                <button className="p-3 sm:p-4 bg-[#18181B] border border-white/10 rounded-lg hover:border-blue-500 text-left transition-colors w-full touch-manipulation active:scale-95">
+                  <h4 className="font-bold text-sm sm:text-base text-gray-200">
+                    📊 Analytics
+                  </h4>
+                  <p className="text-xs sm:text-sm text-gray-400">
+                    View Reports
+                  </p>
                 </button>
               </Link>
               <Link href="/dashboard/settings" className="block">
-                <button className="p-4 bg-[#18181B] border border-white/10 rounded-lg hover:border-blue-500 text-left transition-colors w-full">
-                  <h4 className="font-bold text-gray-200">⚙️ Settings</h4>
-                  <p className="text-sm text-gray-400">Preferences</p>
+                <button className="p-3 sm:p-4 bg-[#18181B] border border-white/10 rounded-lg hover:border-blue-500 text-left transition-colors w-full touch-manipulation active:scale-95">
+                  <h4 className="font-bold text-sm sm:text-base text-gray-200">
+                    ⚙️ Settings
+                  </h4>
+                  <p className="text-xs sm:text-sm text-gray-400">
+                    Preferences
+                  </p>
                 </button>
               </Link>
             </div>
