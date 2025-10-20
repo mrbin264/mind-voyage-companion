@@ -1,4 +1,11 @@
-export default {
+import type { Config } from 'tailwindcss'
+
+const config: Config = {
+  content: [
+    './src/pages/**/*.{js,ts,jsx,tsx,mdx}',
+    './src/components/**/*.{js,ts,jsx,tsx,mdx}',
+    './src/app/**/*.{js,ts,jsx,tsx,mdx}',
+  ],
   darkMode: 'class',
   theme: {
     extend: {
@@ -15,11 +22,13 @@ export default {
         foreground: 'var(--mv-color-text)',
         border: 'var(--mv-color-border)',
       },
-        borderRadius: {
-          lg: 'var(--mv-radius-lg)',
-          xl: 'var(--mv-radius-xl)',
-        }
+      borderRadius: {
+        lg: 'var(--mv-radius-lg)',
+        xl: 'var(--mv-radius-xl)',
+      },
     },
   },
   plugins: [],
 }
+
+export default config

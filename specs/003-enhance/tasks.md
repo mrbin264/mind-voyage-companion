@@ -32,13 +32,13 @@ description: 'Implementation tasks for Enhanced Responsive Dashboard with Consis
 
 **Duration Estimate**: 30 minutes
 
-- [ ] T001 Verify Node.js 18+ and pnpm are installed per quickstart.md
-- [ ] T002 Run `pnpm install` to ensure all dependencies current
-- [ ] T003 [P] Verify Tailwind CSS config includes correct content paths in `tailwind.config.ts`
-- [ ] T004 [P] Verify TypeScript strict mode enabled in `tsconfig.json`
-- [ ] T005 Start development server with `pnpm dev` and confirm MongoDB Memory Server starts
-- [ ] T006 Navigate to `http://localhost:3000/dashboard` and verify baseline (existing dashboard loads without errors)
-- [ ] T007 Create feature branch tracking document in `specs/003-enhance/progress.md` (task completion log)
+- [x] T001 Verify Node.js 18+ and pnpm are installed per quickstart.md
+- [x] T002 Run `pnpm install` to ensure all dependencies current
+- [x] T003 [P] Verify Tailwind CSS config includes correct content paths in `tailwind.config.ts`
+- [x] T004 [P] Verify TypeScript strict mode enabled in `tsconfig.json`
+- [x] T005 Start development server with `pnpm dev` and confirm MongoDB Memory Server starts
+- [x] T006 Navigate to `http://localhost:3000/dashboard` and verify baseline (existing dashboard loads without errors)
+- [x] T007 Create feature branch tracking document in `specs/003-enhance/progress.md` (task completion log)
 
 ---
 
