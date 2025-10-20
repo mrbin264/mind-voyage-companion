@@ -266,7 +266,7 @@ export function HabitForm({
 
             {/* Frequency */}
             <div>
-              <label className="block text-sm font-medium text-gray-300 mb-2 flex items-center gap-2">
+              <label className="flex items-center gap-2 text-sm font-medium text-gray-300 mb-2">
                 <Calendar className="w-4 h-4" /> Frequency
               </label>
               <div className="flex gap-2">
@@ -348,7 +348,7 @@ export function HabitForm({
 
             {/* Target */}
             <div>
-              <label className="block text-sm font-medium text-gray-300 mb-2 flex items-center gap-2">
+              <label className="flex items-center gap-2 text-sm font-medium text-gray-300 mb-2">
                 <Target className="w-4 h-4" /> Target
               </label>
               <div className="flex flex-wrap gap-2">

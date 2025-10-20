@@ -26,6 +26,7 @@ interface HabitCardProps {
   onComplete?: (habitId: string, value?: number) => void
   onSkip?: (habitId: string) => void
   onEdit?: (habitId: string) => void
+  onDelete?: (habitId: string) => void
   onViewDetails?: (habitId: string) => void
   compact?: boolean
   timezone?: string
@@ -110,6 +111,7 @@ export function HabitCard({
   onComplete,
   onSkip,
   onEdit,
+  onDelete,
   onViewDetails,
   compact = false,
 }: HabitCardProps) {
@@ -221,8 +223,11 @@ export function HabitCard({
                 >
                   Edit Habit
                 </button>
-                <button className="text-xs font-semibold text-slate-600 dark:text-gray-400 hover:underline">
-                  ⋮ More
+                <button
+                  className="text-xs font-semibold text-red-600 dark:text-red-400 hover:underline"
+                  onClick={() => onDelete?.(habit._id!)}
+                >
+                  Delete
                 </button>
               </>
             ) : isInProgress ? (
@@ -245,20 +250,17 @@ export function HabitCard({
                     ? 'Continue Timer'
                     : 'Complete'}
                 </button>
-                <button className="text-xs font-semibold text-slate-600 dark:text-gray-400 hover:underline">
-                  Pause
-                </button>
                 <button
                   className="text-xs font-semibold text-slate-600 dark:text-gray-400 hover:underline"
-                  onClick={() => onViewDetails?.(habit._id!)}
+                  onClick={() => onEdit?.(habit._id!)}
                 >
-                  View History
-                </button>
-                <button className="text-xs font-semibold text-slate-600 dark:text-gray-400 hover:underline">
                   Edit
                 </button>
-                <button className="text-xs font-semibold text-slate-600 dark:text-gray-400 hover:underline">
-                  ⋮ More
+                <button
+                  className="text-xs font-semibold text-red-600 dark:text-red-400 hover:underline"
+                  onClick={() => onDelete?.(habit._id!)}
+                >
+                  Delete
                 </button>
               </>
             ) : isPaused ? (
@@ -266,17 +268,17 @@ export function HabitCard({
                 <button className="text-xs bg-purple-600 hover:bg-purple-700 text-white font-semibold py-1 px-3 rounded-md">
                   Resume Habit
                 </button>
-                <button className="text-xs font-semibold text-slate-600 dark:text-gray-400 hover:underline">
-                  Delete
-                </button>
                 <button
                   className="text-xs font-semibold text-slate-600 dark:text-gray-400 hover:underline"
-                  onClick={() => onViewDetails?.(habit._id!)}
+                  onClick={() => onEdit?.(habit._id!)}
                 >
-                  View History
+                  Edit
                 </button>
-                <button className="text-xs font-semibold text-slate-600 dark:text-gray-400 hover:underline">
-                  ⋮ More
+                <button
+                  className="text-xs font-semibold text-red-600 dark:text-red-400 hover:underline"
+                  onClick={() => onDelete?.(habit._id!)}
+                >
+                  Delete
                 </button>
               </>
             ) : (
@@ -299,10 +301,13 @@ export function HabitCard({
                   className="text-xs font-semibold text-slate-600 dark:text-gray-400 hover:underline"
                   onClick={() => onEdit?.(habit._id!)}
                 >
-                  Edit Schedule
+                  Edit
                 </button>
-                <button className="text-xs font-semibold text-slate-600 dark:text-gray-400 hover:underline">
-                  ⋮ More
+                <button
+                  className="text-xs font-semibold text-red-600 dark:text-red-400 hover:underline"
+                  onClick={() => onDelete?.(habit._id!)}
+                >
+                  Delete
                 </button>
               </>
             )}
