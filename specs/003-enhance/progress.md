@@ -245,11 +245,66 @@
 
 ---
 
-## In Progress
-
 ### Phase 3: User Story 1 - Dashboard Widgets Enhancement (Section 3.5)
 
-- [ ] **T024** - Next task: Enhance HabitOverviewWidget
+- [x] **T024** - Create HabitOverviewWidget component `src/components/dashboard/HabitOverviewWidget.tsx` ✅
+  - Extracted "Today's Habits" section into reusable widget
+  - Wrapped in WidgetCard with loading/error/empty states
+  - Integrated ResponsiveGrid for habit cards (mobile:1, tablet:2, desktop:4, xl:4)
+  - Empty state with Target icon and "Create Your First Habit" action
+  - Individual HabitCard sub-component with completion status
+  - Mobile-optimized spacing (p-3 sm:p-4, gap-3 sm:gap-4)
+  - Props: habits, loading, error, onAddHabit, onCompleteHabit, actionLoading, maxHabits
+  - Responsive action button labels ("Add Habit" vs "Add New Habit")
+  - Completed: 2025-10-20
+
+- [x] **T025** - Create StreakCard widget `src/components/dashboard/StreakCard.tsx` ✅
+  - Standalone streak display widget
+  - Wrapped in WidgetCard with loading/error/empty states
+  - Displays top N streaks sorted by current streak count
+  - Empty state with TrendingUp icon and encouragement message
+  - StreakItem sub-component with hover effects
+  - Shows current streak, longest streak (best), and personal record badge (🏆)
+  - Mobile-optimized typography (text-sm sm:text-base)
+  - Props: streaks, loading, error, maxStreaks, title, icon
+  - Award icon in header (yellow-400 color)
+  - Completed: 2025-10-20
+
+- [x] **T026** - Create WeeklyProgressChart widget `src/components/dashboard/WeeklyProgressChart.tsx` ✅
+  - Extracted "Weekly Progress" section into reusable widget
+  - Wrapped in WidgetCard with loading/error/empty states
+  - Progress bars with percentage and visual indicators
+  - Empty state with BarChart3 icon
+  - Achievements section with dynamic calculation
+  - ProgressBar sub-component with ARIA progressbar role
+  - AchievementsList sub-component with smart achievement detection
+  - Responsive text (text-xs sm:text-sm, text-sm sm:text-base)
+  - Props: habits, loading, error, maxHabits, title, showAchievements
+  - Smooth transitions (300ms duration)
+  - Completed: 2025-10-20
+
+- [x] **T027** - Create QuickStatsWidget component `src/components/dashboard/QuickStatsWidget.tsx` ✅
+  - Summary statistics widget with stat cards
+  - Wrapped in WidgetCard with loading/error/empty states
+  - Integrated ResponsiveGrid for stat cards (mobile:2, tablet:2, desktop:4, xl:4)
+  - StatCard sub-component with color-coded icons
+  - Generates stats from HabitSummary (Today, This Week, Best Streak, Total Habits)
+  - Supports custom stats override
+  - Color variants: blue, green, orange, purple, yellow
+  - Empty state with Target icon
+  - Mobile-optimized stat cards (p-3 sm:p-4, text-xl sm:text-2xl)
+  - Props: summary, loading, error, customStats, title
+  - Completed: 2025-10-20
+
+**Phase 3 Section 3.5 Status**: ✅ COMPLETE (4/4 tasks, ~1.5 hours)
+
+---
+
+## In Progress
+
+### Phase 3: User Story 1 - End-to-End Tests (Section 3.6)
+
+- [ ] **T028** - Next task: Playwright E2E tests
 
 ---
 
