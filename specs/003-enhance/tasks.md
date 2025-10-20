@@ -113,17 +113,18 @@ description: 'Implementation tasks for Enhanced Responsive Dashboard with Consis
   - Dev mode: Show error stack in collapsible details
   - Accessibility: `role="alert"`, `aria-live="assertive"`, focus on retry button
 
-### 3.2: Widget Card Enhancement
+### 3.2: WidgetCard Enhancement (Prerequisite for US1)
 
-**Duration Estimate**: 2-3 hours
+**Duration Estimate**: 1.5 hours
 
-- [ ] T015 [US1] Enhance WidgetCard component `src/components/ui/widget-card.tsx`:
-  - Add new props: loading, error, empty, emptyConfig, title, subtitle, icon, actions, fullWidth, noPadding
-  - Implement state logic: if loading → render SkeletonLoader; if error → render ErrorBoundary; if empty → render EmptyState
-  - Enforce default styling: bg-background-card, border-border-subtle, rounded-xl, p-6 (p-4 on mobile)
-  - Add hover effect: hover:shadow-lg with transition-all duration-200
-  - If title provided: wrap in `<section>` with `aria-labelledby`
-  - Add responsive padding: `p-4 md:p-6`
+- [x] T015 [P] [US1] Enhance WidgetCard component `src/components/ui/widget-card.tsx`:
+  - Add state management props: loading, error, empty, emptyConfig, title, subtitle, icon, actions, fullWidth, noPadding
+  - Implement state logic: if loading → SkeletonLoader, if error → ErrorBoundary, if empty → EmptyState, else children
+  - Add title section with icon and actions (header only if title or actions exist)
+  - Enforce dark theme: bg-background-card, border-border-subtle, rounded-xl, p-4 md:p-6
+  - Add hover effect: hover:shadow-lg hover:shadow-black/20 transition-all duration-200
+  - Responsive padding: p-4 (mobile) → p-6 (desktop)
+  - Text truncation: Apply truncate class to title with tooltip for >60 char titles
 
 ### 3.3: Unit Tests for Core Components (TDD - Write Before Enhancement)
 

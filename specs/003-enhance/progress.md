@@ -103,15 +103,31 @@
 
 ---
 
-## In Progress
-
 ### Phase 3: User Story 1 - WidgetCard Enhancement (Section 3.2)
 
-- [ ] **T015** - Enhance WidgetCard component (NEXT)
-  - Add state management props (loading, error, empty, emptyConfig)
-  - Implement state logic: loading → SkeletonLoader, error → ErrorBoundary, empty → EmptyState
-  - Add title section with optional icon and actions
-  - Enforce dark theme styling (bg-background-card, border-border-subtle)
+- [x] **T015** - Enhanced WidgetCard component `src/components/ui/widget-card.tsx` ✅
+  - Added state management props: loading, error, empty, emptyConfig, title, subtitle, icon, actions, fullWidth, noPadding
+  - Implemented state logic: loading → SkeletonLoader, error → ErrorBoundary, empty → EmptyState, normal → children
+  - Added title section with icon, subtitle, and action buttons (conditional rendering)
+  - Dark theme styling: bg-background-card, border-border-subtle, rounded-xl
+  - Hover effect: hover:shadow-lg hover:shadow-black/20 transition-all duration-200
+  - Responsive padding: p-4 md:p-6
+  - Text truncation: truncate class with tooltip for titles >60 characters
+  - Full TypeScript strict typing with WidgetCardProps interface
+  - Completed: 2025-10-20
+
+**Phase 3 Section 3.2 Status**: ✅ COMPLETE (1/1 task, ~1 hour)
+
+---
+
+## In Progress
+
+### Phase 3: User Story 1 - Unit Tests (Section 3.3)
+
+- [ ] **T016** - Write SkeletonLoader unit tests (NEXT)
+  - Test all 7 variants render correctly
+  - Test count prop creates multiple skeletons
+  - Test accessibility attributes (role, aria-live, aria-label)
 
 ---
 
@@ -126,10 +142,10 @@
 ## Metrics
 
 - **Total Tasks**: 50
-- **Completed**: 14 (28%)
-- **In Progress**: 1 (T015)
-- **Remaining**: 35 (70%)
-- **Estimated Time Remaining**: ~23 hours
+- **Completed**: 15 (30%)
+- **In Progress**: 1 (T016)
+- **Remaining**: 34 (68%)
+- **Estimated Time Remaining**: ~22 hours
 
 ---
 
@@ -140,9 +156,10 @@
 - Phase 1 (Setup) - ✅ COMPLETE (7 tasks, ~15 minutes)
 - Phase 2 (Foundational) - ✅ COMPLETE (4 tasks, ~45 minutes)
 - Phase 3 Section 3.1 (Core UI Components) - ✅ COMPLETE (3 tasks, ~1.5 hours)
-- Phase 3 Section 3.2 (WidgetCard Enhancement) - 🟡 IN PROGRESS
+- Phase 3 Section 3.2 (WidgetCard Enhancement) - ✅ COMPLETE (1 task, ~1 hour)
+- Phase 3 Section 3.3 (Unit Tests) - 🟡 IN PROGRESS (0/4 tasks)
 - MVP Scope: Targeting Sections 3.1-3.3b (12 tasks) for proof-of-concept
 
 ---
 
-**Last Updated**: 2025-10-20 14:30:00
+**Last Updated**: 2025-10-20 15:00:00
