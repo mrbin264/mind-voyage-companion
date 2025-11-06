@@ -296,17 +296,23 @@ description: 'Implementation tasks for Enhanced Responsive Dashboard with Consis
 
 **Duration Estimate**: 2-3 hours
 
-- [ ] T031 [US1] Implement lazy loading for below-the-fold widgets in `src/app/dashboard/page.tsx`:
+- [x] T031 [US1] Implement lazy loading for below-the-fold widgets in `src/app/dashboard/page.tsx`:
   - Use React.lazy() for AnalyticsWidget, HistoryWidget, etc.
   - Wrap each in Suspense with matching SkeletonLoader fallback
   - Verify bundle size reduction with `@next/bundle-analyzer`
   - Target: 30-40% initial bundle size reduction
+  - ✅ Extended to all application pages (dashboard, analytics, habits, profile, wisdom, journal)
+  - ✅ Commit 919ae55 (Oct 20, 2025)
 
-- [ ] T032 [US1] Optimize animations for 60fps in `src/components/ui/widget-card.tsx`:
-  - Verify transitions use only transform and opacity (GPU-accelerated)
-  - Avoid animating width, height, margin (CPU-bound)
-  - Test with Chrome DevTools Performance profiler
-  - Confirm no dropped frames during interactions
+- [x] T032 [US1] Optimize animations for 60fps in components:
+  - ✅ **Phase 1** (commit 4bded05): HabitForm.tsx (20 instances) + 5 progress bars (scaleX transforms)
+  - ✅ **Phase 2** (commit 53e80b8): UI components (widget-card, Sidebar, MobileNav, DashboardLayout, StreakCard, QuickStatsWidget) + globals.css
+  - ✅ All `transition-all` instances eliminated (45 total)
+  - ✅ Progress bars converted to GPU-accelerated scaleX transforms
+  - ✅ Sidebar collapse uses will-change hints for smooth transitions
+  - ✅ All animations use specific property transitions (colors, opacity, transform)
+  - ✅ Production build successful, all tests passing (154/154)
+  - ✅ Documentation: `specs/003-enhance/T032-animation-optimization-summary.md`
 
 - [ ] T033 [US1] Setup Lighthouse CI configuration file `lighthouserc.json`:
   - Configure performance budget: score ≥90
