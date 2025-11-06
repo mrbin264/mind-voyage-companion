@@ -75,7 +75,8 @@ export function Sidebar({
     <nav
       className={cn(
         // Base styles
-        'flex flex-col bg-[#101010] border-r border-white/10 transition-all duration-300 ease-in-out',
+        'flex flex-col bg-[#101010] border-r border-white/10 transition-[width,transform,padding] duration-300 ease-in-out',
+        isCollapsed && 'will-change-[width]',
 
         // Responsive positioning
         'fixed inset-y-0 left-0 z-50',
@@ -139,7 +140,7 @@ export function Sidebar({
               href={item.href as any}
               className={cn(
                 // Base styles
-                'flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-200',
+                'flex items-center gap-3 px-4 py-3 rounded-lg transition-colors duration-200',
                 'hover:bg-gray-700/50 focus:outline-none focus:ring-2 focus:ring-blue-500',
 
                 // Collapsed state: center icon, hide label
@@ -177,7 +178,7 @@ export function Sidebar({
           <Button
             className={cn(
               'w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700',
-              'text-white font-semibold py-3 rounded-lg transition-all duration-200',
+              'text-white font-semibold py-3 rounded-lg transition-colors duration-200',
               'flex items-center justify-center gap-3',
               'focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:ring-offset-[#101010]',
               isCollapsed && 'px-2'

@@ -123,7 +123,7 @@ export function WidgetCard({
     <div
       className={cn(
         'bg-background-card border border-border-subtle rounded-xl',
-        'transition-all duration-200',
+        'transition-[border-color,box-shadow] duration-200',
         'hover:shadow-lg hover:shadow-black/20',
         !noPadding && 'p-4 md:p-6',
         !fullWidth && 'max-w-full',

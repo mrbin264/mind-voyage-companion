@@ -79,7 +79,7 @@ function StatCard({ stat }: StatCardProps) {
   const colorClasses = getColorClasses(stat.color)
 
   return (
-    <div className="bg-[#18181B] border border-white/10 rounded-lg p-3 sm:p-4 hover:border-white/20 transition-all duration-200">
+    <div className="bg-[#18181B] border border-white/10 rounded-lg p-3 sm:p-4 hover:border-white/20 transition-[border-color] duration-200">
       <div className="flex items-center gap-2 mb-2">
         <div className={`${colorClasses.icon}`}>{stat.icon}</div>
         <span className="text-xs sm:text-sm text-gray-400 font-medium">

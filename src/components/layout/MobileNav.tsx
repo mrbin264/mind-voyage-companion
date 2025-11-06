@@ -46,7 +46,7 @@ export function MobileNav({ isOpen, onToggle, className }: MobileNavProps) {
         'p-2 rounded-lg',
         'text-gray-400 hover:text-white',
         'hover:bg-gray-700/50',
-        'transition-all duration-200',
+        'transition-colors duration-200',
         'focus:outline-none focus:ring-2 focus:ring-blue-500',
         'touch-manipulation active:scale-95',
 
@@ -66,7 +66,7 @@ export function MobileNav({ isOpen, onToggle, className }: MobileNavProps) {
         {/* Menu icon (3 lines) */}
         <Menu
           className={cn(
-            'w-6 h-6 absolute inset-0 transition-all duration-300',
+            'w-6 h-6 absolute inset-0 transition-[opacity,transform] duration-300',
             isOpen
               ? 'opacity-0 rotate-180 scale-0'
               : 'opacity-100 rotate-0 scale-100'
@@ -77,7 +77,7 @@ export function MobileNav({ isOpen, onToggle, className }: MobileNavProps) {
         {/* Close icon (X) */}
         <X
           className={cn(
-            'w-6 h-6 absolute inset-0 transition-all duration-300',
+            'w-6 h-6 absolute inset-0 transition-[opacity,transform] duration-300',
             isOpen
               ? 'opacity-100 rotate-0 scale-100'
               : 'opacity-0 -rotate-180 scale-0'

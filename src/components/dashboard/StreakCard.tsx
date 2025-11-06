@@ -78,7 +78,7 @@ interface StreakItemProps {
 
 function StreakItem({ streak }: StreakItemProps) {
   return (
-    <div className="flex items-center justify-between gap-4 transition-all duration-200 hover:bg-white/5 rounded-lg p-2 -mx-2">
+    <div className="flex items-center justify-between gap-4 transition-colors duration-200 hover:bg-white/5 rounded-lg p-2 -mx-2">
       <div className="flex-1 min-w-0">
         <p className="text-white font-medium truncate text-sm sm:text-base">
           {streak.emoji && <span className="mr-2">{streak.emoji}</span>}

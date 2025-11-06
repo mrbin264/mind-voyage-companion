@@ -150,7 +150,7 @@ export function DashboardLayout({
 
       {/* Sidebar Toggle Button (Tablet/Desktop) */}
       <button
-        className="hidden md:flex lg:flex items-center justify-center absolute top-6 left-64 -translate-x-1/2 z-50 w-8 h-8 bg-[#18181B] border border-white/10 rounded-full text-gray-400 hover:text-white hover:bg-gray-700/50 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500"
+        className="hidden md:flex lg:flex items-center justify-center absolute top-6 left-64 -translate-x-1/2 z-50 w-8 h-8 bg-[#18181B] border border-white/10 rounded-full text-gray-400 hover:text-white hover:bg-gray-700/50 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500"
         onClick={() => setIsTabletCollapsed(prev => !prev)}
         aria-label={isTabletCollapsed ? 'Expand sidebar' : 'Collapse sidebar'}
         title="Toggle sidebar (Ctrl+B)"
@@ -197,7 +197,7 @@ export function DashboardLayout({
                 <Input
                   type="search"
                   placeholder="Search..."
-                  className="w-full bg-gray-800 border-gray-700 text-gray-100 rounded-lg pl-10 pr-4 py-2 text-sm sm:text-base focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+                  className="w-full bg-gray-800 border-gray-700 text-gray-100 rounded-lg pl-10 pr-4 py-2 text-sm sm:text-base focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-[border-color,box-shadow] duration-200"
                   onKeyDown={e => {
                     if (e.key === 'Enter') {
                       alert(

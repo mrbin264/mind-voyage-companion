@@ -295,7 +295,7 @@ describe('WidgetCard', () => {
       const { container } = render(<WidgetCard>Content</WidgetCard>)
       const card = container.firstChild as HTMLElement
       expect(card).toHaveClass(
-        'transition-all',
+        'transition-[border-color,box-shadow]',
         'duration-200',
         'hover:shadow-lg',
         'hover:shadow-black/20'
