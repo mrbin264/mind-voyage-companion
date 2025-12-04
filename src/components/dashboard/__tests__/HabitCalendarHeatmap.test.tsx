@@ -1,7 +1,26 @@
-import { describe, it, expect, beforeEach } from 'vitest'
+import {
+  describe,
+  it,
+  expect,
+  beforeEach,
+  beforeAll,
+  afterAll,
+  vi,
+} from 'vitest'
 import { render, screen, fireEvent } from '@testing-library/react'
 import { HabitCalendarHeatmap } from '../HabitCalendarHeatmap'
 import type { HabitLog } from '@/types/habit'
+
+// Freeze system time to a fixed date for deterministic calendar rendering in tests
+beforeAll(() => {
+  vi.useFakeTimers()
+  // Set to November 15, 2025 (mid-month) so calendar renders November 2025 by default
+  vi.setSystemTime(new Date('2025-11-15T12:00:00Z'))
+})
+
+afterAll(() => {
+  vi.useRealTimers()
+})
 
 describe('HabitCalendarHeatmap', () => {
   const mockLogs: HabitLog[] = [

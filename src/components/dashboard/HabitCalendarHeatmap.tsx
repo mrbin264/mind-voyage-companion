@@ -209,6 +209,7 @@ export function HabitCalendarHeatmap({
             size="sm"
             variant="outline"
             onClick={goToPreviousMonth}
+            aria-label="chevron-left"
             className="bg-zinc-800 border-zinc-700 hover:bg-zinc-700 text-gray-300"
           >
             <ChevronLeft className="h-4 w-4" />
@@ -217,6 +218,7 @@ export function HabitCalendarHeatmap({
             size="sm"
             variant="outline"
             onClick={goToNextMonth}
+            aria-label="chevron-right"
             disabled={!canGoNext}
             className="bg-zinc-800 border-zinc-700 hover:bg-zinc-700 text-gray-300 disabled:opacity-30 disabled:cursor-not-allowed"
           >
