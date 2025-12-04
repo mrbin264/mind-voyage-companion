@@ -4,7 +4,6 @@ import { WisdomContent } from '@/components/dashboard/wisdom/WisdomContent'
 import { SkeletonLoader } from '@/components/ui/skeleton-loader'
 import { auth } from '@/lib/auth'
 import { redirect } from 'next/navigation'
-import { cookies } from 'next/headers'
 
 interface AuthUser {
   userId: string

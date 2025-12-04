@@ -1,6 +1,7 @@
 'use client'
 
 import React from 'react'
+import { useRouter } from 'next/navigation'
 import { Button } from '@/components/ui/button'
 import { WidgetCard } from '@/components/ui/widget-card'
 import { Plus, Target } from 'lucide-react'
@@ -19,7 +20,17 @@ export default function TodaysHabitsSection({
   onCompleteHabit,
   onShowCreateForm,
 }: TodaysHabitsSectionProps) {
+  const router = useRouter()
   const todaysHabits = habits.slice(0, 4)
+
+  const handleViewDetails = (habitId: string) => {
+    console.log('🔍 TodaysHabitsSection: Navigating to habit details:', habitId)
+    const targetUrl = `/dashboard/habits/${habitId}`
+    console.log('🎯 Target URL:', targetUrl)
+
+    // Use window.location for reliable navigation in lazy components
+    window.location.href = targetUrl
+  }
 
   return (
     <div className="xl:col-span-3">
@@ -63,9 +74,6 @@ export default function TodaysHabitsSection({
                     <p className="text-xs text-gray-400 mb-3">
                       🔥 {habitProgress.currentStreak}-day streak
                     </p>
-                    <button className="text-xs font-semibold text-blue-400 hover:underline">
-                      View Details
-                    </button>
                   </div>
                 ) : (
                   <div>

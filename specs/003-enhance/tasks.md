@@ -314,11 +314,18 @@ description: 'Implementation tasks for Enhanced Responsive Dashboard with Consis
   - ✅ Production build successful, all tests passing (154/154)
   - ✅ Documentation: `specs/003-enhance/T032-animation-optimization-summary.md`
 
-- [ ] T033 [US1] Setup Lighthouse CI configuration file `lighthouserc.json`:
-  - Configure performance budget: score ≥90
-  - Set thresholds: FCP <1.8s, LCP <2.5s, TTI <3.5s, TBT <300ms, CLS <0.1
-  - Configure URL: http://localhost:3000/dashboard
-  - Set numberOfRuns: 3 (for average)
+- [x] T033 [US1] Setup Lighthouse CI configuration file `lighthouserc.json`:
+  - ✅ Created lighthouserc.json with comprehensive configuration
+  - ✅ Performance budget: score ≥90 for all categories
+  - ✅ Core Web Vitals thresholds: FCP <1.8s, LCP <2.5s, TTI <3.5s, TBT <300ms, CLS <0.1
+  - ✅ Speed Index threshold: <3.4s
+  - ✅ Installed @lhci/cli and lighthouse packages
+  - ✅ Added npm scripts: lhci:autorun, lhci:collect, lhci:assert, perf:audit
+  - ✅ Configured for desktop testing (1350x940 viewport)
+  - ✅ Set numberOfRuns: 3 for reliable averages
+  - ✅ Added .lighthouseci/ to .gitignore
+  - ✅ Successfully ran initial audit on homepage
+  - ✅ Report URL: https://storage.googleapis.com/lighthouse-infrastructure.appspot.com/reports/1762402492078-73878.report.html
 
 - [ ] T034 [US1] Run Lighthouse CI locally and validate metrics:
   - Build production: `pnpm build`

@@ -27,7 +27,6 @@ interface HabitCardProps {
   onSkip?: (habitId: string) => void
   onEdit?: (habitId: string) => void
   onDelete?: (habitId: string) => void
-  onViewDetails?: (habitId: string) => void
   compact?: boolean
   timezone?: string
 }
@@ -112,7 +111,6 @@ export function HabitCard({
   onSkip,
   onEdit,
   onDelete,
-  onViewDetails,
   compact = false,
 }: HabitCardProps) {
   const { habit, todayLog, currentStreak, weeklyProgress } = habitProgress
@@ -211,12 +209,6 @@ export function HabitCard({
           <div className="flex gap-2 flex-wrap justify-end">
             {isCompleted ? (
               <>
-                <button
-                  className="text-xs font-semibold text-blue-600 dark:text-blue-400 hover:underline"
-                  onClick={() => onViewDetails?.(habit._id!)}
-                >
-                  View Details
-                </button>
                 <button
                   className="text-xs font-semibold text-slate-600 dark:text-gray-400 hover:underline"
                   onClick={() => onEdit?.(habit._id!)}

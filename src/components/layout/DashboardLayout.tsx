@@ -83,6 +83,19 @@ export function DashboardLayout({
     return () => window.removeEventListener('keydown', handleKeyDown)
   }, [])
 
+  // Keyboard shortcut: Ctrl+K / Cmd+K to open search
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
+        e.preventDefault()
+        window.location.href = '/dashboard/search'
+      }
+    }
+
+    window.addEventListener('keydown', handleKeyDown)
+    return () => window.removeEventListener('keydown', handleKeyDown)
+  }, [])
+
   // Keyboard shortcut: Escape to close mobile menu
   useEffect(() => {
     const handleEscape = (e: KeyboardEvent) => {
@@ -192,21 +205,31 @@ export function DashboardLayout({
             </div>
 
             <div className="flex items-center gap-3 sm:gap-4 w-full lg:w-auto">
-              <div className="relative flex-grow lg:flex-grow-0 lg:w-64">
-                <Search className="w-5 h-5 text-gray-500 absolute top-1/2 left-3 -translate-y-1/2" />
+              <form
+                className="relative flex-grow lg:flex-grow-0 lg:w-64"
+                onSubmit={e => {
+                  e.preventDefault()
+                  const input = e.currentTarget.elements.namedItem(
+                    'search'
+                  ) as HTMLInputElement
+                  if (input.value.trim()) {
+                    window.location.href = `/dashboard/search?q=${encodeURIComponent(input.value)}`
+                  } else {
+                    window.location.href = '/dashboard/search'
+                  }
+                }}
+              >
+                <Search className="w-5 h-5 text-gray-500 absolute top-1/2 left-3 -translate-y-1/2 pointer-events-none" />
                 <Input
                   type="search"
+                  name="search"
                   placeholder="Search..."
-                  className="w-full bg-gray-800 border-gray-700 text-gray-100 rounded-lg pl-10 pr-4 py-2 text-sm sm:text-base focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-[border-color,box-shadow] duration-200"
-                  onKeyDown={e => {
-                    if (e.key === 'Enter') {
-                      alert(
-                        "🔍 Global search coming soon! You'll be able to search across habits, journal entries, and wisdom quotes."
-                      )
-                    }
-                  }}
+                  className="w-full bg-gray-800 border-gray-700 text-gray-100 rounded-lg pl-10 pr-16 py-2 text-sm sm:text-base focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-[border-color,box-shadow] duration-200"
                 />
-              </div>
+                <kbd className="hidden sm:inline-block absolute top-1/2 right-3 -translate-y-1/2 px-2 py-0.5 text-xs text-gray-500 bg-gray-700 border border-gray-600 rounded">
+                  ⌘K
+                </kbd>
+              </form>
 
               <button
                 className="relative text-gray-400 hover:text-white p-2 transition-colors rounded-lg hover:bg-gray-700/50 focus:outline-none focus:ring-2 focus:ring-blue-500"

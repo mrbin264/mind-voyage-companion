@@ -1,6 +1,7 @@
 'use client'
 
 import React, { useState, lazy, Suspense } from 'react'
+import { useRouter } from 'next/navigation'
 import { Card } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { SkeletonLoader } from '@/components/ui/skeleton-loader'
@@ -25,6 +26,7 @@ interface HabitsPageContentProps {
 }
 
 export function HabitsPageContent({ user }: HabitsPageContentProps) {
+  const router = useRouter()
   const [showCreateForm, setShowCreateForm] = useState(false)
   const [showEditForm, setShowEditForm] = useState(false)
   const [editingHabitId, setEditingHabitId] = useState<string | null>(null)
@@ -103,11 +105,6 @@ export function HabitsPageContent({ user }: HabitsPageContentProps) {
         console.log('Habit deleted successfully')
       }
     }
-  }
-
-  const handleViewHabitDetails = (habitId: string) => {
-    // TODO: Navigate to habit details page or open details modal
-    console.log('View habit details:', habitId)
   }
 
   // Find the habit being edited
@@ -189,33 +186,21 @@ export function HabitsPageContent({ user }: HabitsPageContentProps) {
       </div>
 
       {/* Main Habit List - Lazy Loaded */}
-      <Suspense
-        fallback={
-          <div className="space-y-4">
-            <SkeletonLoader variant="habit-card" count={3} />
-          </div>
-        }
-      >
-        <HabitList
-          habits={habits}
-          loading={loading}
-          filters={filters}
-          onFiltersChange={handleFiltersChange}
-          onAddHabit={handleAddHabit}
-          onCompleteHabit={handleCompleteHabit}
-          onSkipHabit={handleSkipHabit}
-          onEditHabit={handleEditHabit}
-          onDeleteHabit={handleDeleteHabit}
-          onViewHabitDetails={handleViewHabitDetails}
-          compact={false}
-          showFilters={true}
-          emptyMessage={
-            filters.status === 'all'
-              ? 'No habits found. Create your first habit to get started!'
-              : `No ${filters.status} habits found. Try adjusting your filters.`
-          }
-        />
-      </Suspense>
+      <div>
+        <Suspense fallback={<SkeletonLoader />}>
+          <HabitList
+            habits={habits}
+            loading={loading}
+            filters={filters}
+            onFiltersChange={handleFiltersChange}
+            onAddHabit={handleAddHabit}
+            onCompleteHabit={handleCompleteHabit}
+            onSkipHabit={handleSkipHabit}
+            onEditHabit={handleEditHabit}
+            onDeleteHabit={handleDeleteHabit}
+          />
+        </Suspense>
+      </div>
 
       {/* Create Habit Form Modal */}
       {showCreateForm && (

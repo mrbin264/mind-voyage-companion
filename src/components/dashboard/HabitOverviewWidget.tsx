@@ -1,6 +1,7 @@
 'use client'
 
 import React from 'react'
+import { useRouter } from 'next/navigation'
 import { Button } from '@/components/ui/button'
 import { WidgetCard } from '@/components/ui/widget-card'
 import { ResponsiveGrid } from '@/components/ui/responsive-grid'
@@ -105,12 +106,35 @@ function HabitCard({
   onComplete,
   actionLoading = false,
 }: HabitCardProps) {
+  const router = useRouter()
   const { habit, todayLog, currentStreak } = habitProgress
   const isCompleted = todayLog?.completed
 
   const handleComplete = async () => {
     if (onComplete && habit._id) {
       await onComplete(habit._id, 1)
+    }
+  }
+
+  const handleViewDetails = () => {
+    console.log('🔍 View Details clicked:', {
+      habitId: habit._id,
+      habitTitle: habit.title,
+      targetUrl: `/dashboard/habits/${habit._id}`,
+    })
+
+    if (!habit._id) {
+      console.error('❌ No habit._id available:', habit)
+      alert('Error: Habit ID is missing. Please refresh the page.')
+      return
+    }
+
+    try {
+      router.push(`/dashboard/habits/${habit._id}` as any)
+      console.log('✅ Navigation initiated')
+    } catch (error) {
+      console.error('❌ Navigation error:', error)
+      alert('Failed to navigate. Please try again.')
     }
   }
 
@@ -135,7 +159,10 @@ function HabitCard({
             <p className="text-xs text-gray-400 mb-3">
               🔥 {currentStreak}-day streak
             </p>
-            <button className="text-xs font-semibold text-blue-400 hover:underline">
+            <button
+              className="text-xs font-semibold text-blue-400 hover:underline"
+              onClick={handleViewDetails}
+            >
               View Details
             </button>
           </>
