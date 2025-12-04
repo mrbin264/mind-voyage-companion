@@ -48,6 +48,9 @@ data/
 
 # Coverage directory used by tools like istanbul
 coverage/
+
+# Lighthouse CI reports
+.lighthouseci/
 *.lcov
 
 # Dependency directories

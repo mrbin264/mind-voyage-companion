@@ -177,6 +177,33 @@ export interface DataExportRequest {
   requestedAt: string
 }
 
+export interface DataExport {
+  userId: string
+  data?: Record<string, unknown>
+  format: 'json' | 'csv' | 'pdf'
+  includes?: {
+    profile?: boolean
+    habits?: boolean
+    journal?: boolean
+    wisdom?: boolean
+    analytics?: boolean
+  }
+  status?: 'pending' | 'processing' | 'completed' | 'failed'
+  downloadUrl?: string
+  requestedAt?: Date | string
+  exportedAt?: string
+}
+
+export interface DataDeletion {
+  userId: string
+  dataTypes?: ('habits' | 'journal' | 'analytics' | 'profile' | 'all')[]
+  reason?: string
+  requestedAt: Date | string
+  scheduledFor?: Date | string
+  completedAt?: Date | string
+  status: 'pending' | 'processing' | 'completed' | 'failed'
+}
+
 export interface SupportTicket {
   ticketId: string
   userId: string

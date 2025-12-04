@@ -59,15 +59,15 @@ export function ProfileForm({
 
   return (
     <form onSubmit={handleFormSubmit} className={className}>
-      <div className="space-y-6">
+      <div className="space-y-4 sm:space-y-6">
         {/* Profile Photo */}
         <SettingsCard
           title="Profile Photo"
           description="Upload a photo to personalize your account"
         >
-          <div className="flex items-center gap-6">
+          <div className="flex flex-col sm:flex-row items-center sm:items-start gap-4 sm:gap-6">
             <div className="relative">
-              <div className="w-20 h-20 bg-gray-700 rounded-full flex items-center justify-center overflow-hidden border-2 border-gray-600">
+              <div className="w-20 h-20 sm:w-24 sm:h-24 bg-gray-700 rounded-full flex items-center justify-center overflow-hidden border-2 border-gray-600">
                 {formData.avatar ? (
                   <img
                     src={formData.avatar}
@@ -75,15 +75,15 @@ export function ProfileForm({
                     className="w-full h-full object-cover"
                   />
                 ) : (
-                  <span className="text-2xl font-bold text-gray-400">
+                  <span className="text-2xl sm:text-3xl font-bold text-gray-400">
                     {formData.firstName?.[0] ||
                       formData.email?.[0]?.toUpperCase() ||
                       '?'}
                   </span>
                 )}
               </div>
-              <label className="absolute -bottom-1 -right-1 w-6 h-6 bg-blue-600 rounded-full flex items-center justify-center cursor-pointer hover:bg-blue-700 transition-colors">
-                <Upload className="w-3 h-3 text-white" />
+              <label className="absolute -bottom-1 -right-1 w-6 h-6 sm:w-7 sm:h-7 bg-blue-600 rounded-full flex items-center justify-center cursor-pointer hover:bg-blue-700 transition-colors touch-manipulation active:scale-95">
+                <Upload className="w-3 h-3 sm:w-4 sm:h-4 text-white" />
                 <input
                   type="file"
                   accept="image/*"
@@ -93,8 +93,8 @@ export function ProfileForm({
               </label>
             </div>
 
-            <div>
-              <p className="text-sm text-gray-300 mb-1">
+            <div className="text-center sm:text-left">
+              <p className="text-xs sm:text-sm text-gray-300 mb-1">
                 Choose a new profile photo
               </p>
               <p className="text-xs text-gray-500">
@@ -109,7 +109,7 @@ export function ProfileForm({
           title="Personal Information"
           description="Basic information about yourself"
         >
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
             <SettingsField label="First Name" required>
               <SettingsInput
                 type="text"
@@ -134,25 +134,25 @@ export function ProfileForm({
               description="This is your login email and where we'll send notifications"
             >
               <div className="relative">
-                <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
+                <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 sm:w-5 sm:h-5 text-gray-400" />
                 <SettingsInput
                   type="email"
                   value={formData.email}
                   onChange={e => updateField('email', e.target.value)}
                   placeholder="Enter your email"
-                  className="pl-10"
+                  className="pl-9 sm:pl-10"
                 />
               </div>
             </SettingsField>
 
             <SettingsField label="Date of Birth">
               <div className="relative">
-                <Calendar className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
+                <Calendar className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 sm:w-5 sm:h-5 text-gray-400" />
                 <SettingsInput
                   type="date"
                   value={formData.dateOfBirth || ''}
                   onChange={e => updateField('dateOfBirth', e.target.value)}
-                  className="pl-10"
+                  className="pl-9 sm:pl-10"
                 />
               </div>
             </SettingsField>
@@ -171,7 +171,10 @@ export function ProfileForm({
             />
             <div className="flex justify-between items-center mt-1">
               <span className="text-xs text-gray-500">
-                Share your interests, goals, or philosophy
+                <span className="hidden sm:inline">
+                  Share your interests, goals, or philosophy
+                </span>
+                <span className="sm:hidden">Brief bio</span>
               </span>
               <span className="text-xs text-gray-500">
                 {formData.bio.length}/500
@@ -185,40 +188,40 @@ export function ProfileForm({
           title="Location & Preferences"
           description="Set your location and regional preferences"
         >
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
             <SettingsField label="Location">
               <div className="relative">
-                <MapPin className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
+                <MapPin className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 sm:w-5 sm:h-5 text-gray-400" />
                 <SettingsInput
                   type="text"
                   value={formData.location || ''}
                   onChange={e => updateField('location', e.target.value)}
                   placeholder="City, Country"
-                  className="pl-10"
+                  className="pl-9 sm:pl-10"
                 />
               </div>
             </SettingsField>
 
             <SettingsField label="Timezone">
               <div className="relative">
-                <Clock className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400 z-10" />
+                <Clock className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 sm:w-5 sm:h-5 text-gray-400 z-10" />
                 <SettingsSelect
                   value={formData.timezone}
                   onChange={e => updateField('timezone', e.target.value)}
                   options={timezoneOptions}
-                  className="pl-10"
+                  className="pl-9 sm:pl-10"
                 />
               </div>
             </SettingsField>
 
             <SettingsField label="Language">
               <div className="relative">
-                <Globe className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400 z-10" />
+                <Globe className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 sm:w-5 sm:h-5 text-gray-400 z-10" />
                 <SettingsSelect
                   value={formData.language}
                   onChange={e => updateField('language', e.target.value)}
                   options={languageOptions}
-                  className="pl-10"
+                  className="pl-9 sm:pl-10"
                 />
               </div>
             </SettingsField>
@@ -239,7 +242,7 @@ export function ProfileForm({
           title="Social Links"
           description="Connect your social media profiles (optional)"
         >
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
             <SettingsField label="Twitter">
               <SettingsInput
                 type="text"

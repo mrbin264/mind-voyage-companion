@@ -179,7 +179,7 @@ export function HabitForm({
                 value={formData.title}
                 onChange={e => updateFormData({ title: e.target.value })}
                 placeholder="e.g., Morning Pages, Drink Water, Exercise"
-                className={`w-full rounded-lg px-4 py-2 bg-zinc-800 border border-zinc-700 text-white placeholder-gray-500 focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/50 transition-all ${
+                className={`w-full rounded-lg px-4 py-2 bg-zinc-800 border border-zinc-700 text-white placeholder-gray-500 focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/50 transition-[border-color,box-shadow] duration-200 ${
                   errors.title ? 'border-red-500' : ''
                 }`}
               />
@@ -202,7 +202,7 @@ export function HabitForm({
                 value={formData.description}
                 onChange={e => updateFormData({ description: e.target.value })}
                 placeholder="Optional description of your habit"
-                className="w-full rounded-lg px-4 py-2 bg-zinc-800 border border-zinc-700 text-white placeholder-gray-500 focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/50 transition-all resize-none"
+                className="w-full rounded-lg px-4 py-2 bg-zinc-800 border border-zinc-700 text-white placeholder-gray-500 focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/50 transition-[border-color,box-shadow] duration-200 resize-none"
               />
             </div>
 
@@ -233,7 +233,7 @@ export function HabitForm({
                   value={formData.emoji}
                   onChange={e => updateFormData({ emoji: e.target.value })}
                   placeholder="Or type custom emoji"
-                  className="w-full rounded-lg px-4 py-2 bg-zinc-800 border border-zinc-700 text-white placeholder-gray-500 focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/50 transition-all"
+                  className="w-full rounded-lg px-4 py-2 bg-zinc-800 border border-zinc-700 text-white placeholder-gray-500 focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/50 transition-[border-color,box-shadow] duration-200"
                 />
               </div>
               <div>
@@ -246,7 +246,7 @@ export function HabitForm({
                       key={color}
                       type="button"
                       onClick={() => updateFormData({ color })}
-                      className={`w-full h-10 rounded-md border-2 transition-all ${
+                      className={`w-full h-10 rounded-md border-2 transition-[border-color,box-shadow] duration-200 ${
                         formData.color === color
                           ? 'border-white border-2'
                           : 'border-transparent hover:border-gray-400'
@@ -259,7 +259,7 @@ export function HabitForm({
                   type="text"
                   value={formData.color}
                   onChange={e => updateFormData({ color: e.target.value })}
-                  className="w-full rounded-lg px-4 py-2 bg-zinc-800 border border-zinc-700 text-white placeholder-gray-500 focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/50 transition-all"
+                  className="w-full rounded-lg px-4 py-2 bg-zinc-800 border border-zinc-700 text-white placeholder-gray-500 focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/50 transition-[border-color,box-shadow] duration-200"
                 />
               </div>
             </div>
@@ -275,7 +275,7 @@ export function HabitForm({
                   onClick={() =>
                     updateFormData({ frequency: { type: 'daily' } })
                   }
-                  className={`flex-1 text-sm font-semibold py-2 px-4 rounded-lg border transition-all ${
+                  className={`flex-1 text-sm font-semibold py-2 px-4 rounded-lg border transition-[border-color,box-shadow] duration-200 ${
                     formData.frequency.type === 'daily'
                       ? 'bg-blue-600 border-blue-600 text-white'
                       : 'bg-zinc-800 border-zinc-700 text-gray-300 hover:bg-zinc-700'
@@ -290,7 +290,7 @@ export function HabitForm({
                       frequency: { type: 'weekly', daysOfWeek: [] },
                     })
                   }
-                  className={`flex-1 text-sm font-semibold py-2 px-4 rounded-lg border transition-all ${
+                  className={`flex-1 text-sm font-semibold py-2 px-4 rounded-lg border transition-[border-color,box-shadow] duration-200 ${
                     formData.frequency.type === 'weekly'
                       ? 'bg-blue-600 border-blue-600 text-white'
                       : 'bg-zinc-800 border-zinc-700 text-gray-300 hover:bg-zinc-700'
@@ -305,7 +305,7 @@ export function HabitForm({
                       frequency: { type: 'custom', daysOfWeek: [] },
                     })
                   }
-                  className={`flex-1 text-sm font-semibold py-2 px-4 rounded-lg border transition-all ${
+                  className={`flex-1 text-sm font-semibold py-2 px-4 rounded-lg border transition-[border-color,box-shadow] duration-200 ${
                     formData.frequency.type === 'custom'
                       ? 'bg-blue-600 border-blue-600 text-white'
                       : 'bg-zinc-800 border-zinc-700 text-gray-300 hover:bg-zinc-700'
@@ -327,7 +327,7 @@ export function HabitForm({
                         key={day.value}
                         type="button"
                         onClick={() => toggleDayOfWeek(day.value)}
-                        className={`flex-1 text-sm font-semibold py-2 px-2 rounded-lg border transition-all ${
+                        className={`flex-1 text-sm font-semibold py-2 px-2 rounded-lg border transition-[border-color,box-shadow] duration-200 ${
                           formData.frequency.daysOfWeek?.includes(day.value)
                             ? 'bg-blue-600 border-blue-600 text-white'
                             : 'bg-zinc-800 border-zinc-700 text-gray-300 hover:bg-zinc-700'
@@ -357,7 +357,7 @@ export function HabitForm({
                   onClick={() =>
                     updateFormData({ target: { type: 'boolean' } })
                   }
-                  className={`text-sm font-semibold py-2 px-4 rounded-lg border transition-all ${
+                  className={`text-sm font-semibold py-2 px-4 rounded-lg border transition-[border-color,box-shadow] duration-200 ${
                     formData.target.type === 'boolean'
                       ? 'bg-blue-600 border-blue-600 text-white'
                       : 'bg-zinc-800 border-zinc-700 text-gray-300 hover:bg-zinc-700'
@@ -372,7 +372,7 @@ export function HabitForm({
                       target: { type: 'count', value: 1, unit: 'times' },
                     })
                   }
-                  className={`text-sm font-semibold py-2 px-4 rounded-lg border transition-all ${
+                  className={`text-sm font-semibold py-2 px-4 rounded-lg border transition-[border-color,box-shadow] duration-200 ${
                     formData.target.type === 'count'
                       ? 'bg-blue-600 border-blue-600 text-white'
                       : 'bg-zinc-800 border-zinc-700 text-gray-300 hover:bg-zinc-700'
@@ -387,7 +387,7 @@ export function HabitForm({
                       target: { type: 'duration', value: 30, unit: 'minutes' },
                     })
                   }
-                  className={`text-sm font-semibold py-2 px-4 rounded-lg border transition-all ${
+                  className={`text-sm font-semibold py-2 px-4 rounded-lg border transition-[border-color,box-shadow] duration-200 ${
                     formData.target.type === 'duration'
                       ? 'bg-blue-600 border-blue-600 text-white'
                       : 'bg-zinc-800 border-zinc-700 text-gray-300 hover:bg-zinc-700'
@@ -402,7 +402,7 @@ export function HabitForm({
                       target: { type: 'amount', value: 8, unit: 'glasses' },
                     })
                   }
-                  className={`text-sm font-semibold py-2 px-4 rounded-lg border transition-all ${
+                  className={`text-sm font-semibold py-2 px-4 rounded-lg border transition-[border-color,box-shadow] duration-200 ${
                     formData.target.type === 'amount'
                       ? 'bg-blue-600 border-blue-600 text-white'
                       : 'bg-zinc-800 border-zinc-700 text-gray-300 hover:bg-zinc-700'
@@ -431,7 +431,7 @@ export function HabitForm({
                         })
                       }
                       placeholder="e.g., 8, 30, 5"
-                      className={`w-full rounded-lg px-4 py-2 bg-zinc-800 border border-zinc-700 text-white placeholder-gray-500 focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/50 transition-all ${
+                      className={`w-full rounded-lg px-4 py-2 bg-zinc-800 border border-zinc-700 text-white placeholder-gray-500 focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/50 transition-[border-color,box-shadow] duration-200 ${
                         errors.target ? 'border-red-500' : ''
                       }`}
                     />
@@ -454,7 +454,7 @@ export function HabitForm({
                         })
                       }
                       placeholder="e.g., glasses, minutes, pages"
-                      className="w-full rounded-lg px-4 py-2 bg-zinc-800 border border-zinc-700 text-white placeholder-gray-500 focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/50 transition-all"
+                      className="w-full rounded-lg px-4 py-2 bg-zinc-800 border border-zinc-700 text-white placeholder-gray-500 focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/50 transition-[border-color,box-shadow] duration-200"
                     />
                   </div>
                 </div>
@@ -480,7 +480,7 @@ export function HabitForm({
                     value={formData.category}
                     onChange={e => updateFormData({ category: e.target.value })}
                     placeholder="e.g., Health, Work, Personal"
-                    className="w-full rounded-lg px-4 py-2 bg-zinc-800 border border-zinc-700 text-white placeholder-gray-500 focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/50 transition-all"
+                    className="w-full rounded-lg px-4 py-2 bg-zinc-800 border border-zinc-700 text-white placeholder-gray-500 focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/50 transition-[border-color,box-shadow] duration-200"
                   />
                 </div>
                 <div>
@@ -496,7 +496,7 @@ export function HabitForm({
                     onChange={e =>
                       updateFormData({ priority: e.target.value as any })
                     }
-                    className="w-full rounded-lg px-4 py-2 bg-zinc-800 border border-zinc-700 text-white focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/50 transition-all"
+                    className="w-full rounded-lg px-4 py-2 bg-zinc-800 border border-zinc-700 text-white focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/50 transition-[border-color,box-shadow] duration-200"
                   >
                     <option value="low">Low</option>
                     <option value="medium">Medium</option>
@@ -518,7 +518,7 @@ export function HabitForm({
                   onChange={e =>
                     updateFormData({ reminderTime: e.target.value })
                   }
-                  className={`w-full rounded-lg px-4 py-2 bg-zinc-800 border border-zinc-700 text-white focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/50 transition-all ${
+                  className={`w-full rounded-lg px-4 py-2 bg-zinc-800 border border-zinc-700 text-white focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/50 transition-[border-color,box-shadow] duration-200 ${
                     errors.reminderTime ? 'border-red-500' : ''
                   }`}
                 />
@@ -541,7 +541,7 @@ export function HabitForm({
                   value={formData.notes}
                   onChange={e => updateFormData({ notes: e.target.value })}
                   placeholder="Additional notes or motivation for this habit"
-                  className="w-full rounded-lg px-4 py-2 bg-zinc-800 border border-zinc-700 text-white placeholder-gray-500 focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/50 transition-all resize-none"
+                  className="w-full rounded-lg px-4 py-2 bg-zinc-800 border border-zinc-700 text-white placeholder-gray-500 focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/50 transition-[border-color,box-shadow] duration-200 resize-none"
                 />
               </div>
             </div>

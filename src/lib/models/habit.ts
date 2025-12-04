@@ -280,3 +280,7 @@ export const HabitModel =
 export const HabitLogModel =
   mongoose.models.HabitLog ||
   mongoose.model<IHabitLog>('HabitLog', HabitLogSchema)
+
+export function getHabitModel() {
+  return HabitModel
+}

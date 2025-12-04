@@ -40,7 +40,7 @@ export function WeeklyTrendsChart({
             >
               {/* Bar */}
               <div
-                className={`w-full max-w-8 rounded-t-md mb-2 transition-all duration-500 group-hover:opacity-80 ${
+                className={`w-full max-w-8 rounded-t-md mb-2 transition-opacity duration-500 group-hover:opacity-80 ${
                   isLowPerformance
                     ? 'bg-orange-500'
                     : isCurrentWeek
@@ -126,8 +126,8 @@ export function CompletionRateIndicator({
         className={`${sizeClasses[size]} bg-gray-700 rounded-full overflow-hidden`}
       >
         <div
-          className={`h-full ${getColor(rate)} transition-all duration-300 rounded-full`}
-          style={{ width: `${Math.min(rate, 100)}%` }}
+          className={`h-full ${getColor(rate)} origin-left transition-transform duration-300 rounded-full`}
+          style={{ transform: `scaleX(${Math.min(rate, 100) / 100})` }}
         />
       </div>
       {showLabel && (

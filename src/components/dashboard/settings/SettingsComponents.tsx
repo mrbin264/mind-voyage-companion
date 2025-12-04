@@ -77,9 +77,9 @@ export function SettingsNavigation({
 }: SettingsNavigationProps) {
   return (
     <div
-      className={`bg-gray-800 rounded-xl p-4 border border-gray-700 ${className}`}
+      className={`bg-gray-800 rounded-xl p-3 sm:p-4 border border-gray-700 ${className}`}
     >
-      <nav className="space-y-2">
+      <nav className="space-y-1 sm:space-y-2">
         {navigationItems.map(item => {
           const Icon = item.icon
           const isActive = activeSection === item.id
@@ -88,14 +88,14 @@ export function SettingsNavigation({
             <button
               key={item.id}
               onClick={() => onSectionChange(item.id)}
-              className={`w-full flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm transition-colors text-left ${
+              className={`w-full flex items-center gap-2 sm:gap-3 px-3 sm:px-4 py-2 sm:py-2.5 rounded-lg text-xs sm:text-sm transition-colors text-left touch-manipulation active:scale-95 ${
                 isActive
                   ? 'bg-blue-600 text-white font-semibold'
                   : 'text-gray-300 hover:bg-gray-700/50 hover:text-white'
               }`}
               title={item.description}
             >
-              <Icon className="w-5 h-5 flex-shrink-0" />
+              <Icon className="w-4 h-4 sm:w-5 sm:h-5 flex-shrink-0" />
               <span className="truncate">{item.label}</span>
             </button>
           )
@@ -166,28 +166,28 @@ export function SettingsHeader({
 
   return (
     <header
-      className={`flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-8 ${className}`}
+      className={`flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-4 mb-6 sm:mb-8 ${className}`}
     >
       <div>
-        <h2 className="text-3xl font-bold text-gray-100 flex items-center gap-3">
+        <h2 className="text-2xl sm:text-3xl font-bold text-gray-100 flex items-center gap-2 sm:gap-3">
           ⚙️ {title}
         </h2>
-        <p className="text-gray-400 mt-1">{subtitle}</p>
+        <p className="text-sm sm:text-base text-gray-400 mt-1">{subtitle}</p>
       </div>
 
       {onSave && (
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-2 sm:gap-3">
           {isDirty && (
-            <span className="text-sm text-yellow-400 flex items-center gap-1">
+            <span className="text-xs sm:text-sm text-yellow-400 flex items-center gap-1">
               <span className="w-2 h-2 bg-yellow-400 rounded-full"></span>
-              Unsaved changes
+              <span className="hidden sm:inline">Unsaved changes</span>
             </span>
           )}
 
           <button
             onClick={onSave}
             disabled={!isDirty || isSaving}
-            className={`text-sm font-semibold py-2 px-4 rounded-lg transition-colors flex items-center gap-2 ${
+            className={`text-xs sm:text-sm font-semibold py-2 px-3 sm:px-4 rounded-lg transition-colors flex items-center gap-2 touch-manipulation active:scale-95 ${
               isDirty && !isSaving
                 ? 'bg-blue-600 hover:bg-blue-700 text-white'
                 : 'bg-gray-700 text-gray-400 cursor-not-allowed'
@@ -195,11 +195,14 @@ export function SettingsHeader({
           >
             {isSaving ? (
               <>
-                <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-                Saving...
+                <div className="w-3 h-3 sm:w-4 sm:h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                <span className="hidden sm:inline">Saving...</span>
               </>
             ) : (
-              'Save Changes'
+              <>
+                <span className="hidden sm:inline">Save Changes</span>
+                <span className="sm:hidden">Save</span>
+              </>
             )}
           </button>
         </div>

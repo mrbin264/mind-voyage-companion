@@ -1,3 +1,7 @@
+const withBundleAnalyzer = require('@next/bundle-analyzer')({
+  enabled: process.env.ANALYZE === 'true',
+})
+
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   typedRoutes: true,
@@ -52,35 +56,37 @@ const nextConfig = {
 
     // Handle MongoDB optional dependencies for all environments
     config.externals = config.externals || []
-    
+
     // Add externals differently for edge vs server runtime
     if (nextRuntime === 'edge') {
       // For edge runtime, completely ignore these modules
       config.externals.push({
         'mongodb-memory-server': 'commonjs2 mongodb-memory-server',
         'mongodb-memory-server-core': 'commonjs2 mongodb-memory-server-core',
-        'kerberos': 'commonjs2 kerberos',
+        kerberos: 'commonjs2 kerberos',
         'mongodb-client-encryption': 'commonjs2 mongodb-client-encryption',
-        '@mongodb-js/zstd': 'commonjs2 @mongodb-js/zstd', 
-        '@aws-sdk/credential-providers': 'commonjs2 @aws-sdk/credential-providers',
+        '@mongodb-js/zstd': 'commonjs2 @mongodb-js/zstd',
+        '@aws-sdk/credential-providers':
+          'commonjs2 @aws-sdk/credential-providers',
         'gcp-metadata': 'commonjs2 gcp-metadata',
-        'snappy': 'commonjs2 snappy',
-        'socks': 'commonjs2 socks',
-        'aws4': 'commonjs2 aws4',
+        snappy: 'commonjs2 snappy',
+        socks: 'commonjs2 socks',
+        aws4: 'commonjs2 aws4',
         mongodb: 'commonjs2 mongodb',
         mongoose: 'commonjs2 mongoose',
       })
     } else {
       // For server runtime, use normal externals
       config.externals.push({
-        'kerberos': 'commonjs kerberos',
+        kerberos: 'commonjs kerberos',
         'mongodb-client-encryption': 'commonjs mongodb-client-encryption',
-        '@mongodb-js/zstd': 'commonjs @mongodb-js/zstd', 
-        '@aws-sdk/credential-providers': 'commonjs @aws-sdk/credential-providers',
+        '@mongodb-js/zstd': 'commonjs @mongodb-js/zstd',
+        '@aws-sdk/credential-providers':
+          'commonjs @aws-sdk/credential-providers',
         'gcp-metadata': 'commonjs gcp-metadata',
-        'snappy': 'commonjs snappy',
-        'socks': 'commonjs socks',
-        'aws4': 'commonjs aws4',
+        snappy: 'commonjs snappy',
+        socks: 'commonjs socks',
+        aws4: 'commonjs aws4',
       })
     }
 
@@ -88,4 +94,4 @@ const nextConfig = {
   },
 }
 
-module.exports = nextConfig
+module.exports = withBundleAnalyzer(nextConfig)
